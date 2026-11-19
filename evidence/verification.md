@@ -16,3 +16,7 @@ Browser page-error capture was empty. Screenshots in this directory use syntheti
 The earlier embedded-board verification identified an inline host SVG-sizing conflict and a partial-upload loop overlapping another branch. The scoped edge-sizing rule and corrected path remain in this version. This version's added intake form was verified in the standalone application and portable HTML; it has not been reverified in the chat's embedded renderer.
 
 This verifies the interactive blueprint. It does not verify native GHL request storage, secure upload access, workflow execution, reminders, delivery or lender policy compliance. Those remain explicit implementation gates.
+
+## Vercel website build correction — 19 November 2026
+
+The original Vercel deployment completed successfully but the library-mode build emitted only JavaScript/CSS, with no `dist/index.html`. The default build now uses Vite’s HTML entry; portable export has its own output directory. A build-output check verifies the homepage and referenced compiled assets. Model tests, both build modes, and the complete browser suite against the production build preview passed with no browser errors.

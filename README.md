@@ -78,7 +78,9 @@ Owner: Tumai approves business rules; building team implements and proves GHL be
 - `scripts/verify.mjs`: desktop/mobile browser behaviour and portable-bundle checks.
 - `evidence/`: rendered inspection screenshots.
 
-Development: `npm ci`, then `npm run dev` (http://127.0.0.1:5319). Validate: `npm test` and `npm run build`. Regenerate the portable HTML: `npm run package`.
+Development: `npm ci`, then `npm run dev` (http://127.0.0.1:5319). Validate: `npm test` and `npm run build`. The website build produces `dist/index.html` and compiled assets; Vercel serves `dist` using the checked-in `vercel.json`. A build check fails if the homepage or its assets are missing.
+
+Regenerate the portable HTML with `npm run package`. This uses a separate library build in `dist-portable` and leaves the deployable website intact. To verify the production website locally, run `npx vite preview --host 127.0.0.1 --port 5320`, then set `BASE_URL=http://127.0.0.1:5320` when running the browser checks.
 
 For browser checks, keep the development server running, install a test browser with `npx playwright install chromium`, then run `npm run verify`. Alternatively set `CHROME_PATH` to a local Chrome executable. `BASE_URL` can override the local server address. These checks verify the presentation and form demonstration, not a deployed CRM. See [verification record](evidence/verification.md) for checks and limits.
 

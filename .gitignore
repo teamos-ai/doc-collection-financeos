@@ -1,5 +1,7 @@
 node_modules/
 dist/
+dist-portable/
+.vercel/
 test-results/
 .DS_Store
 .env
