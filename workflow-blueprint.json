@@ -7,7 +7,7 @@
       "id": "DC-01",
       "folder": "01 · Broker setup",
       "title": "Build the right checklist",
-      "sub": "Scenario → documents → confirmation",
+      "sub": "Purpose + property use → evidence route → confirmation",
       "note": "The broker selects circumstances. Fixed rules generate the checklist; the broker ticks the required items and confirms.",
       "steps": [
         {
@@ -37,12 +37,77 @@
           "evidence": "Confirmed"
         },
         {
+          "id": "property-path",
+          "title": "Which property scenario?",
+          "summary": "Purpose × intended property use",
+          "kind": "decision",
+          "x": 380,
+          "y": 450,
+          "trigger": "Purpose × intended property use",
+          "action": "Choose purchase or refinance, then owner occupied or investment for each property. Construction and income routes are separate overlays. Route mixed properties or changed occupancy to broker review.",
+          "guard": "A purchase can include retained existing loans. Investment does not prove rental income exists. A new loan does not mean a newly built home.",
+          "ghl": "If/Else on property-scoped purpose/use; repeat per property in the manual build.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "purchase-home",
+          "title": "Purchase · home to live in",
+          "summary": "Contract stage + funds to complete",
+          "kind": "action",
+          "x": 760,
+          "y": 0,
+          "trigger": "Contract stage + funds to complete",
+          "action": "Request the signed purchase contract when available and the selected source-of-funds evidence. Add personal income/ID and existing debts independently. Savings statements apply only when savings contribute.",
+          "guard": "No automatic refinance statements for a new buyer. No subject-property rent request. Other investment income may still matter; first-home schemes need separate review.",
+          "ghl": "Prepare draft purchase requirements; do not add tags until confirmed and persisted.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "purchase-investment",
+          "title": "Purchase · investment",
+          "summary": "Existing tenant or future rent?",
+          "kind": "action",
+          "x": 760,
+          "y": 280,
+          "trigger": "Existing tenant or future rent?",
+          "action": "Use the purchase pack plus a property-specific rental route if rent is relied upon. Existing tenancy may use an approved lease, statement or tenancy details in the contract. Expected rent needs a separate broker evidence route.",
+          "guard": "Do not ask the purchaser for rental credits earned before ownership. Reuse the purchase contract once. Excluded appraisals/valuations stay outside this module.",
+          "ghl": "Conditional rental fields and approved evidence selection; unresolved future-rent evidence remains draft.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "refinance-home",
+          "title": "Refinance · home to live in",
+          "summary": "Existing security + each refinanced account",
+          "kind": "action",
+          "x": 760,
+          "y": 560,
+          "trigger": "Existing security + each refinanced account",
+          "action": "Request six continuous months for each home-loan account actually being refinanced. Propose a rates notice for the named security. Keep other loans and cards under their own treatment and income/ID rules.",
+          "guard": "No new purchase contract or deposit pack for a pure refinance. Cash-out, changed occupancy and settlement documents require separate broker review; founder exclusions remain.",
+          "ghl": "Link security property and refinanced accounts; apply the fixed standard per account.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "refinance-investment",
+          "title": "Refinance · investment",
+          "summary": "Refinance pack + selected rental evidence",
+          "kind": "action",
+          "x": 760,
+          "y": 840,
+          "trigger": "Refinance pack + selected rental evidence",
+          "action": "Use the same six-month refinance standard and proposed security evidence. Add approved evidence for existing rent, or resolve expected rent separately if vacant or converting to investment.",
+          "guard": "Investment use alone does not trigger every rental document. Keep each property and account separate; do not infer an income or evidence waiver.",
+          "ghl": "Compose refinance and rental requirements, then review the combined checklist.",
+          "evidence": "Proposed"
+        },
+        {
           "id": "rules",
           "title": "Apply fixed scenario rules",
           "summary": "Periods are read-only",
           "kind": "action",
-          "x": 760,
-          "y": 120,
+          "x": 1140,
+          "y": 450,
           "trigger": "Periods are read-only",
           "action": "Home-loan refinance = 6 months. Consolidated credit card = 6 months. Retained credit card = 3 months. Apply other standards only after approval.",
           "guard": "No broker period override or automatic lender waiver. No blanket request for all 70 items. Keep publication date, check date and channel on the rule.",
@@ -54,8 +119,8 @@
           "title": "Approved rule available?",
           "summary": "Known defaults versus unresolved cases",
           "kind": "decision",
-          "x": 1140,
-          "y": 120,
+          "x": 1520,
+          "y": 450,
           "trigger": "Known defaults versus unresolved cases",
           "action": "Continue with approved rules. If a selected item has no approved standard or falls outside the retained catalogue, flag it for controlled review.",
           "guard": "Unknown is not zero and not a guessed maximum period.",
@@ -67,8 +132,8 @@
           "title": "Review, tick and confirm",
           "summary": "Broker confirms before issue",
           "kind": "human",
-          "x": 1520,
-          "y": 120,
+          "x": 1900,
+          "y": 450,
           "trigger": "Broker confirms before issue",
           "action": "Show the applicant, account, document, locked period and any exception. Broker ticks the required documents and submits.",
           "guard": "Saving a draft sends nothing. Explicit confirmation is required.",
@@ -80,8 +145,8 @@
           "title": "Resolve the rule exception",
           "summary": "Keep request draft",
           "kind": "stop",
-          "x": 1140,
-          "y": 400,
+          "x": 1520,
+          "y": 790,
           "trigger": "Keep request draft",
           "action": "Route missing standards or excluded documents to the broker/policy owner. Resolve through controlled rule maintenance or handle outside this collection module.",
           "guard": "Do not silently reinstate removed financials, consents or expense documents.",
@@ -97,6 +162,56 @@
         },
         {
           "from": "scenario",
+          "to": "property-path",
+          "loop": false
+        },
+        {
+          "from": "property-path",
+          "to": "purchase-home",
+          "label": "Purchase + live in",
+          "loop": false
+        },
+        {
+          "from": "property-path",
+          "to": "purchase-investment",
+          "label": "Purchase + investment",
+          "loop": false
+        },
+        {
+          "from": "property-path",
+          "to": "refinance-home",
+          "label": "Refinance + live in",
+          "loop": false
+        },
+        {
+          "from": "property-path",
+          "to": "refinance-investment",
+          "label": "Refinance + investment",
+          "loop": false
+        },
+        {
+          "from": "property-path",
+          "to": "exception",
+          "label": "Mixed / unresolved",
+          "loop": true
+        },
+        {
+          "from": "purchase-home",
+          "to": "rules",
+          "loop": false
+        },
+        {
+          "from": "purchase-investment",
+          "to": "rules",
+          "loop": false
+        },
+        {
+          "from": "refinance-home",
+          "to": "rules",
+          "loop": false
+        },
+        {
+          "from": "refinance-investment",
           "to": "rules",
           "loop": false
         },
@@ -1168,7 +1283,7 @@
     ],
     [
       "Existing rental income",
-      "Rental statement OR lease",
+      "Selected lender rental evidence route",
       "Latest statement or current lease",
       "Proposed"
     ],

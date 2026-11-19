@@ -8,6 +8,7 @@ export type Applicant = {
   ytdCoversHistory?: boolean;
   incomeRoute?: "Review first" | "Standard two-year pack" | "Personal NOAs only" | "Company wage evidence";
   entity: string;
+  rentalProperty?: string;
 };
 export type Liability = {
   id: string;
@@ -21,6 +22,11 @@ export type Intake = {
   broker: string;
   purposes: string[];
   propertyUse: string;
+  propertyLabel?: string;
+  rentBasis?: "Review first" | "Not relied upon" | "Existing tenancy" | "Expected future rent";
+  rentDocuments?: string[];
+  purchaseType?: "Established dwelling" | "Newly built dwelling" | "Off the plan" | "Vacant land";
+  firstHomeBuyer?: boolean;
   contractAvailable: boolean;
   savings: boolean;
   constructionStage?: "Review first" | "Pre-approval" | "Formal application" | "Before commencement" | "Progress draw" | "Final draw";
@@ -41,6 +47,9 @@ export const initialIntake: Intake = {
   broker: "Assigned broker",
   purposes: ["Refinance"],
   propertyUse: "Owner occupied",
+  propertyLabel: "Property A",
+  rentBasis: "Review first",
+  rentDocuments: [],
   contractAvailable: false,
   savings: false,
   applicants: [
@@ -91,8 +100,47 @@ export const incomeRoutes = ["Review first", "Standard two-year pack", "Personal
 export const constructionStages = ["Review first", "Pre-approval", "Formal application", "Before commencement", "Progress draw", "Final draw"] as const;
 export const isSelfEmployed = (a: Applicant) => a.income.some((x) => ["Sole trader", "Company income", "Partnership income", "Trust income"].includes(x));
 const companyWageOnly = (a: Applicant) => a.income.includes("Company income") && !a.income.some((x) => ["Sole trader", "Partnership income", "Trust income"].includes(x));
+export const rentalEvidenceOptions = [
+  {key:"lease", label:"Current lease agreement"},
+  {key:"rental-statements", label:"Rental statements"},
+  {key:"rental-bank-statements", label:"Rental bank statements"},
+  {key:"purchase-contract", label:"Tenancy evidenced in the purchase contract"},
+];
+export const hasPurchase = (f: Intake) => f.purposes.includes("Purchase");
+export const hasRefinance = (f: Intake) => f.purposes.includes("Refinance");
+export function propertyScenario(f: Intake): string {
+  const use=f.propertyUse === "Investment" ? "investment property" : "home to live in";
+  if(hasPurchase(f)&&hasRefinance(f)) return "Purchase + refinance · separate property records required";
+  if(hasPurchase(f)) return "Purchase · "+use;
+  if(hasRefinance(f)) return "Refinance · "+use;
+  return "Select purchase or refinance; construction is a separate stage overlay";
+}
+export function scenarioExample(purpose: "Purchase" | "Refinance", propertyUse: "Owner occupied" | "Investment"): Intake {
+  const f=structuredClone(initialIntake);
+  f.purposes=[purpose]; f.propertyUse=propertyUse;
+  f.contractAvailable=purpose==="Purchase"; f.savings=purpose==="Purchase";
+  f.liabilities=purpose==="Purchase" ? [] : [f.liabilities[0]];
+  f.rentBasis=propertyUse==="Investment" ? (purpose==="Purchase" ? "Expected future rent" : "Existing tenancy") : "Not relied upon";
+  f.rentDocuments=propertyUse==="Investment"&&purpose==="Refinance" ? ["rental-statements"] : [];
+  return f;
+}
 export function reviewIssues(f: Intake): string[] {
   const issues: string[] = [];
+  if(!f.purposes.length) issues.push("Select a loan purpose before issuing a checklist.");
+  if(hasPurchase(f)&&hasRefinance(f)) issues.push("Purchase + refinance: link the purchase property, existing security and each loan account separately. This one-property preview cannot approve a multi-property pack; rates evidence needs a scoped broker review.");
+  if(hasRefinance(f)&&!f.liabilities.some(l=>l.type==="Home loan"&&l.treatment==="Refinance")) issues.push("Refinance selected: identify each home-loan account being refinanced. Selecting a purpose alone cannot create a correctly scoped statement request.");
+  if(!hasRefinance(f)&&f.liabilities.some(l=>l.type==="Home loan"&&l.treatment==="Refinance")) issues.push("An account is marked Refinance while the refinance purpose is unticked. Resolve the mismatch; existing account requests are preserved for review, not silently withdrawn.");
+  if(f.propertyUse==="Investment") {
+    if(!f.rentBasis||f.rentBasis==="Review first") issues.push("Investment property: confirm whether existing rent, expected future rent or no rental income is relied upon.");
+    if(f.rentBasis==="Expected future rent") issues.push("Expected future rent: broker obtains the lender-approved rental estimate outside this module. Rental appraisals and valuation reports remain excluded; do not chase historic rent that does not exist.");
+    if(f.rentBasis==="Existing tenancy") {
+      if(!f.rentDocuments?.length) issues.push("Existing tenancy: select the approved evidence route. A lease, statement or combined pack depends on the lender; this preview does not decide the acceptable bundle.");
+      if(hasPurchase(f)&&f.rentDocuments?.includes("rental-bank-statements")) issues.push("Purchase with an existing tenant: do not request the purchaser’s pre-ownership rental credits. Verify the tenancy using available approved evidence.");
+      if(f.rentDocuments?.includes("purchase-contract")&&(!hasPurchase(f)||!f.contractAvailable)) issues.push("Contract-based tenancy evidence needs a current purchase contract. The broker must confirm it contains accepted tenancy details; no automatic waiver.");
+    }
+  }
+  if(hasPurchase(f)&&f.firstHomeBuyer) issues.push("First-home buyer: resolve state/territory, named scheme and eligibility with the broker before selecting extra documents. No blanket first-home-buyer pack or automatic grant decision.");
+  if(hasPurchase(f)&&f.purchaseType&&f.purchaseType!=="Established dwelling") issues.push(`${f.purchaseType}: buying a newly built or off-the-plan property is not automatically a construction loan. Check contract stage, title/completion conditions and any lender or scheme requirements before issue.`);
   for (const a of f.applicants) {
     if (!isSelfEmployed(a)) continue;
     if (!a.incomeRoute || a.incomeRoute === "Review first") issues.push(`${a.name || a.id}: choose and verify an income evidence route before requesting tax or entity packs.`);
@@ -244,11 +292,11 @@ export function previewRequests(f: Intake): RequestPreview[] {
       add(
         a.id + "-rent",
         "rental-statements",
-        subject,
+        subject + " · " + (a.rentalProperty || "Other rental property — resolve reference"),
         "Rental statements",
         "Latest statement · lender-specific evidence route",
         "Proposed",
-        "Landlord rental income only. Lease/statement alternatives depend on lender; tenant rental ledger and ongoing rent expenses are different purposes.",
+        "Income from another property, independent of the subject property's use. Resolve ownership and property reference; lender-specific bundles may require more than this proposed statement.",
       );
   }
   for (const l of f.liabilities) {
@@ -288,13 +336,23 @@ export function previewRequests(f: Intake): RequestPreview[] {
     add(
       "loan-contract",
       "purchase-contract",
-      "Loan",
+      f.propertyLabel || "Subject property",
       "Contract of sale — buying",
       "Complete signed current contract",
       "Proposed",
-      "Purchase has reached the contract stage.",
+      `${f.propertyUse} purchase has reached the contract stage. Verify current signatures, property, parties and lender/state requirements.`,
     );
-  if (f.savings)
+  if (hasRefinance(f) && !hasPurchase(f))
+    add("property-rates", "rates-notice", f.propertyLabel || "Subject property", "Rates notice", "Latest available · lender freshness to confirm", "Proposed", `${f.propertyUse} refinance: identify the existing security property. Rates are a proposed collection item; confirm lender exceptions and do not request a new purchase contract.`);
+  if(f.propertyUse==="Investment" && f.rentBasis==="Existing tenancy")
+    for(const key of [...new Set(f.rentDocuments ?? [])]) {
+      const option=rentalEvidenceOptions.find(x=>x.key===key);
+      if(!option || key==="purchase-contract" || (hasPurchase(f)&&key==="rental-bank-statements")) continue;
+      add("property-rent-"+key, key, f.propertyLabel || "Subject property", option.label,
+        key==="rental-bank-statements" ? "3 continuous months · proposed lender route" : "Current tenancy evidence · lender freshness to confirm",
+        "Proposed", `${hasPurchase(f)?"Tenanted purchase":"Existing investment property"}: selected rental evidence for this property. Confirm availability, ownership and lender-approved alternatives/bundle; do not duplicate evidence already linked to another request.`);
+    }
+  if (f.savings && (hasPurchase(f) || f.purposes.includes("Construction")))
     add(
       "loan-savings",
       "savings-statements",

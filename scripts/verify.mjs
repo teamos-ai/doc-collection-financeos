@@ -23,7 +23,7 @@ try {
   await page
     .getByRole("button", { name: "Whole journey", exact: true })
     .click();
-  assert.equal(await page.locator(".react-flow__node-step").count(), 54);
+  assert.equal(await page.locator(".react-flow__node-step").count(), 59);
   const original = await page
     .locator(".react-flow__viewport")
     .getAttribute("style");
@@ -138,6 +138,19 @@ try {
     await intake.getByLabel("Applicant email", { exact: true }).inputValue(),
     "sam@example.test",
   );
+  await intake.getByText("Try the four property scenarios · replaces this preview", { exact: true }).click();
+  for (const [name, purchase, rent] of [
+    ["Purchase · Owner occupied", true, false],
+    ["Purchase · Investment", true, false],
+    ["Refinance · Owner occupied", false, false],
+    ["Refinance · Investment", false, true],
+  ]) {
+    await intake.getByRole("button", { name, exact: true }).click();
+    const text = await intake.getByRole("table").innerText();
+    assert.equal(text.includes("Contract of sale — buying"), purchase);
+    assert.equal(text.includes("Home-loan statements"), !purchase);
+    assert.equal(text.includes("Rental statements"), rent);
+  }
   await page.setViewportSize({ width: 390, height: 844 });
   assert.equal(
     await page.evaluate(
@@ -158,7 +171,7 @@ try {
   await page
     .getByRole("heading", { name: "One checklist. The whole journey." })
     .waitFor();
-  assert.equal(await page.locator(".react-flow__node-step").count(), 54);
+  assert.equal(await page.locator(".react-flow__node-step").count(), 59);
   await page
     .getByRole("button", { name: "Document catalogue", exact: true })
     .click();

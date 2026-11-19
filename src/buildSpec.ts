@@ -165,7 +165,7 @@ export const buildOrder = [
     title: "Build intake and issue guard",
     flows: ["DC-01", "DC-02"],
     detail:
-      "Broker selects circumstances, reviews proposed and approved requirements, records already-held evidence, ticks and confirms. Guard loan + revision before creating requests.",
+      "Broker selects the property-specific purchase/refinance and intended-use path, tenancy, income and debts; reviews requirements and already-held evidence, ticks and confirms. Guard loan + revision before creating requests.",
     done: "Drafts send nothing. Replaying confirmation does not duplicate requests or invitation. Unapproved selected rules block production issue.",
   },
   {
@@ -210,8 +210,8 @@ export const fieldMappings = [
   ],
   [
     "Purpose + stage",
-    "purchase / refinance / construction; contract_available; construction_stage",
-    "R13 / R15 → DC-01.rules",
+    "property_id; purchase / refinance / construction; intended_use; rent_basis; contract_available; construction_stage",
+    "P01–P04 + R12–R15 → DC-01.property-path → rules",
     "Pre-approval does not chase an unavailable sale contract. Construction stages issue only their current pack; changes re-open evidence review.",
   ],
   [
@@ -274,6 +274,7 @@ export const capabilityChecks = [
   ],
 ];
 export const schemaFields = [
+  ["Property scenario", "property_id, intended_use, transaction_purpose, tenancy_status, rent_relied_upon, rental_evidence_route, dwelling_type, scheme_review", "Scoped references and reviewed selections", "Each security and purchase property has its own record; applicant income and account treatment remain independent. Never infer tenancy or grant eligibility from Investment or First-home buyer."],
   ["Policy route", "lender_channel, income_route, construction_stage, source_url, source_version, checked_at, approved_by", "References, enum, dates, reviewer", "Public-source check is not policy approval. No inferred waiver or eligibility; stage changes require a reviewed revision."],
   ["Evidence review", "document_issued_at, coverage_intervals, financial_year, finalisation_status, tfn_check", "Dates/intervals, year, Current YTD / Finalised / Needs review, reviewer check", "Review coverage and accepted formats; no automated redaction or document-content extraction is provided by the board."],
 
@@ -333,6 +334,12 @@ export const schemaFields = [
   ],
 ];
 export const acceptanceCases = [
+  "Purchase to live in: no refinanced debt means no home-loan history request; signed contract only at contract stage, savings only if used. Income from another investment remains possible.",
+  "Investment purchase: existing tenancy, future rent and rent not relied upon give different requests. Do not chase purchaser rental credits before ownership; a tenancy-bearing sale contract is linked once.",
+  "Owner-occupied refinance: six months per refinanced account plus proposed rates notice; no new purchase contract or deposit pack. Retained accounts stay separate.",
+  "Investment refinance: same fixed refinance period; rental evidence only for the selected property and route. Vacant/future rent creates a broker exception, not a historical statement request.",
+  "Change intended use or property: review only affected requests; another property's rental evidence and another account's required tag must survive.",
+  "Purchase plus refinance, new-build/off-the-plan, first-home schemes, continuing accommodation and equity/cash-out: show explicit review flags and do not pretend the one-property preview proves multi-property or credit-policy support.",
   "Self-employed Review first: no automatic tax/entity pack. NOA-only and company-wage examples do not stack standard returns; ineligible mixed structures stay in review.",
   "Construction pre-approval: no permits, draw invoices or final certificates. Changing to a later stage generates only that stage’s proposed requests.",
   "Change a request’s subject, route or period: previous held/unticked choices reset; unchanged requirements retain their decisions.",

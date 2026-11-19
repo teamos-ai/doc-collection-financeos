@@ -5,6 +5,9 @@ Updated 20 November 2026 after the Perplexity cross-check. The **Broker intake f
 | Form area | Fields / controls | Effect |
 | --- | --- | --- |
 | Loan and scenario | Loan reference, assigned broker, purchase/refinance/construction, owner occupied/investment | Identify the loan and circumstances before issuing requests. Multiple purposes can coexist. |
+| Property use and reference | Intended use after settlement, property label | Four paths separate purchase/refinance and live-in/investment; property use now affects rental requests. |
+| Rental income from subject property | Not relied upon / existing tenancy / future rent; selected lender evidence | Historical documents only for existing income; future rent needs the broker exception path. A sale contract used for tenancy is linked once. |
+| Dwelling / scheme | Established / newly built / off-the-plan / land; first-home/scheme flag | Triggers a review; never infers a construction loan or scheme entitlement. |
 | Purchase stage | Signed contract available | Request the purchase contract when it exists; do not chase it at pre-approval. |
 | Deposit | Savings contribute | Suggest savings statements, with proposed three-month history. Account and ownership need resolution in the actual build. |
 | Applicants | Repeated name, email, mobile | Bind requests to the correct person. The demo requires email and name at confirmation. |
@@ -27,3 +30,5 @@ No real borrower data should be entered into this illustrative board. Its form v
 Changed requirements invalidate previous held/unticked decisions when their subject, period or route changes. For example, a held draft building contract does not automatically satisfy the later signed-contract request. Unchanged card requests retain their decisions. The builder must preserve prior evidence and link any reuse explicitly.
 
 Capture lender/channel, source version, policy reviewer, financial year, coverage intervals and freshness reference event. File count does not prove coverage; an accepted transaction history may bridge a statement gap. TFN removal instructions require a reviewer check; this board provides no automatic redaction.
+
+See [property scenario coverage](property-scenario-coverage-2026-11-20.md) for the four-path table and supporting lender sources. The synthetic example buttons replace the preview and clear its previous held/unticked choices. Changing only a property scenario preserves independent account evidence; production changes require a reviewed revision before tag reconciliation.

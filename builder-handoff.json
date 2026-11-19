@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-20.1",
+  "version": "2026-11-20.2",
   "status": "proposed specification",
   "catalogue": [
     {
@@ -717,9 +717,9 @@
     {
       "id": "R12",
       "scenario": "Existing rental income",
-      "documents": "Rental statements OR current lease",
+      "documents": "Approved rental evidence route: statement, lease and/or required supporting evidence",
       "period": "Proposed: latest statement / current lease",
-      "quantity": "One approved evidence route",
+      "quantity": "Selected lender route; one or several items, not a universal OR",
       "freshness": "Current evidence for named property",
       "condition": "Landlord income only; not a tenant ledger. Alternatives are lender-specific: ANZ lists multiple evidence items. Prospective rent and excluded rental appraisals remain separate exceptions.",
       "basis": "Proposed",
@@ -1243,6 +1243,82 @@
       "sources": []
     }
   ],
+  "propertyScenarios": [
+    {
+      "id": "P01",
+      "step": "purchase-home",
+      "title": "Purchase · home to live in",
+      "purpose": "Purchase",
+      "use": "Owner occupied",
+      "documents": "Signed purchase contract when available; evidence of the actual deposit/funds source. Personal income, ID and existing liabilities remain independent.",
+      "conditions": "Pre-approval without a contract does not chase it. Savings are conditional on contributing savings. A retained loan is not automatically a refinance.",
+      "tags": "purchase-contract; savings-statements only if selected. No subject-property rental tag. Other owned rental properties can still need their own evidence.",
+      "review": "First-home buyer/scheme, dwelling type, source of funds and any property being retained or sold.",
+      "sources": [
+        "ANZ",
+        "NAB",
+        "CBA"
+      ]
+    },
+    {
+      "id": "P02",
+      "step": "purchase-investment",
+      "title": "Purchase · investment",
+      "purpose": "Purchase",
+      "use": "Investment",
+      "documents": "Purchase contract/funding pack plus the approved rental route only if that income is used. Separate existing tenancy from expected future rent.",
+      "conditions": "For a tenanted purchase, confirm accessible lease/agent evidence or accepted tenancy details in the contract. Do not request the buyer's pre-ownership rental credits.",
+      "tags": "purchase-contract once; selected lease/rental-statements as applicable. Expected future rent creates a broker exception, not an impossible historical-statement chase.",
+      "review": "Tenancy status, who can supply the evidence, ongoing accommodation and excluded rental estimate/valuation requirements.",
+      "sources": [
+        "WBC-26",
+        "ANZ",
+        "NAB"
+      ]
+    },
+    {
+      "id": "P03",
+      "step": "refinance-home",
+      "title": "Refinance · home to live in",
+      "purpose": "Refinance",
+      "use": "Owner occupied",
+      "documents": "Six continuous months for each refinanced home-loan account; proposed rates notice for the named existing security. Income/ID/debts remain independent.",
+      "conditions": "A pure refinance does not create a new purchase contract or deposit request. Retained loans use their separate rule; consolidated and retained cards keep their own periods.",
+      "tags": "home-loan-statements per required account; rates-notice if selected. Contact tags are recomputed across all requests, not removed on a purpose dropdown change.",
+      "review": "Cash-out, debt consolidation, interest-only evidence, security ownership, change of use and broker-managed settlement requirements.",
+      "sources": [
+        "NAB",
+        "CBA",
+        "ANZ"
+      ]
+    },
+    {
+      "id": "P04",
+      "step": "refinance-investment",
+      "title": "Refinance · investment",
+      "purpose": "Refinance",
+      "use": "Investment",
+      "documents": "Refinance statements and proposed rates notice, plus selected existing-rent evidence. Vacant or newly converted investments need a future-rent review.",
+      "conditions": "Do not treat investment use as proof of rent or require all rental alternatives. Multiple properties and accounts need separate records and explicit shared-evidence links.",
+      "tags": "home-loan-statements + selected rates-notice / lease / rental-statements / rental-bank-statements. One receipt cannot clear another property's request.",
+      "review": "Whether rent is relied upon, existing versus expected rent, lender evidence bundle and any change from home to investment.",
+      "sources": [
+        "WBC-26",
+        "ANZ",
+        "CBA",
+        "NAB"
+      ]
+    }
+  ],
+  "propertyConsiderations": [
+    "The base pack follows each person's income and identity route, irrespective of purchase/refinance or home/investment use.",
+    "Link purpose and intended use to a property; link repayment evidence to an account. A purchase funded by refinancing another property needs both scoped paths, not a single global use flag.",
+    "New to this buyer, newly built, off the plan and a construction loan are different circumstances. Building-loan documents follow the separate construction stage.",
+    "Savings history is not the same as funds to complete or a universal genuine-savings test. Resolve gifts, sales, equity and guarantees separately within approved catalogue scope.",
+    "First-home-buyer and scheme flags need state/territory, scheme and eligibility review. Do not generate a generic placeholder request or infer entitlement.",
+    "If the applicant keeps renting, assess the commitment in the broker's wider application process. Expense documents remain outside this module; exclusion is not a lender waiver.",
+    "On a change of property, use or tenancy, create a reviewed revision. Preserve accepted files, revalidate affected links and notify only genuinely changed requirements."
+  ],
   "buildOrder": [
     {
       "id": "B01",
@@ -1272,7 +1348,7 @@
         "DC-01",
         "DC-02"
       ],
-      "detail": "Broker selects circumstances, reviews proposed and approved requirements, records already-held evidence, ticks and confirms. Guard loan + revision before creating requests.",
+      "detail": "Broker selects the property-specific purchase/refinance and intended-use path, tenancy, income and debts; reviews requirements and already-held evidence, ticks and confirms. Guard loan + revision before creating requests.",
       "done": "Drafts send nothing. Replaying confirmation does not duplicate requests or invitation. Unapproved selected rules block production issue."
     },
     {
@@ -1332,8 +1408,8 @@
     ],
     [
       "Purpose + stage",
-      "purchase / refinance / construction; contract_available; construction_stage",
-      "R13 / R15 → DC-01.rules",
+      "property_id; purchase / refinance / construction; intended_use; rent_basis; contract_available; construction_stage",
+      "P01–P04 + R12–R15 → DC-01.property-path → rules",
       "Pre-approval does not chase an unavailable sale contract. Construction stages issue only their current pack; changes re-open evidence review."
     ],
     [
@@ -1396,6 +1472,12 @@
     ]
   ],
   "schemaFields": [
+    [
+      "Property scenario",
+      "property_id, intended_use, transaction_purpose, tenancy_status, rent_relied_upon, rental_evidence_route, dwelling_type, scheme_review",
+      "Scoped references and reviewed selections",
+      "Each security and purchase property has its own record; applicant income and account treatment remain independent. Never infer tenancy or grant eligibility from Investment or First-home buyer."
+    ],
     [
       "Policy route",
       "lender_channel, income_route, construction_stage, source_url, source_version, checked_at, approved_by",
@@ -1672,6 +1754,12 @@
     ]
   ],
   "acceptanceCases": [
+    "Purchase to live in: no refinanced debt means no home-loan history request; signed contract only at contract stage, savings only if used. Income from another investment remains possible.",
+    "Investment purchase: existing tenancy, future rent and rent not relied upon give different requests. Do not chase purchaser rental credits before ownership; a tenancy-bearing sale contract is linked once.",
+    "Owner-occupied refinance: six months per refinanced account plus proposed rates notice; no new purchase contract or deposit pack. Retained accounts stay separate.",
+    "Investment refinance: same fixed refinance period; rental evidence only for the selected property and route. Vacant/future rent creates a broker exception, not a historical statement request.",
+    "Change intended use or property: review only affected requests; another property's rental evidence and another account's required tag must survive.",
+    "Purchase plus refinance, new-build/off-the-plan, first-home schemes, continuing accommodation and equity/cash-out: show explicit review flags and do not pretend the one-property preview proves multi-property or credit-policy support.",
     "Self-employed Review first: no automatic tax/entity pack. NOA-only and company-wage examples do not stack standard returns; ineligible mixed structures stay in review.",
     "Construction pre-approval: no permits, draw invoices or final certificates. Changing to a later stage generates only that stage’s proposed requests.",
     "Change a request’s subject, route or period: previous held/unticked choices reset; unchanged requirements retain their decisions.",

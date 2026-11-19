@@ -15,7 +15,7 @@ async function load(file) {
 }
 const { recordUpload, reconcile } = await load("src/requestState.ts");
 const { WORKFLOWS } = await load("src/model.ts");
-const { scenarioRules, sources, namingAliases, gaps, researchCrossCheck, crossCheckFindings } =
+const { scenarioRules, sources, namingAliases, gaps, researchCrossCheck, crossCheckFindings, propertyScenarios, propertyConsiderations } =
   await load("src/research.ts");
 const {
   messages,
@@ -46,6 +46,11 @@ assert(!namingAliases.bas.some(x=>/IAS|instalment|integrated|running balance/i.t
 assert.equal(crossCheckFindings.length,18);
 for(const finding of crossCheckFindings) for(const id of finding.sources) assert(sources.some(s=>s.id===id),'Unlinked cross-check source '+id);
 assert.equal(researchCrossCheck.status,'Completed');
+assert.equal(propertyScenarios.length,4);
+for(const p of propertyScenarios) {
+  assert(WORKFLOWS.find(w=>w.id==='DC-01').steps.some(s=>s.id===p.step),'Scenario missing from canvas '+p.id);
+  for(const id of p.sources) assert(sources.some(s=>s.id===id),'Scenario source missing '+id);
+}
 assert.equal(createHash('sha256').update(readFileSync(researchCrossCheck.reportFile)).digest('hex'),researchCrossCheck.sha256,'Keep the supplied research unchanged');
 for (const rule of scenarioRules)
   for (const id of rule.sources)
@@ -131,7 +136,7 @@ writeFileSync(
   "builder-handoff.json",
   JSON.stringify(
     {
-      version: "2026-11-20.1",
+      version: "2026-11-20.2",
       status: "proposed specification",
       catalogue,
       scenarioRules,
@@ -140,6 +145,8 @@ writeFileSync(
       gaps,
       researchCrossCheck,
       crossCheckFindings,
+      propertyScenarios,
+      propertyConsiderations,
       buildOrder,
       fieldMappings,
       capabilityChecks,

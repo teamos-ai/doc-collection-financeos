@@ -15,9 +15,15 @@ Resources open over the same canvas:
 - **Broker intake:** scenario selections, account-specific treatment, locked periods, conditional salary matching, distinct self-employed evidence routes, construction stages, already-held evidence and resulting tag preview.
 - **Upload example:** synthetic two-card case with failed save, partial receipt, broker review, replacement and another-loan tag retention.
 - **Document catalogue:** all 70 retained entries, explanations, Australian aliases and stable tags.
-- **Rules & research:** 18 scenario routes with coverage, count, freshness, authority, sources and gaps.
+- **Rules & research:** four property paths plus 18 evidence routes with coverage, count, freshness, authority, sources and gaps.
 - **Email & SMS:** seven draft messages/actions, restrained proposed cadence and explicit placeholder mappings.
 - **Build guide:** numbered dependencies, logical field schema, intended GHL capabilities and future acceptance cases.
+
+## Property scenarios
+
+DC-01 now shows purchase to live in, investment purchase, owner-occupied refinance and investment refinance as four explicit branches. Try each with **Broker intake → Try the four property scenarios**. The **Rules & research** panel gives documents, conditions, tag implications and review points. [Detailed coverage and source checks](docs/property-scenario-coverage-2026-11-20.md).
+
+Investment use asks whether rent exists or is expected; it does not automatically request every rental document. A purchase is not automatically a refinance or a construction loan. Mixed properties, scheme eligibility and excluded lender requirements stay explicit broker reviews.
 
 ## The build contract
 
@@ -45,7 +51,7 @@ See [repository due diligence](docs/repository-review-2026-11-19.md) for pinned 
 
 ## Files and exports
 
-- `src/model.ts`: seven workflows / 46 detailed steps, conditions and builder instructions.
+- `src/model.ts`: seven workflows / 51 detailed steps, conditions and builder instructions.
 - `src/intake.ts`: illustrative main-scenario form rules.
 - `src/catalogue.json`: retained 70-entry catalogue; stable keys preserved.
 - `src/research.ts`: scenario/source/naming register.

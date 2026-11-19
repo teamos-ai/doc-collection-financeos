@@ -8,6 +8,9 @@ import {
   isSelfEmployed,
   reviewIssues,
   unchangedRequestIds,
+  rentalEvidenceOptions,
+  propertyScenario,
+  scenarioExample,
   type Intake,
   type Applicant,
   type Liability,
@@ -65,6 +68,17 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
           View intake logic →
         </button>
       </div>
+      <details className="dc-source">
+        <summary>Try the four property scenarios · replaces this preview</summary>
+        <p>Loads a synthetic example. Income, existing debts and funding sources still need their own review.</p>
+        <div className="dc-form-checks">
+          {(["Purchase", "Refinance"] as const).flatMap((purpose) => (["Owner occupied", "Investment"] as const).map((use) => (
+            <button key={purpose+use} type="button" className="dc-button" onClick={() => {
+              change(scenarioExample(purpose,use)); setHeld({}); setExcluded(new Set());
+            }}>{purpose} · {use}</button>
+          )))}
+        </div>
+      </details>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -91,7 +105,7 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
               />
             </label>
             <label>
-              Property use
+              Intended property use
               <select
                 value={form.propertyUse}
                 onChange={(e) =>
@@ -102,6 +116,15 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
                 <option>Investment</option>
               </select>
             </label>
+            <label>
+              Subject property reference
+              <input value={form.propertyLabel ?? ""} placeholder="Property A" onChange={(e)=>change({...form,propertyLabel:e.target.value})} />
+            </label>
+          </div>
+          <div className="dc-note" aria-label="Property scenario summary">
+            <b>{propertyScenario(form)}</b>
+            <p>Purpose determines transaction evidence. Property use determines the rental-income questions. Personal income and existing debt evidence remain separate.</p>
+            <p>For a purchase, add only debts the applicant already has. An existing loan being kept is Retained; do not mark it Refinance unless this deal actually refinances it.</p>
           </div>
           <div className="dc-form-checks">
             {["Purchase", "Refinance", "Construction"].map((p) => (
@@ -129,6 +152,28 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
               Signed purchase contract is available
             </label>
           )}
+          {form.purposes.includes("Purchase") && <div className="dc-form-grid">
+            <label>Dwelling type
+              <select value={form.purchaseType ?? "Established dwelling"} onChange={(e)=>change({...form,purchaseType:e.target.value as Intake["purchaseType"]})}>
+                {["Established dwelling","Newly built dwelling","Off the plan","Vacant land"].map(x=><option key={x}>{x}</option>)}
+              </select>
+            </label>
+            <label className="dc-form-check"><input type="checkbox" checked={form.firstHomeBuyer ?? false} onChange={(e)=>change({...form,firstHomeBuyer:e.target.checked})}/>First-home buyer or scheme review needed</label>
+          </div>}
+          {form.propertyUse === "Investment" && <section className="dc-note" aria-label="Subject property rental income">
+            <label>Rental income from this property
+              <select value={form.rentBasis ?? "Review first"} onChange={(e)=>change({...form,rentBasis:e.target.value as Intake["rentBasis"],rentDocuments:[]})}>
+                {["Review first","Not relied upon","Existing tenancy","Expected future rent"].map(x=><option key={x}>{x}</option>)}
+              </select>
+            </label>
+            <p>Existing tenancy and expected rent use different evidence. Do not request past rental credits before the applicant owns the property. A rental appraisal remains a broker-handled exception.</p>
+            {form.rentBasis === "Existing tenancy" && <>
+              <p>Tick the evidence available under the selected lender route. These are conditional options; they are not all compulsory. A contract used for tenancy evidence is linked once, rather than requested twice.</p>
+              <div className="dc-form-checks">{rentalEvidenceOptions.filter(x=>form.purposes.includes("Purchase") ? x.key!=="rental-bank-statements" : x.key!=="purchase-contract").map(x=><label key={x.key}>
+                <input type="checkbox" checked={form.rentDocuments?.includes(x.key) ?? false} onChange={()=>change({...form,rentDocuments:toggle(form.rentDocuments ?? [],x.key)})}/>{x.label}
+              </label>)}</div>
+            </>}
+          </section>}
           {form.purposes.includes("Construction") && (
             <label className="dc-entity-field">
               Construction stage
@@ -138,14 +183,15 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
               <small>Only the current stage generates requests. Owner-builder, contract age and lender-specific requirements need review.</small>
             </label>
           )}
-          <label className="dc-form-check">
+          {(form.purposes.includes("Purchase") || form.purposes.includes("Construction")) && <label className="dc-form-check">
             <input
               type="checkbox"
               checked={form.savings}
               onChange={(e) => change({ ...form, savings: e.target.checked })}
             />
             Savings contribute to the deposit
-          </label>
+          </label>}
+          <p className="dc-caption">Funding can also come from a gift, sale or existing equity. The builder must resolve the actual source and approved evidence; savings are not assumed. Continuing rent, cash-out, bridging, multiple securities and changes from home to investment require broker review. Excluded expense, appraisal, valuation, discharge and insurance requests stay outside this module.</p>
         </fieldset>
         <fieldset>
           <legend>2 · Applicants and income</legend>
@@ -194,10 +240,14 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
                         applicant(a.id, { income: toggle(a.income, x) })
                       }
                     />
-                    {x}
+                    {x === "Rental income" ? "Rental income from another property" : x}
                   </label>
                 ))}
               </div>
+              {a.income.includes("Rental income") && <label className="dc-entity-field">Other rental property reference
+                <input required value={a.rentalProperty ?? ""} onChange={(e)=>applicant(a.id,{rentalProperty:e.target.value})} placeholder="Separate property label" />
+                <small>Use this for a different property. Evidence for a shared property needs one linked request, not duplicate applicant requests.</small>
+              </label>}
               {isSelfEmployed(a) && (
                 <label className="dc-entity-field">
                   Self-employed evidence route
@@ -392,7 +442,7 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
               <thead>
                 <tr>
                   <th>Request</th>
-                  <th>Applicant / account</th>
+                  <th>Applicant / property / account</th>
                   <th>Locked requirement</th>
                   <th>Basis</th>
                   <th>Existing evidence</th>

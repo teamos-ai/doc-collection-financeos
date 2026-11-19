@@ -1,3 +1,16 @@
+# Property scenario amendment — 20 November 2026
+
+Version 0.5.0. Seven workflows / 51 detailed steps; 59 persistent step nodes including the overview. No live GHL activation.
+
+- Automated model, intake, evidence and tag-state checks passed. New cases cover the four property paths; no deposit/contract on pure refinance; no automatic refinanced debt on purchase; existing versus future rent; no purchaser pre-ownership credits; reuse of tenancy-bearing sale contract; other-property income; changed-use review; mixed-property and first-home/new-dwelling gates.
+- TypeScript, website output and portable packaging passed; handoff/JSON/property-scenario guide synchronised.
+- Connected-browser walkthrough confirmed all four synthetic examples change the visible checklist correctly. A tenanted purchase linked one sale contract and did not request historical purchaser rental credits.
+- Four branches render on the same canvas. In-place inspector and full-screen exit preserve the viewport. With tags enabled, all 59 step nodes have non-overlapping bounds. No local browser errors were returned.
+- [Local canvas screenshot](property-scenarios-local.jpg). Production verification is recorded in the Finance OS hub after deployment.
+- The separate Playwright script was extended but not executed. No new mobile or direct portable-file rendering check is claimed in this amendment.
+
+---
+
 # Perplexity amendment verification — 20 November 2026
 
 Version 0.4.0. Amends the existing visual specification; no live GHL test or activation is claimed.

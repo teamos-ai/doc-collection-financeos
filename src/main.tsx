@@ -44,8 +44,8 @@ const stageNames = [
   "Tag reconciliation",
 ];
 const offsets = WORKFLOWS.map((_, i) => ({
-  x: (i % 2) * 2260,
-  y: 980 + Math.floor(i / 2) * 860,
+  x: (i % 2) * 2480,
+  y: 980 + (i < 2 ? 0 : 1240 + Math.floor((i - 2) / 2) * 860),
 }));
 const fullId = (flow: string, step: string) => flow + "." + step;
 function FlowNode({ data, selected }: NodeProps) {
@@ -254,7 +254,7 @@ function createGraph() {
       selectable: false,
       draggable: false,
       focusable: false,
-      style: { width: 1900, height: 100 },
+      style: { width: i === 0 ? 2220 : 1900, height: 100 },
     });
     add(w, o.x, o.y);
   });

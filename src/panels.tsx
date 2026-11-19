@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { IntakeForm } from "./IntakeForm";
 import catalogue from "./catalogue.json";
 import { WORKFLOWS, fields } from "./model";
-import { scenarioRules, sources, namingAliases, gaps, researchCrossCheck, crossCheckFindings } from "./research";
+import { scenarioRules, sources, namingAliases, gaps, researchCrossCheck, crossCheckFindings, propertyScenarios, propertyConsiderations } from "./research";
 import {
   tagOperations,
   buildOrder,
@@ -134,6 +134,20 @@ function Rules() {
         Keep the collection standard separate from each lender’s policy. No
         broker can edit the fixed periods.
       </p>
+      <section aria-label="Purchase and refinance scenario guide">
+        <h3>Four property scenarios</h3>
+        <p>Start with purpose and intended use, then layer income, existing debts, funding and stage. The same four paths appear on the Broker intake canvas.</p>
+        <div className="dc-rule-cards">{propertyScenarios.map(p=><article className="dc-rule-card" key={p.id}>
+          <span className="dc-mono">{p.id} · DC-01.{p.step}</span>
+          <h3>{p.title}</h3><p><b>Request:</b> {p.documents}</p>
+          <p><b>Conditions:</b> {p.conditions}</p>
+          <p><b>Tag implications:</b> {p.tags} Prefix document keys with <code>fos-doc-needed-</code>; DC-07 remains the sole writer.</p>
+          <p><b>Broker review:</b> {p.review}</p><small>Evidence: {p.sources.join(" · ")} · other periods remain proposed</small>
+        </article>)}</div>
+        <details className="dc-source"><summary>Other circumstances staff must consider</summary>
+          <ul>{propertyConsiderations.map(x=><li key={x}>{x}</li>)}</ul>
+        </details>
+      </section>
       <section className="dc-note" aria-label="Perplexity cross-check status">
         <b>Perplexity cross-check {researchCrossCheck.status.toLowerCase()} · {researchCrossCheck.date}</b>
         <p>{researchCrossCheck.summary}</p>

@@ -2,6 +2,19 @@
 
 Updated 20 November 2026 after the [Perplexity reconciliation](perplexity-cross-check-2026-11-20.md). Proposed specification for a manual GHL build. The board is the primary walkthrough; this document and the JSON exports carry the exact build contract.
 
+## Property scenario routing
+
+The four paths are visible in DC-01 and available as synthetic intake examples. Purpose, intended use and tenancy are separate inputs.
+
+| Scenario | Request / conditions | Tag implications | Broker review |
+| --- | --- | --- | --- |
+| Purchase · home to live in | Signed purchase contract when available; evidence of the actual deposit/funds source. Personal income, ID and existing liabilities remain independent. Pre-approval without a contract does not chase it. Savings are conditional on contributing savings. A retained loan is not automatically a refinance. | purchase-contract; savings-statements only if selected. No subject-property rental tag. Other owned rental properties can still need their own evidence. | First-home buyer/scheme, dwelling type, source of funds and any property being retained or sold. |
+| Purchase · investment | Purchase contract/funding pack plus the approved rental route only if that income is used. Separate existing tenancy from expected future rent. For a tenanted purchase, confirm accessible lease/agent evidence or accepted tenancy details in the contract. Do not request the buyer's pre-ownership rental credits. | purchase-contract once; selected lease/rental-statements as applicable. Expected future rent creates a broker exception, not an impossible historical-statement chase. | Tenancy status, who can supply the evidence, ongoing accommodation and excluded rental estimate/valuation requirements. |
+| Refinance · home to live in | Six continuous months for each refinanced home-loan account; proposed rates notice for the named existing security. Income/ID/debts remain independent. A pure refinance does not create a new purchase contract or deposit request. Retained loans use their separate rule; consolidated and retained cards keep their own periods. | home-loan-statements per required account; rates-notice if selected. Contact tags are recomputed across all requests, not removed on a purpose dropdown change. | Cash-out, debt consolidation, interest-only evidence, security ownership, change of use and broker-managed settlement requirements. |
+| Refinance · investment | Refinance statements and proposed rates notice, plus selected existing-rent evidence. Vacant or newly converted investments need a future-rent review. Do not treat investment use as proof of rent or require all rental alternatives. Multiple properties and accounts need separate records and explicit shared-evidence links. | home-loan-statements + selected rates-notice / lease / rental-statements / rental-bank-statements. One receipt cannot clear another property's request. | Whether rent is relied upon, existing versus expected rent, lender evidence bundle and any change from home to investment. |
+
+[Evidence, exclusions and staff considerations](property-scenario-coverage-2026-11-20.md).
+
 ## Build order and completion checks
 
 ### B01 · Prove the record and access model
@@ -66,6 +79,7 @@ Logical names, not live GHL custom-field IDs. Builder must prove the representat
 
 | Record | Field names | Type / values | Constraint |
 | --- | --- | --- | --- |
+| Property scenario | property_id, intended_use, transaction_purpose, tenancy_status, rent_relied_upon, rental_evidence_route, dwelling_type, scheme_review | Scoped references and reviewed selections | Each security and purchase property has its own record; applicant income and account treatment remain independent. Never infer tenancy or grant eligibility from Investment or First-home buyer. |
 | Policy route | lender_channel, income_route, construction_stage, source_url, source_version, checked_at, approved_by | References, enum, dates, reviewer | Public-source check is not policy approval. No inferred waiver or eligibility; stage changes require a reviewed revision. |
 | Evidence review | document_issued_at, coverage_intervals, financial_year, finalisation_status, tfn_check | Dates/intervals, year, Current YTD / Finalised / Needs review, reviewer check | Review coverage and accepted formats; no automated redaction or document-content extraction is provided by the board. |
 | Request set | loan_id, revision, rule_version, owner_id | Stable reference, integer, version, staff reference | Unique issue key = loan_id + revision; not a contact email. |
@@ -83,7 +97,7 @@ Logical names, not live GHL custom-field IDs. Builder must prove the representat
 | Input / event | Field | Route | Guard |
 | --- | --- | --- | --- |
 | Loan reference + applicants | request_set.loan_id; request.subject_id | DC-01.start → DC-02.create | Never resolve solely by email. |
-| Purpose + stage | purchase / refinance / construction; contract_available; construction_stage | R13 / R15 → DC-01.rules | Pre-approval does not chase an unavailable sale contract. Construction stages issue only their current pack; changes re-open evidence review. |
+| Purpose + stage | property_id; purchase / refinance / construction; intended_use; rent_basis; contract_available; construction_stage | P01–P04 + R12–R15 → DC-01.property-path → rules | Pre-approval does not chase an unavailable sale contract. Construction stages issue only their current pack; changes re-open evidence review. |
 | Income + entity role | income_sources[]; entity_id; income_route | R04–R12 / R16–R17 | Mixed income is additive; alternative routes are not. |
 | Salary matching | salary_match_required | R06 → salary-statements | No blanket transaction-account request. |
 | Liability + treatment | account_id; retained / refinance / consolidated | R01–R03 → locked coverage | Each card is assessed independently. |
@@ -95,7 +109,7 @@ Logical names, not live GHL custom-field IDs. Builder must prove the representat
 
 ### DC-01 · Build the right checklist
 
-Scenario → documents → confirmation
+Purpose + property use → evidence route → confirmation
 
 #### DC-01.01 / `DC-01.start` · Broker opens request form
 
@@ -113,9 +127,54 @@ Scenario → documents → confirmation
 - **Action:** Select purchase/refinance/construction, property use, current construction stage, income evidence route and each debt’s treatment. Review self-employed eligibility before generating a tax pack; alternative routes never stack.
 - **Guard:** One consolidated card must not make every retained card a consolidation request.
 - **Proposed GHL mapping:** Conditional form fields; repeated applicant/account mapping to prove.
+- **Next:** Continue → `DC-01.property-path`
+
+#### DC-01.03 / `DC-01.property-path` · Which property scenario?
+
+- **Evidence:** Proposed
+- **Trigger:** Purpose × intended property use
+- **Action:** Choose purchase or refinance, then owner occupied or investment for each property. Construction and income routes are separate overlays. Route mixed properties or changed occupancy to broker review.
+- **Guard:** A purchase can include retained existing loans. Investment does not prove rental income exists. A new loan does not mean a newly built home.
+- **Proposed GHL mapping:** If/Else on property-scoped purpose/use; repeat per property in the manual build.
+- **Next:** Purchase + live in → `DC-01.purchase-home`; Purchase + investment → `DC-01.purchase-investment`; Refinance + live in → `DC-01.refinance-home`; Refinance + investment → `DC-01.refinance-investment`; Mixed / unresolved → `DC-01.exception`
+
+#### DC-01.04 / `DC-01.purchase-home` · Purchase · home to live in
+
+- **Evidence:** Proposed
+- **Trigger:** Contract stage + funds to complete
+- **Action:** Request the signed purchase contract when available and the selected source-of-funds evidence. Add personal income/ID and existing debts independently. Savings statements apply only when savings contribute.
+- **Guard:** No automatic refinance statements for a new buyer. No subject-property rent request. Other investment income may still matter; first-home schemes need separate review.
+- **Proposed GHL mapping:** Prepare draft purchase requirements; do not add tags until confirmed and persisted.
 - **Next:** Continue → `DC-01.rules`
 
-#### DC-01.03 / `DC-01.rules` · Apply fixed scenario rules
+#### DC-01.05 / `DC-01.purchase-investment` · Purchase · investment
+
+- **Evidence:** Proposed
+- **Trigger:** Existing tenant or future rent?
+- **Action:** Use the purchase pack plus a property-specific rental route if rent is relied upon. Existing tenancy may use an approved lease, statement or tenancy details in the contract. Expected rent needs a separate broker evidence route.
+- **Guard:** Do not ask the purchaser for rental credits earned before ownership. Reuse the purchase contract once. Excluded appraisals/valuations stay outside this module.
+- **Proposed GHL mapping:** Conditional rental fields and approved evidence selection; unresolved future-rent evidence remains draft.
+- **Next:** Continue → `DC-01.rules`
+
+#### DC-01.06 / `DC-01.refinance-home` · Refinance · home to live in
+
+- **Evidence:** Proposed
+- **Trigger:** Existing security + each refinanced account
+- **Action:** Request six continuous months for each home-loan account actually being refinanced. Propose a rates notice for the named security. Keep other loans and cards under their own treatment and income/ID rules.
+- **Guard:** No new purchase contract or deposit pack for a pure refinance. Cash-out, changed occupancy and settlement documents require separate broker review; founder exclusions remain.
+- **Proposed GHL mapping:** Link security property and refinanced accounts; apply the fixed standard per account.
+- **Next:** Continue → `DC-01.rules`
+
+#### DC-01.07 / `DC-01.refinance-investment` · Refinance · investment
+
+- **Evidence:** Proposed
+- **Trigger:** Refinance pack + selected rental evidence
+- **Action:** Use the same six-month refinance standard and proposed security evidence. Add approved evidence for existing rent, or resolve expected rent separately if vacant or converting to investment.
+- **Guard:** Investment use alone does not trigger every rental document. Keep each property and account separate; do not infer an income or evidence waiver.
+- **Proposed GHL mapping:** Compose refinance and rental requirements, then review the combined checklist.
+- **Next:** Continue → `DC-01.rules`
+
+#### DC-01.08 / `DC-01.rules` · Apply fixed scenario rules
 
 - **Evidence:** Confirmed
 - **Trigger:** Periods are read-only
@@ -124,7 +183,7 @@ Scenario → documents → confirmation
 - **Proposed GHL mapping:** Rules evaluation; native feasibility to prove.
 - **Next:** Continue → `DC-01.supported`
 
-#### DC-01.04 / `DC-01.supported` · Approved rule available?
+#### DC-01.09 / `DC-01.supported` · Approved rule available?
 
 - **Evidence:** Proposed
 - **Trigger:** Known defaults versus unresolved cases
@@ -133,7 +192,7 @@ Scenario → documents → confirmation
 - **Proposed GHL mapping:** If/Else on evaluated result; rule source is to be selected.
 - **Next:** Yes → `DC-01.confirm`; No → `DC-01.exception`
 
-#### DC-01.05 / `DC-01.confirm` · Review, tick and confirm
+#### DC-01.10 / `DC-01.confirm` · Review, tick and confirm
 
 - **Evidence:** Confirmed
 - **Trigger:** Broker confirms before issue
@@ -142,7 +201,7 @@ Scenario → documents → confirmation
 - **Proposed GHL mapping:** Broker form submission / reviewed request event.
 - **Next:** Exit / handoff described above.
 
-#### DC-01.06 / `DC-01.exception` · Resolve the rule exception
+#### DC-01.11 / `DC-01.exception` · Resolve the rule exception
 
 - **Evidence:** Proposed
 - **Trigger:** Keep request draft
@@ -713,21 +772,27 @@ Authoring tokens are not automatically executable CRM merge fields. Missing valu
 
 These are future tests of the manual GHL implementation. Board tests do not establish GHL acceptance.
 
-1. Self-employed Review first: no automatic tax/entity pack. NOA-only and company-wage examples do not stack standard returns; ineligible mixed structures stay in review.
-2. Construction pre-approval: no permits, draw invoices or final certificates. Changing to a later stage generates only that stage’s proposed requests.
-3. Change a request’s subject, route or period: previous held/unticked choices reset; unchanged requirements retain their decisions.
-4. Six-month history: one complete file can cover it; six overlapping files cannot. Broker reviews accepted statement/listing combinations.
-5. Current-year ATO evidence is not forced to Tax ready; completed-year evidence records finalisation and financial year. BAS is not substituted by IAS.
-6. Later submission/approval date: broker reviews freshness and issues an owned amendment if needed; no automatic rewrite or unsolicited restart.
-7. PAYG purchase before contract: request income / selected ID; do not chase an unavailable contract.
-8. Refinance: home loan 6 months, consolidated card A 6 months, retained card B 3 months; all locked.
-9. Joint applicants and trust: separate personal requests, link shared entity evidence explicitly.
-10. Dropdown selection only, failed save and replayed upload: no premature removal or duplicate task.
-11. Partial A, then ready A, then ready B: retain shared card tag until B is also received.
-12. A different loan still needs card statements: keep the shared contact tag even when this loan is complete.
-13. Broker rejects A: preserve files, reopen A, restore needed state; B stays in its actual state.
-14. Pause or close while waiting: suppress next send; resume never clears DND or resends invitation.
-15. Add or withdraw a requirement after issue: preserve accepted evidence and revision history.
-16. Already-held evidence: confirm subject, period and acceptance before excluding from client chase.
-17. Client replies / reaches reminder cap: pause automated follow-up and create an owned task.
-18. Copy snapshot to clean test account: prove fields, private links, sender configuration and placeholders.
+1. Purchase to live in: no refinanced debt means no home-loan history request; signed contract only at contract stage, savings only if used. Income from another investment remains possible.
+2. Investment purchase: existing tenancy, future rent and rent not relied upon give different requests. Do not chase purchaser rental credits before ownership; a tenancy-bearing sale contract is linked once.
+3. Owner-occupied refinance: six months per refinanced account plus proposed rates notice; no new purchase contract or deposit pack. Retained accounts stay separate.
+4. Investment refinance: same fixed refinance period; rental evidence only for the selected property and route. Vacant/future rent creates a broker exception, not a historical statement request.
+5. Change intended use or property: review only affected requests; another property's rental evidence and another account's required tag must survive.
+6. Purchase plus refinance, new-build/off-the-plan, first-home schemes, continuing accommodation and equity/cash-out: show explicit review flags and do not pretend the one-property preview proves multi-property or credit-policy support.
+7. Self-employed Review first: no automatic tax/entity pack. NOA-only and company-wage examples do not stack standard returns; ineligible mixed structures stay in review.
+8. Construction pre-approval: no permits, draw invoices or final certificates. Changing to a later stage generates only that stage’s proposed requests.
+9. Change a request’s subject, route or period: previous held/unticked choices reset; unchanged requirements retain their decisions.
+10. Six-month history: one complete file can cover it; six overlapping files cannot. Broker reviews accepted statement/listing combinations.
+11. Current-year ATO evidence is not forced to Tax ready; completed-year evidence records finalisation and financial year. BAS is not substituted by IAS.
+12. Later submission/approval date: broker reviews freshness and issues an owned amendment if needed; no automatic rewrite or unsolicited restart.
+13. PAYG purchase before contract: request income / selected ID; do not chase an unavailable contract.
+14. Refinance: home loan 6 months, consolidated card A 6 months, retained card B 3 months; all locked.
+15. Joint applicants and trust: separate personal requests, link shared entity evidence explicitly.
+16. Dropdown selection only, failed save and replayed upload: no premature removal or duplicate task.
+17. Partial A, then ready A, then ready B: retain shared card tag until B is also received.
+18. A different loan still needs card statements: keep the shared contact tag even when this loan is complete.
+19. Broker rejects A: preserve files, reopen A, restore needed state; B stays in its actual state.
+20. Pause or close while waiting: suppress next send; resume never clears DND or resends invitation.
+21. Add or withdraw a requirement after issue: preserve accepted evidence and revision history.
+22. Already-held evidence: confirm subject, period and acceptance before excluding from client chase.
+23. Client replies / reaches reminder cap: pause automated follow-up and create an owned task.
+24. Copy snapshot to clean test account: prove fields, private links, sender configuration and placeholders.
