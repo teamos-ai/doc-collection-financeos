@@ -1,13 +1,13 @@
 {
   "name": "doc-collection-financeos",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5319",
     "build": "tsc --noEmit && vite build && node scripts/check-site-build.mjs",
     "build:portable": "tsc --noEmit && vite build --mode portable",
-    "test": "node scripts/check-model.mjs && node scripts/check-intake.mjs",
+    "test": "node scripts/check-model.mjs && node scripts/check-intake.mjs && node scripts/check-blueprint.mjs",
     "package": "npm run build:portable && sh scripts/package.sh",
     "verify": "node scripts/verify.mjs"
   },

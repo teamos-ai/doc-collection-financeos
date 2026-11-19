@@ -1,87 +1,77 @@
-# Document collection — visual builder handoff
+# Document collection · Finance OS builder blueprint
 
-Prepared 19 November 2026 for Tumai and the Finance OS builders. **This is a proposed build specification, not an activated CRM system.**
+An interactive **proposed specification**, not a borrower portal or activated CRM integration. Built for the team implementing the document-collection process manually in GoHighLevel.
 
-Open [the interactive board](document-collection-board.html) in a browser. It works without a development server; web fonts fall back to system fonts when offline. Use Broker intake form to explore the scenario-driven checklist and resulting tags. Use Preview for folder → workflow → step inspection, Workflow board for connected branches, and Full screen for presentation. Click a step for its trigger, action, guard, state/tag effect and intended GHL mapping. Escape returns to preview size. The Rules & build details view includes the fixed-period matrix, record model and an interactive two-card tag example.
+[Open the board](https://doc-collection-financeos.vercel.app) · [Builder handoff](docs/builder-handoff-2026-11-19.md) · [Research validation](docs/research-validation-2026-11-19.md)
 
-## The requested experience
+## One continuous canvas
 
-This adapts the inspected Finovate “New proposed” workflow section. The current remote repository was read at `e6f6d8d1423bd97a33a014f38f71d0a8282889b8` on 19 November 2026. The older local checkout used InfinityBoard; the current section routes through **CurrentAutomationMap** for preview and **AutomationFlowBoard** for full screen. The screenshot’s folder drill-down matches that newer implementation.
+The whole journey and all seven detailed logic areas stay mounted on the same dotted canvas. Click a step for its in-place inspector. The numbered left navigation explicitly moves to a logic area; it never swaps graphs or pages. “Whole journey” returns to the summary. “See all logic” fits the entire board. Drag to pan and use the zoom controls to read a detailed area.
 
-Reviewed the workflow entry and all relevant dependencies: `src/pages/AreaPage.tsx`, `components/previews/WorkflowsPreview.tsx`, `components/CurrentAutomationMap.tsx`, `components/AutomationFlowBoard.tsx`, `components/WorkflowDictionary.tsx`, `data/proposedWorkflows.ts`, the current workflow types, `main.tsx`, relevant theme/shell/preview/canvas styles, project instructions and memory. Also compared the superseded InfinityBoard route. This is an inspection of the complete relevant section and its dependencies, not a claim to have audited every unrelated page in the repository. The public URL did not load through the text browser; the remote source and supplied screenshot ground the adaptation.
+“Show tags” reveals the operations on the nodes. The inspector and tag dictionary explain exact names, writers, readers and add/keep/remove conditions. Preview and full screen share graph, selection, forms and viewport state. Escape closes a resource, then the inspector, then full screen. Keyboard Enter/Space opens a focused step.
 
-Preserved: white/Atlas Blue proposed state, compact folder preview, progressive detail, React Flow pan/zoom, draggable nodes, minimap and viewport-filling overlay with Escape. Extended: explicit condition-labelled branch edges and loop paths, separate decision/evidence status, a GHL builder inspector and shared scenario metadata. The current source’s `status: live` on proposed records was not copied as a production claim. Its Finovate-specific two-day reminder and partner onboarding rules were not imported.
+Resources open over the same canvas:
 
-## Seven proposed workflows
+- **Broker intake:** scenario selections, account-specific treatment, locked periods, conditional salary matching, already-held evidence and resulting tag preview.
+- **Upload example:** synthetic two-card case with failed save, partial receipt, broker review, replacement and another-loan tag retention.
+- **Document catalogue:** all 70 retained entries, explanations, Australian aliases and stable tags.
+- **Rules & research:** 18 scenario routes with coverage, count, freshness, authority, sources and gaps.
+- **Email & SMS:** seven draft messages/actions, restrained proposed cadence and explicit placeholder mappings.
+- **Build guide:** numbered dependencies, logical field schema, intended GHL capabilities and future acceptance cases.
 
-| ID | Purpose | Entry and exit |
-| --- | --- | --- |
-| DC-01 | Build the right checklist | Broker selects scenario → approved rules → confirms; unresolved rule stays draft |
-| DC-02 | Issue one request set | Confirmed revision → guard → persist requests → synchronise tags → invitation |
-| DC-03 | Receive the selected document | Authorised request → upload → save check → partial or received-for-review |
-| DC-04 | Chase only what is missing | Single sequence → wait → permission/loan checks → read current outstanding → send or stop |
-| DC-05 | Accept or request replacement | Broker review → accepted or reopened; complete only when selected active requirements are accepted |
-| DC-06 | Pause, resume and close safely | Loan controls and contact channel events → scoped suppression or guarded resume |
-| DC-07 | Keep tags truthful | Request changes → aggregate all applicable requests → retain/remove type tag → summaries |
+## The build contract
 
-The six preview folders are navigation groups for this module, not an instruction to renumber the existing brokerage’s pipelines. The seven workflow IDs are proposed logical units; final GHL deployment may combine or split units after feasibility checks.
+The broker selects circumstances, reviews and ticks requirements, then confirms. Each request belongs to the correct loan, applicant/entity and account. The client selects that request and saves evidence. A dropdown selection alone does nothing to tags.
 
-## Confirmed rules and proposed behaviour
+DC-07 is the only document-tag writer. Contact tags summarise all relevant requests; one upload cannot clear another account or loan’s requirement. Proposed receipt behaviour pauses ordinary chasing for ready-for-review evidence while retaining broker review. Partial or replacement requests still need client action. Collection completion requires human acceptance of every active selected request; it is not lender approval.
 
-Confirmed: broker selects circumstances, ticks requirements, confirms and submits; client selects a request and uploads; broker reviews. Periods cannot be edited by the broker. Home-loan refinance requires six months as the Finance OS collection standard. Credit cards consolidated into the home loan use six months; retained cards use three months. These apply per account. They are operating defaults, not universal lender-policy claims.
+Fixed founder defaults, per account, with no broker override:
 
-Proposed: stop an item’s ordinary chase when a saved submission is ready for broker review, keep partial submissions actionable, reopen a rejected item with its reason, and use a single tag writer. Proposed periods outside the three confirmed statement rules, reminder cadence/cap, time windows, copy, partial-upload interaction and receipt-pause behaviour require owner review before activation. They are labelled on the board.
+| Circumstance | Coverage |
+| --- | --- |
+| Home loan being refinanced | 6 continuous months |
+| Credit card consolidated into home loan | 6 continuous months |
+| Credit card retained / conduct checked | 3 continuous months |
 
-The record model is logical. It does not promise that arbitrary repeated document requests can be represented by native Contact fields. The builders must prove the native GHL representation for each loan/applicant/entity/account before implementing dependent automation. A separate adapter remains an option only if native capability cannot satisfy the design; no external platform has been selected.
+These are Finance OS collection standards, not universal lender-policy claims. Other periods, freshness cutoffs, receipt-pause behaviour and message settings remain visibly proposed. Unapproved selected rules block production issue. Broad catalogue entries are not automatically requested by the demonstrator.
 
-## Tag contract
+The neutral CRM template has no brokerage-branding setup product. Required sender identity, correct recipients and reviewer ownership are operational references.
 
-- `fos-doc-needed-<document-key>`: at least one relevant active request for this contact/type needs client action.
-- `fos-docs-action-needed`: derived contact summary of client-action work, not the authoritative recipient/loan checklist.
-- `fos-docs-review-needed`: saved evidence awaits broker review.
-- `fos-docs-paused`: informational summary; never use this alone to stop every loan for the contact.
+## Sources and research status
 
-Only DC-07 writes these document summaries. It reads persisted requests; it does not decrement a counter on every event. Receive card A while card B remains missing → retain `fos-doc-needed-credit-card-statements`. Receive both → remove the needed tag, while review tasks remain. Reject A → reopen A and restore needed state. A different active loan with the same missing type also retains the tag. A pause preserves request history and blocks only the relevant loan’s sends.
+Direct lender/ATO checks and three supplied Australian broker/construction PDFs informed the new matrix. Current ING detail and several specialised routes remain unresolved. Perplexity Deep Research was started in Brave, but its completed report could not be retrieved after the native window became unavailable; it is marked pending, not verified.
 
-File count is not period coverage. One PDF can cover six months; six files can overlap. A selected dropdown option, failed upload, duplicate event or unmatched reference never clears a requirement. Do not remove options from a globally shared dropdown; filter the recipient’s request list.
+See [repository due diligence](docs/repository-review-2026-11-19.md) for pinned source revisions, design/component reuse, message provenance and authority conflicts. The earlier Finovate reference section was inspected at `e6f6d8d1423bd97a33a014f38f71d0a8282889b8`: AreaPage → WorkflowsPreview → CurrentAutomationMap / AutomationFlowBoard, dictionary/data/types and supporting styles. The new founder direction replaces its folder/page drill-down with one canvas. Unrelated application pages were not claimed audited.
 
-## Native capability evidence and feasibility gates
+## Files and exports
 
-Public HighLevel support documents reviewed 19 November 2026 confirm individual building blocks:
+- `src/model.ts`: seven workflows / 46 detailed steps, conditions and builder instructions.
+- `src/intake.ts`: illustrative main-scenario form rules.
+- `src/catalogue.json`: retained 70-entry catalogue; stable keys preserved.
+- `src/research.ts`: scenario/source/naming register.
+- `src/buildSpec.ts`: tag contract, build order, schema, messages and acceptance cases.
+- `src/requestState.ts`: synthetic upload/tag example only.
+- `workflow-blueprint.json`, `builder-handoff.json`: generated builder exports, refreshed by tests.
+- `document-collection-board.html`: portable single-file board, including fonts/logo.
+- `docs/builder-handoff-2026-11-19.md`: readable manual implementation handoff.
 
-- [Contact Tag trigger](https://help.gohighlevel.com/support/solutions/articles/48001213546-workflow-trigger-contact-tag): added/removed contact tags can initiate workflows. Avoid dual entry from form and tag events.
-- [Add Contact Tag](https://help.gohighlevel.com/support/solutions/articles/155000003111-workflow-action-add-contact-tag) and [Remove Contact Tag](https://help.gohighlevel.com/support/solutions/articles/155000003266-workflow-action-remove-contact-tag): apply/remove selected contact tags. Do not use Remove All Tags.
-- [Wait](https://help.gohighlevel.com/support/solutions/articles/155000002470-workflow-action-wait): fixed, conditional and scheduled wait options. This does not establish the business’s approved cadence.
-- [File Upload custom field](https://help.gohighlevel.com/support/solutions/articles/48001171922-adding-files-to-contacts-using-a-custom-field): contact file fields support configurable file settings and multiple files. This is not proof of private per-loan links, dynamic dropdowns or immutable upload history.
+No form inputs are persisted or transmitted. Synthetic examples use reserved test addresses. No credentials, live GHL access or document storage is included.
 
-Before client activation prove: exact opportunity/request targeting; multiple simultaneous loans and applicants; private file access; history across repeated uploads; partial/complete submission behaviour; current-list message generation; pause during a wait; once-only processing; and cross-loan tag reconciliation. If any fails, revise the representation before building the chasing sequence. No live GHL account has been changed or tested in this work.
+## Run and verify
 
-## Builder sequence and acceptance
+```sh
+npm ci
+npm run dev                 # http://127.0.0.1:5319
+npm test                    # model, intake, scope and state invariants; refresh JSON exports
+npm run build               # website build + index/assets check
+npm run package             # portable HTML with embedded assets
+npm run verify              # repeatable Playwright browser suite; needs its Chromium installation
+```
 
-1. Agree approved defaults, reminder schedule/cap/copy and proposed receipt behaviour with Tumai.
-2. Prove request storage and authorised upload access with synthetic records.
-3. Build DC-01, DC-02 and DC-07 without sending customer messages.
-4. Add upload/review transitions, including retry and replacement history.
-5. Add reminders and controls after current-list generation and scoped suppression pass.
-6. Demonstrate two cards (one retained, one consolidated), two loans for one contact, a partial six-month submission, failed/replayed uploads, broker rejection, pause during wait, opt-out, duplicate issue and completion. Verify no wrong-account/wrong-loan tag clearance and no stale reminders.
+Current rendered checks used the connected browser controller, including desktop, 390px mobile, full screen, stable viewport, keyboard navigation, form and tag examples. The reusable Playwright script is provided separately for the builder; its execution status is recorded honestly in [verification](evidence/verification.md).
 
-Owner: Tumai approves business rules; building team implements and proves GHL behaviour. Success: every request has the correct account and fixed period; every reminder contains only the recipient’s currently actionable items; every tag reflects all applicable requests. Review at the next builder walkthrough and before activation. No publication or production deployment is included.
+Vercel uses the normal Vite website output in `dist/`. Portable mode has a separate `dist-portable/` library output. Do not point Vercel at the library output; it has no website `index.html`. Existing deployment protection remains enabled.
 
-## Files and verification
+## Next owner
 
-- `src/model.ts`: the canonical typed workflow model (7 workflows, 45 detailed steps).
-- `workflow-blueprint.json`: generated model for Claude/builders, including topology, decisions, rules and fields.
-- `src/main.tsx` / `src/style.css`: preview, branch board and builder-detail presentation.
-- `document-collection-board.html`: portable single-file presentation.
-- `scripts/check-model.mjs`: validates identifiers, references, decision branches and reachability; exports the JSON.
-- `src/intake.ts` / `src/IntakeForm.tsx`: interactive intake demonstration. See [field and behaviour specification](docs/intake-form.md).
-- `scripts/verify.mjs`: desktop/mobile browser behaviour and portable-bundle checks.
-- `evidence/`: rendered inspection screenshots.
-
-Development: `npm ci`, then `npm run dev` (http://127.0.0.1:5319). Validate: `npm test` and `npm run build`. The website build produces `dist/index.html` and compiled assets; Vercel serves `dist` using the checked-in `vercel.json`. A build check fails if the homepage or its assets are missing.
-
-Regenerate the portable HTML with `npm run package`. This uses a separate library build in `dist-portable` and leaves the deployable website intact. To verify the production website locally, run `npx vite preview --host 127.0.0.1 --port 5320`, then set `BASE_URL=http://127.0.0.1:5320` when running the browser checks.
-
-For browser checks, keep the development server running, install a test browser with `npx playwright install chromium`, then run `npm run verify`. Alternatively set `CHROME_PATH` to a local Chrome executable. `BASE_URL` can override the local server address. These checks verify the presentation and form demonstration, not a deployed CRM. See [verification record](evidence/verification.md) for checks and limits.
-
-Source decisions: [catalogue and tags](docs/document-collection-catalogue-and-tags-2026-11-18.md), [lender research](docs/document-collection-lender-research-2026-11-18.md). The retained catalogue is unchanged at 70 entries. This board does not add specialist documents that Tumai removed.
+Tumai: approve remaining policy and message defaults. Builder: prove scoped records, private upload access, dynamic checklist composition, retries and installation in the intended GHL account. Audit the manual implementation together using the synthetic acceptance pack before client activation. Board verification does not establish GHL feasibility or lending-policy approval.

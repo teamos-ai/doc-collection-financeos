@@ -160,7 +160,7 @@
           "x": 760,
           "y": 130,
           "trigger": "One record per subject and requirement",
-          "action": "Create selected requests with document key, applicant/entity/account, period, revision and status. Reuse compatible evidence only with explicit links.",
+          "action": "Create selected requests with document key, applicant/entity/account, period, revision and status. Already-held evidence needs an explicit file link, matching subject/period and review state. Invite only for client-action items; accepted held evidence does not enter chasing.",
           "guard": "Never overwrite another loan’s request or previous upload.",
           "ghl": "Per-request storage design: native linked records if proven; otherwise adapter.",
           "evidence": "Feasibility",
@@ -174,7 +174,7 @@
           "x": 1140,
           "y": 130,
           "trigger": "Recompute from open requests",
-          "action": "Apply the needed tag for each outstanding document type. Set the action-needed summary when any authorised client action remains.",
+          "action": "Invoke DC-07 after request persistence. It applies needed tags and the action-needed summary from current requests; this step must not become a second tag writer.",
           "guard": "Tags are a projection; counts and periods live on requests.",
           "ghl": "Add Contact Tag action after correct-contact projection.",
           "evidence": "Proposed",
@@ -390,7 +390,7 @@
       "folder": "04 · Follow-up",
       "title": "Chase only what is missing",
       "sub": "Wait → recheck → current reminder",
-      "note": "Cadence, business-day calendar, maximum attempts and message copy remain to be approved. There is no hard-coded two-day schedule.",
+      "note": "Draft cadence: invitation, then 3 business days to email, 4 more to one permitted-channel reminder, 5 more to a broker task. Cap at two reminders. Calendar, timing and copy require approval before activation.",
       "steps": [
         {
           "id": "enrol",
@@ -413,7 +413,7 @@
           "x": 380,
           "y": 120,
           "trigger": "Cadence is still to be decided",
-          "action": "Wait using the approved schedule, recipient timezone and sending window.",
+          "action": "Use the draft 3 / 4 / 5 business-day schedule only after approval. Respect recipient timezone, approved window and a proposed contact-level minimum 3-business-day gap across reminder/replacement sends. Receipt acknowledgements are events, not extra chases.",
           "guard": "No production send until cadence, cap and copy are approved.",
           "ghl": "Wait action supports timing/conditions; values pending.",
           "evidence": "Proposed"
@@ -426,7 +426,7 @@
           "x": 760,
           "y": 120,
           "trigger": "Active · channel allowed · below cap",
-          "action": "Recheck loan pause/closure, recipient permissions, DND, channel validity and attempt cap immediately before sending.",
+          "action": "Recheck loan pause/closure, recent client replies, recipient permissions, DND, channel validity, last outreach and attempt cap immediately before sending. A client reply pauses the chase for broker handling; another case must not create overlapping outreach.",
           "guard": "A pause while waiting must suppress the next send.",
           "ghl": "If/Else + channel/DND controls + request-set status.",
           "evidence": "Proposed"
@@ -677,12 +677,12 @@
         {
           "id": "event",
           "title": "Control event",
-          "summary": "Pause · resume · closure · opt-out",
+          "summary": "Pause · resume · amend · reply · opt-out",
           "kind": "trigger",
           "x": 0,
           "y": 120,
-          "trigger": "Pause · resume · closure · opt-out",
-          "action": "Receive an owned loan-control decision or a channel permission/delivery event.",
+          "trigger": "Pause · resume · amend · reply · opt-out",
+          "action": "Receive an owned loan-control or checklist-amendment decision, client reply, or a channel permission/delivery event.",
           "guard": "Identify exact loan and recipient before changing anything.",
           "ghl": "Controlled form/status + relevant channel event.",
           "evidence": "Proposed"
@@ -695,7 +695,7 @@
           "x": 380,
           "y": 120,
           "trigger": "Loan status versus contact channel",
-          "action": "Apply pause/closure to the loan request set; apply channel restrictions to the actual recipient channel.",
+          "action": "Apply pause/closure/reply to the loan request set; apply channel restrictions to the actual recipient channel. Route reviewed checklist changes to the amendment action.",
           "guard": "A summary paused tag alone must not suppress all loans.",
           "ghl": "Request-set status plus native DND/channel checks.",
           "evidence": "Proposed"
@@ -741,6 +741,19 @@
           "evidence": "Proposed"
         },
         {
+          "id": "amend",
+          "title": "Amend the checklist",
+          "summary": "Add · withdraw · link held evidence",
+          "kind": "human",
+          "x": 760,
+          "y": 690,
+          "trigger": "Add · withdraw · link held evidence",
+          "action": "Create a reviewed checklist revision. Add new scoped requests or mark withdrawn with an owner/reason; preserve accepted evidence and old files. Link already-held evidence with its review status. Notify only the changed requirements.",
+          "guard": "Do not reset reminder attempts, recreate accepted requests or silently change an issued period. Newly selected unapproved rules remain draft.",
+          "ghl": "Controlled amendment form/event → persisted revision → DC-07.",
+          "evidence": "Proposed"
+        },
+        {
           "id": "sync",
           "title": "Reconcile current summary",
           "summary": "DC-07 recomputes state",
@@ -763,7 +776,7 @@
         {
           "from": "scope",
           "to": "pause",
-          "label": "Pause / close",
+          "label": "Pause / close / reply",
           "loop": false
         },
         {
@@ -776,6 +789,17 @@
           "from": "scope",
           "to": "channel",
           "label": "Channel event",
+          "loop": false
+        },
+        {
+          "from": "scope",
+          "to": "amend",
+          "label": "Checklist change",
+          "loop": false
+        },
+        {
+          "from": "amend",
+          "to": "sync",
           "loop": false
         },
         {

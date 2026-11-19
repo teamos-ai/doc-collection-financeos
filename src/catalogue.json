@@ -1,0 +1,562 @@
+[
+  {
+    "number": 1,
+    "group": "Identity",
+    "label": "Driver licence",
+    "description": "Licence supplied through the approved identity process.",
+    "tag": "fos-doc-needed-driver-licence",
+    "key": "driver-licence"
+  },
+  {
+    "number": 2,
+    "group": "Identity",
+    "label": "Passport",
+    "description": "Passport supplied through the approved identity process.",
+    "tag": "fos-doc-needed-passport",
+    "key": "passport"
+  },
+  {
+    "number": 3,
+    "group": "Identity",
+    "label": "Secondary ID",
+    "description": "Additional identification selected by the broker.",
+    "tag": "fos-doc-needed-secondary-id",
+    "key": "secondary-id"
+  },
+  {
+    "number": 4,
+    "group": "Identity",
+    "label": "Name change evidence",
+    "description": "Evidence connecting different names on records.",
+    "tag": "fos-doc-needed-name-change",
+    "key": "name-change"
+  },
+  {
+    "number": 5,
+    "group": "Identity",
+    "label": "Citizenship or residency evidence",
+    "description": "Evidence of relevant citizenship or residency status; visa requests excluded.",
+    "tag": "fos-doc-needed-residency",
+    "key": "residency"
+  },
+  {
+    "number": 6,
+    "group": "Identity",
+    "label": "Verified ID evidence",
+    "description": "Certified ID or the result of an approved digital identity check.",
+    "tag": "fos-doc-needed-verified-id",
+    "key": "verified-id"
+  },
+  {
+    "number": 7,
+    "group": "Employment",
+    "label": "Recent payslips",
+    "description": "Latest payslips for the selected employer and requested quantity.",
+    "tag": "fos-doc-needed-payslips",
+    "key": "payslips"
+  },
+  {
+    "number": 8,
+    "group": "Employment",
+    "label": "Earlier payslips",
+    "description": "Earlier payslips covering the specified history or dates.",
+    "tag": "fos-doc-needed-earlier-payslips",
+    "key": "earlier-payslips"
+  },
+  {
+    "number": 9,
+    "group": "Employment",
+    "label": "Employment contract",
+    "description": "Contract confirming the relevant employment terms.",
+    "tag": "fos-doc-needed-employment-contract",
+    "key": "employment-contract"
+  },
+  {
+    "number": 10,
+    "group": "Employment",
+    "label": "Employer letter",
+    "description": "Employer confirmation of role, income, hours or employment status.",
+    "tag": "fos-doc-needed-employer-letter",
+    "key": "employer-letter"
+  },
+  {
+    "number": 11,
+    "group": "Employment",
+    "label": "ATO income statement",
+    "description": "ATO income statement or PAYG payment summary for the selected year.",
+    "tag": "fos-doc-needed-ato-income",
+    "key": "ato-income"
+  },
+  {
+    "number": 12,
+    "group": "Employment",
+    "label": "Salary bank statements",
+    "description": "Statements showing salary credits for the requested period.",
+    "tag": "fos-doc-needed-salary-statements",
+    "key": "salary-statements"
+  },
+  {
+    "number": 13,
+    "group": "Employment",
+    "label": "Overtime evidence",
+    "description": "Evidence supporting overtime income being considered.",
+    "tag": "fos-doc-needed-overtime",
+    "key": "overtime"
+  },
+  {
+    "number": 14,
+    "group": "Employment",
+    "label": "Commission evidence",
+    "description": "Evidence supporting employment commission income.",
+    "tag": "fos-doc-needed-commission",
+    "key": "commission"
+  },
+  {
+    "number": 15,
+    "group": "Employment",
+    "label": "Bonus evidence",
+    "description": "Evidence supporting bonus income.",
+    "tag": "fos-doc-needed-bonus",
+    "key": "bonus"
+  },
+  {
+    "number": 16,
+    "group": "Employment",
+    "label": "Allowance evidence",
+    "description": "Evidence supporting employment allowances.",
+    "tag": "fos-doc-needed-allowances",
+    "key": "allowances"
+  },
+  {
+    "number": 17,
+    "group": "Employment",
+    "label": "Salary packaging details",
+    "description": "Salary packaging or novated lease documents relevant to deductions.",
+    "tag": "fos-doc-needed-salary-packaging",
+    "key": "salary-packaging"
+  },
+  {
+    "number": 18,
+    "group": "Employment",
+    "label": "Second job evidence",
+    "description": "Requested employment evidence for another job; identify employer and required files.",
+    "tag": "fos-doc-needed-second-job",
+    "key": "second-job"
+  },
+  {
+    "number": 19,
+    "group": "Employment",
+    "label": "Employment history",
+    "description": "Evidence of casual, temporary or contract employment history.",
+    "tag": "fos-doc-needed-employment-history",
+    "key": "employment-history"
+  },
+  {
+    "number": 20,
+    "group": "Personal tax",
+    "label": "Personal tax return",
+    "description": "Individual return and required schedules for the selected year.",
+    "tag": "fos-doc-needed-personal-tax-return",
+    "key": "personal-tax-return"
+  },
+  {
+    "number": 21,
+    "group": "Personal tax",
+    "label": "Notice of Assessment",
+    "description": "ATO assessment for the selected person and year.",
+    "tag": "fos-doc-needed-notice-of-assessment",
+    "key": "notice-of-assessment"
+  },
+  {
+    "number": 22,
+    "group": "Personal tax",
+    "label": "Tax lodgement confirmation",
+    "description": "Confirmation that the relevant return was lodged, where accepted.",
+    "tag": "fos-doc-needed-tax-lodgement",
+    "key": "tax-lodgement"
+  },
+  {
+    "number": 23,
+    "group": "Business income",
+    "label": "Business tax return",
+    "description": "Return for the named business and financial year.",
+    "tag": "fos-doc-needed-business-tax-return",
+    "key": "business-tax-return"
+  },
+  {
+    "number": 24,
+    "group": "Business income",
+    "label": "BAS",
+    "description": "Business Activity Statements for the specified periods.",
+    "tag": "fos-doc-needed-bas",
+    "key": "bas"
+  },
+  {
+    "number": 25,
+    "group": "Business income",
+    "label": "Business bank statements",
+    "description": "Statements for the named business account and period.",
+    "tag": "fos-doc-needed-business-statements",
+    "key": "business-statements"
+  },
+  {
+    "number": 26,
+    "group": "Business income",
+    "label": "Accountant letter and contact details",
+    "description": "Requested accountant confirmation with their contact details.",
+    "tag": "fos-doc-needed-accountant-letter",
+    "key": "accountant-letter"
+  },
+  {
+    "number": 27,
+    "group": "Partnerships and trusts",
+    "label": "Partnership tax return and financials",
+    "description": "Selected partnership return and financial statements; record the required components and years.",
+    "tag": "fos-doc-needed-partnership-financials",
+    "key": "partnership-financials"
+  },
+  {
+    "number": 28,
+    "group": "Partnerships and trusts",
+    "label": "Trust deed",
+    "description": "Deed for the named trust.",
+    "tag": "fos-doc-needed-trust-deed",
+    "key": "trust-deed"
+  },
+  {
+    "number": 29,
+    "group": "Partnerships and trusts",
+    "label": "Trust deed amendments",
+    "description": "Variations or amendments to that trust deed.",
+    "tag": "fos-doc-needed-trust-amendments",
+    "key": "trust-amendments"
+  },
+  {
+    "number": 30,
+    "group": "Partnerships and trusts",
+    "label": "Trust tax return and financials",
+    "description": "Selected trust return and financial statements; record required components and years.",
+    "tag": "fos-doc-needed-trust-financials",
+    "key": "trust-financials"
+  },
+  {
+    "number": 31,
+    "group": "Rental income",
+    "label": "Lease agreement",
+    "description": "Current tenancy agreement for the relevant rental property.",
+    "tag": "fos-doc-needed-lease",
+    "key": "lease"
+  },
+  {
+    "number": 32,
+    "group": "Rental income",
+    "label": "Rental statements",
+    "description": "Rental statements for the named property and period.",
+    "tag": "fos-doc-needed-rental-statements",
+    "key": "rental-statements"
+  },
+  {
+    "number": 33,
+    "group": "Rental income",
+    "label": "Rental bank statements",
+    "description": "Bank statements showing rental credits for the relevant property.",
+    "tag": "fos-doc-needed-rental-bank-statements",
+    "key": "rental-bank-statements"
+  },
+  {
+    "number": 34,
+    "group": "Other income",
+    "label": "Government benefit or pension",
+    "description": "Entitlement statement for the relevant benefit or pension.",
+    "tag": "fos-doc-needed-benefit-pension",
+    "key": "benefit-pension"
+  },
+  {
+    "number": 35,
+    "group": "Other income",
+    "label": "Benefit or pension bank statements",
+    "description": "Statements showing benefit or pension credits.",
+    "tag": "fos-doc-needed-benefit-statements",
+    "key": "benefit-statements"
+  },
+  {
+    "number": 36,
+    "group": "Other income",
+    "label": "Child support agreement",
+    "description": "Child support assessment, agreement or court order.",
+    "tag": "fos-doc-needed-child-support",
+    "key": "child-support"
+  },
+  {
+    "number": 37,
+    "group": "Other income",
+    "label": "Foreign income evidence",
+    "description": "Broker-specified evidence supporting overseas income.",
+    "tag": "fos-doc-needed-foreign-income",
+    "key": "foreign-income"
+  },
+  {
+    "number": 38,
+    "group": "Accounts and assets",
+    "label": "Savings statements",
+    "description": "Statements for the relevant savings account and period.",
+    "tag": "fos-doc-needed-savings-statements",
+    "key": "savings-statements"
+  },
+  {
+    "number": 39,
+    "group": "Accounts and assets",
+    "label": "Term deposit statements",
+    "description": "Statements confirming the relevant term deposit.",
+    "tag": "fos-doc-needed-term-deposit",
+    "key": "term-deposit"
+  },
+  {
+    "number": 40,
+    "group": "Accounts and assets",
+    "label": "Super balance statement",
+    "description": "Superannuation balance evidence where requested; distinct from the removed pension-income item.",
+    "tag": "fos-doc-needed-super-balance",
+    "key": "super-balance"
+  },
+  {
+    "number": 41,
+    "group": "Accounts and assets",
+    "label": "Rates notice",
+    "description": "Rates notice for the named property.",
+    "tag": "fos-doc-needed-rates-notice",
+    "key": "rates-notice"
+  },
+  {
+    "number": 42,
+    "group": "Accounts and assets",
+    "label": "Asset ownership evidence",
+    "description": "Broker-specified evidence for another relevant declared asset.",
+    "tag": "fos-doc-needed-asset-ownership",
+    "key": "asset-ownership"
+  },
+  {
+    "number": 43,
+    "group": "Liabilities",
+    "label": "Home loan statements",
+    "description": "Statements for the named existing home loan.",
+    "tag": "fos-doc-needed-home-loan-statements",
+    "key": "home-loan-statements"
+  },
+  {
+    "number": 44,
+    "group": "Liabilities",
+    "label": "Investment loan statements",
+    "description": "Statements for the named investment-property loan.",
+    "tag": "fos-doc-needed-investment-loan-statements",
+    "key": "investment-loan-statements"
+  },
+  {
+    "number": 45,
+    "group": "Liabilities",
+    "label": "Credit card statements",
+    "description": "Statements showing the relevant credit card balance and limit.",
+    "tag": "fos-doc-needed-credit-card-statements",
+    "key": "credit-card-statements"
+  },
+  {
+    "number": 46,
+    "group": "Liabilities",
+    "label": "Personal loan statements",
+    "description": "Statements for an existing personal loan.",
+    "tag": "fos-doc-needed-personal-loan-statements",
+    "key": "personal-loan-statements"
+  },
+  {
+    "number": 47,
+    "group": "Liabilities",
+    "label": "Vehicle or equipment loan statements",
+    "description": "Statements for existing debt; this does not restore the removed vehicle-finance transaction category.",
+    "tag": "fos-doc-needed-asset-loan-statements",
+    "key": "asset-loan-statements"
+  },
+  {
+    "number": 48,
+    "group": "Liabilities",
+    "label": "Business loan statements",
+    "description": "Statements for relevant existing business debt.",
+    "tag": "fos-doc-needed-business-loan-statements",
+    "key": "business-loan-statements"
+  },
+  {
+    "number": 49,
+    "group": "Liabilities",
+    "label": "Overdraft statements",
+    "description": "Statements for an overdraft or line of credit, including its limit.",
+    "tag": "fos-doc-needed-overdraft-statements",
+    "key": "overdraft-statements"
+  },
+  {
+    "number": 50,
+    "group": "Liabilities",
+    "label": "Buy now pay later statements",
+    "description": "Statements showing relevant buy now pay later commitments.",
+    "tag": "fos-doc-needed-bnpl-statements",
+    "key": "bnpl-statements"
+  },
+  {
+    "number": 51,
+    "group": "Liabilities",
+    "label": "Student loan evidence",
+    "description": "Evidence of HELP or another relevant student loan.",
+    "tag": "fos-doc-needed-student-loan",
+    "key": "student-loan"
+  },
+  {
+    "number": 52,
+    "group": "Liabilities",
+    "label": "Lease or hire purchase agreement",
+    "description": "Agreement for a relevant existing finance commitment.",
+    "tag": "fos-doc-needed-finance-lease",
+    "key": "finance-lease"
+  },
+  {
+    "number": 53,
+    "group": "Deposit and funds",
+    "label": "Deposit funds statements",
+    "description": "Statements evidencing the deposit or funds to complete.",
+    "tag": "fos-doc-needed-deposit-statements",
+    "key": "deposit-statements"
+  },
+  {
+    "number": 54,
+    "group": "Deposit and funds",
+    "label": "Savings history",
+    "description": "Evidence covering the specified savings history.",
+    "tag": "fos-doc-needed-savings-history",
+    "key": "savings-history"
+  },
+  {
+    "number": 55,
+    "group": "Deposit and funds",
+    "label": "Gift declaration",
+    "description": "Gift declaration or selected lender gift form.",
+    "tag": "fos-doc-needed-gift-declaration",
+    "key": "gift-declaration"
+  },
+  {
+    "number": 56,
+    "group": "Deposit and funds",
+    "label": "Contract of sale \u2014 selling",
+    "description": "Contract for a property or asset being sold to contribute funds.",
+    "tag": "fos-doc-needed-sale-contract",
+    "key": "sale-contract"
+  },
+  {
+    "number": 57,
+    "group": "Property transaction",
+    "label": "Contract of sale \u2014 buying",
+    "description": "Contract for the property being purchased.",
+    "tag": "fos-doc-needed-purchase-contract",
+    "key": "purchase-contract"
+  },
+  {
+    "number": 58,
+    "group": "Property transaction",
+    "label": "Contract amendments",
+    "description": "Variations or amendments to the purchase contract.",
+    "tag": "fos-doc-needed-contract-amendments",
+    "key": "contract-amendments"
+  },
+  {
+    "number": 59,
+    "group": "Property transaction",
+    "label": "Conveyancer details",
+    "description": "Solicitor or conveyancer details; information entry rather than mandatory file upload.",
+    "tag": "fos-doc-needed-conveyancer-details",
+    "key": "conveyancer-details"
+  },
+  {
+    "number": 60,
+    "group": "Property transaction",
+    "label": "First home buyer documents",
+    "description": "Placeholder for scheme-specific requests; exact items must be defined before activation.",
+    "tag": "fos-doc-needed-first-home-buyer",
+    "key": "first-home-buyer"
+  },
+  {
+    "number": 61,
+    "group": "Construction",
+    "label": "Building contract",
+    "description": "Signed contract for the construction project.",
+    "tag": "fos-doc-needed-building-contract",
+    "key": "building-contract"
+  },
+  {
+    "number": 62,
+    "group": "Construction",
+    "label": "Progress payment schedule",
+    "description": "Agreed construction draw or progress-payment schedule.",
+    "tag": "fos-doc-needed-progress-schedule",
+    "key": "progress-schedule"
+  },
+  {
+    "number": 63,
+    "group": "Construction",
+    "label": "Building plans",
+    "description": "Plans for the relevant project and revision.",
+    "tag": "fos-doc-needed-building-plans",
+    "key": "building-plans"
+  },
+  {
+    "number": 64,
+    "group": "Construction",
+    "label": "Building specifications",
+    "description": "Specifications describing the proposed build.",
+    "tag": "fos-doc-needed-building-specifications",
+    "key": "building-specifications"
+  },
+  {
+    "number": 65,
+    "group": "Construction",
+    "label": "Building approvals",
+    "description": "Applicable project approvals or permits.",
+    "tag": "fos-doc-needed-building-approvals",
+    "key": "building-approvals"
+  },
+  {
+    "number": 66,
+    "group": "Construction",
+    "label": "Construction insurance",
+    "description": "Required builder or construction insurance evidence.",
+    "tag": "fos-doc-needed-construction-insurance",
+    "key": "construction-insurance"
+  },
+  {
+    "number": 67,
+    "group": "Construction",
+    "label": "Progress payment claim",
+    "description": "Claim or instruction for the relevant construction draw.",
+    "tag": "fos-doc-needed-progress-claim",
+    "key": "progress-claim"
+  },
+  {
+    "number": 68,
+    "group": "Construction",
+    "label": "Builder invoice",
+    "description": "Invoice supporting the relevant progress payment.",
+    "tag": "fos-doc-needed-builder-invoice",
+    "key": "builder-invoice"
+  },
+  {
+    "number": 69,
+    "group": "Construction",
+    "label": "Stage inspection evidence",
+    "description": "Inspection or valuation evidence for the relevant construction stage.",
+    "tag": "fos-doc-needed-stage-inspection",
+    "key": "stage-inspection"
+  },
+  {
+    "number": 70,
+    "group": "Construction",
+    "label": "Completion evidence",
+    "description": "Completion or occupancy evidence for the relevant final stage.",
+    "tag": "fos-doc-needed-completion-evidence",
+    "key": "completion-evidence"
+  }
+]

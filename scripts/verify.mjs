@@ -1,87 +1,173 @@
-import {chromium} from '@playwright/test';
-import {mkdirSync} from 'node:fs';
-import {resolve} from 'node:path';
-import {pathToFileURL} from 'node:url';
-mkdirSync('evidence',{recursive:true});
-const browser=await chromium.launch({...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{}),headless:true});
-const page=await browser.newPage({viewport:{width:1440,height:1100}});
-const errors=[];page.on('pageerror',e=>errors.push(e.message));
-await page.goto(process.env.BASE_URL||'http://127.0.0.1:5319/');
-await page.getByRole('heading',{name:'The right documents.'}).waitFor();
-await page.screenshot({path:'evidence/preview.png',fullPage:true});
-await page.getByRole('button',{name:'Broker intake form',exact:true}).click();
-const intake=page.locator('.dc-intake');
-await intake.getByLabel('Applicant email',{exact:true}).fill('applicant@example.test');
-const cardA=intake.locator('tr').filter({hasText:'Applicant A · Card A'});
-const cardB=intake.locator('tr').filter({hasText:'Applicant A · Card B'});
-if(!await cardA.getByText('6 continuous months',{exact:true}).isVisible())throw Error('Intake consolidated period missing');
-if(!await cardB.getByText('3 continuous months',{exact:true}).isVisible())throw Error('Intake retained period missing');
-if(await intake.getByText('Salary bank statements',{exact:true}).count())throw Error('Salary evidence requested by default');
-await intake.getByLabel('Match salary deposits to payslips').check();
-await intake.getByText('Salary bank statements',{exact:true}).waitFor();
-await cardA.getByRole('checkbox').uncheck();
-if(!await intake.locator('.dc-tag-preview').getByText('fos-doc-needed-credit-card-statements',{exact:true}).isVisible())throw Error('Intake lost shared card tag');
-await cardB.getByRole('checkbox').uncheck();
-if(await intake.locator('.dc-tag-preview').getByText('fos-doc-needed-credit-card-statements',{exact:true}).count())throw Error('Intake retained unselected card tag');
-await cardA.getByRole('checkbox').check();
-await cardB.getByRole('checkbox').check();
-await intake.getByRole('button',{name:/Confirm preview/}).click();
-await intake.getByRole('heading',{name:'Preview confirmed',exact:true}).waitFor();
-await page.screenshot({path:'evidence/intake-form.png',fullPage:true});
-await intake.getByRole('button',{name:'View intake logic →'}).click();
-if(await page.getByLabel('Choose workflow').inputValue()!=='DC-01')throw Error('Intake workflow link wrong');
-await page.getByRole('button',{name:'Preview',exact:true}).click();
-await page.getByRole('button',{name:/03 Client uploads/}).click();
-await page.getByRole('button',{name:/DC-03 Receive the selected document/}).click();
-await page.getByRole('button',{name:'Open connected workflow'}).click();
-await page.locator('.react-flow__node').first().waitFor();
-await page.waitForTimeout(250);
-await page.screenshot({path:'evidence/upload-board.png',fullPage:true});
-await page.getByRole('button',{name:'Full screen',exact:false}).click();
-await page.waitForTimeout(250);
-await page.screenshot({path:'evidence/fullscreen.png',fullPage:true});
-const fullscreen=await page.getByRole('dialog',{name:'Full-screen workflow board'}).evaluate(el=>{const r=el.getBoundingClientRect();return r.x===0&&r.y===0&&r.width===innerWidth&&r.height===innerHeight});
-if(!fullscreen)throw Error('Full-screen overlay does not fill viewport');
-await page.keyboard.press('Escape');
-await page.getByRole('button',{name:'Rules & build details',exact:true}).click();
-await page.getByLabel('Card A treatment').selectOption('Consolidated');
-if(!await page.getByText('6 months · locked',{exact:true}).isVisible())throw Error('Consolidated period missing');
-await page.getByLabel('Card A received',{exact:true}).check();
-if(!await page.locator('.dc-demo-result').getByText('Retained',{exact:true}).isVisible())throw Error('Cleared tag for other card');
-await page.getByLabel('Card B received · retained, 3 months').check();
-if(!await page.locator('.dc-demo-result').getByText('Removed',{exact:true}).isVisible())throw Error('Tag not removed after both');
-await page.getByLabel('Card A received',{exact:true}).uncheck();
-if(!await page.locator('.dc-demo-result').getByText('Retained',{exact:true}).isVisible())throw Error('Tag not restored');
-await page.getByRole('button',{name:'Workflow board',exact:true}).click();
-for(const id of ['DC-01','DC-02','DC-03','DC-04','DC-05','DC-06','DC-07']){
- await page.getByLabel('Choose workflow').selectOption(id);
- await page.waitForTimeout(180);
- const count=await page.locator('.react-flow__node').count();
- if(count<6)throw Error('Missing graph '+id);
+import { chromium } from "@playwright/test";
+import { mkdirSync } from "node:fs";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import assert from "node:assert/strict";
+mkdirSync("evidence", { recursive: true });
+const browser = await chromium.launch({
+  ...(process.env.CHROME_PATH
+    ? { executablePath: process.env.CHROME_PATH }
+    : {}),
+  headless: true,
+});
+try {
+  const page = await browser.newPage({
+    viewport: { width: 1440, height: 1000 },
+  });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(process.env.BASE_URL || "http://127.0.0.1:5319/");
+  await page
+    .getByRole("heading", { name: "One checklist. The whole journey." })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Whole journey", exact: true })
+    .click();
+  assert.equal(await page.locator(".react-flow__node-step").count(), 54);
+  const original = await page
+    .locator(".react-flow__viewport")
+    .getAttribute("style");
+  await page
+    .getByRole("group", { name: "overview.DC-03: Client uploads", exact: true })
+    .press("Enter");
+  await page
+    .getByRole("complementary", { name: "Builder inspector" })
+    .waitFor();
+  await page.getByRole("checkbox", { name: "Show tags", exact: true }).check();
+  assert.equal(
+    await page.locator(".react-flow__viewport").getAttribute("style"),
+    original,
+  );
+  await page.getByRole("button", { name: "Full screen", exact: true }).click();
+  assert.equal(
+    await page.locator(".react-flow__viewport").getAttribute("style"),
+    original,
+  );
+  await page
+    .getByRole("button", { name: "Focus this logic on canvas" })
+    .click();
+  await page.getByRole("button", { name: "Close inspector" }).click();
+  await page.screenshot({ path: "evidence/unified-fullscreen-auto.png" });
+  await page
+    .getByRole("button", { name: "Upload example", exact: true })
+    .click();
+  const result = page.locator(".dc-projection");
+  await page
+    .getByRole("combobox", { name: "Outstanding document" })
+    .selectOption("card-b");
+  assert.match(
+    await result.innerText(),
+    /KEEP \/ ADD fos-doc-needed-credit-card-statements/,
+  );
+  await page.getByRole("button", { name: "Attach a sample PDF" }).click();
+  await page.getByRole("button", { name: "Simulate failed save" }).click();
+  assert.match(await page.getByRole("status").innerText(), /Save failed/);
+  await page
+    .getByRole("checkbox", { name: "This item is ready for broker review" })
+    .uncheck();
+  await page.getByRole("button", { name: "Save sample upload" }).click();
+  assert.equal(
+    await page
+      .getByRole("combobox", { name: "Outstanding document" })
+      .locator("option")
+      .count(),
+    2,
+  );
+  await page
+    .getByRole("checkbox", { name: "This item is ready for broker review" })
+    .check();
+  await page.getByRole("button", { name: "Attach a sample PDF" }).click();
+  await page.getByRole("button", { name: "Save sample upload" }).click();
+  assert.match(
+    await result.innerText(),
+    /KEEP \/ ADD fos-doc-needed-credit-card-statements/,
+  );
+  await page.getByRole("button", { name: "Attach a sample PDF" }).click();
+  await page.getByRole("button", { name: "Save sample upload" }).click();
+  assert.match(
+    await result.innerText(),
+    /REMOVE fos-doc-needed-credit-card-statements/,
+  );
+  await page
+    .getByRole("checkbox", { name: "Another loan still needs card statements" })
+    .check();
+  assert.match(
+    await result.innerText(),
+    /KEEP \/ ADD fos-doc-needed-credit-card-statements/,
+  );
+  await page
+    .getByRole("checkbox", { name: "Another loan still needs card statements" })
+    .uncheck();
+  await page.getByRole("button", { name: "Replace A", exact: true }).click();
+  assert.match(
+    await result.innerText(),
+    /KEEP \/ ADD fos-doc-needed-credit-card-statements/,
+  );
+  await page
+    .getByRole("button", { name: "Broker intake", exact: true })
+    .click();
+  const intake = page.locator(".dc-intake");
+  await intake
+    .getByLabel("Applicant email", { exact: true })
+    .fill("sam@example.test");
+  assert.match(
+    await intake
+      .locator("tr")
+      .filter({ hasText: "Applicant A · Card A" })
+      .innerText(),
+    /6 continuous months/,
+  );
+  assert.match(
+    await intake
+      .locator("tr")
+      .filter({ hasText: "Applicant A · Card B" })
+      .innerText(),
+    /3 continuous months/,
+  );
+  await intake.getByLabel("Match salary deposits to payslips").check();
+  await intake.getByText("Salary bank statements", { exact: true }).waitFor();
+  await intake.getByRole("button", { name: /Confirm preview/ }).click();
+  await intake
+    .getByRole("heading", { name: "Preview confirmed", exact: true })
+    .waitFor();
+  await page.getByRole("button", { name: "Close resource" }).press("Escape");
+  await page
+    .getByRole("button", { name: "Broker intake", exact: true })
+    .click();
+  assert.equal(
+    await intake.getByLabel("Applicant email", { exact: true }).inputValue(),
+    "sam@example.test",
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+    true,
+  );
+  await page.screenshot({ path: "evidence/unified-mobile-auto.png" });
+  await page.getByRole("button", { name: "Close resource" }).press("Escape");
+  await page.getByRole("button", { name: "Exit full screen" }).press("Escape");
+  await page
+    .getByRole("button", { name: "Full screen", exact: true })
+    .waitFor();
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(
+    pathToFileURL(resolve("document-collection-board.html")).href,
+  );
+  await page
+    .getByRole("heading", { name: "One checklist. The whole journey." })
+    .waitFor();
+  assert.equal(await page.locator(".react-flow__node-step").count(), 54);
+  await page
+    .getByRole("button", { name: "Document catalogue", exact: true })
+    .click();
+  await page.getByLabel("Find a document or alias").fill("NOA");
+  await page.getByText("Notice of Assessment", { exact: true }).waitFor();
+  assert.deepEqual(errors, []);
+  console.log(
+    "Browser suite passed: persistent canvas, keyboard, full screen, upload/tag lifecycle, intake, mobile and portable HTML.",
+  );
+} finally {
+  await browser.close();
 }
-await page.locator('.react-flow__node').filter({hasText:'Remove needed tag'}).click();
-if(!await page.getByRole('complementary',{name:'Selected step build details'}).getByText('Remove Contact Tag.',{exact:true}).isVisible())throw Error('Missing GHL detail');
-await page.screenshot({path:'evidence/tag-removal.png',fullPage:true});
-await page.setViewportSize({width:390,height:844});
-await page.getByRole('button',{name:'Preview',exact:true}).click();
-await page.screenshot({path:'evidence/mobile-preview.png',fullPage:true});
-const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
-if(overflow)throw Error('Mobile overflow');
-await page.getByRole('button',{name:'Workflow board',exact:true}).click();
-await page.waitForTimeout(200);
-const mobileOverflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
-if(mobileOverflow)throw Error('Mobile board overflow');
-await page.getByRole('button',{name:'Broker intake form',exact:true}).click();
-if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('Mobile intake overflow');
-await page.screenshot({path:'evidence/mobile-intake.png',fullPage:true});
-await page.setViewportSize({width:1440,height:1100});
-await page.goto(pathToFileURL(resolve('document-collection-board.html')).href);
-await page.getByRole('heading',{name:'The right documents.'}).waitFor();
-await page.getByRole('button',{name:'Broker intake form',exact:true}).click();
-await page.getByRole('heading',{name:'Request documents for this loan',exact:true}).waitFor();
-await page.getByRole('button',{name:'Workflow board',exact:true}).click();
-await page.locator('.react-flow__node').first().waitFor();
-if(await page.locator('.react-flow__edge-path').count()<2)throw Error('Portable board missing connectors');
-console.log(JSON.stringify({fullscreen,errors,checks:'Intake 6/3-month rules, conditional salary evidence, checklist/tag sync, confirmation and navigation; preview drilldown; all 7 graphs; full-screen overlay and Escape; shared tag retention/removal/restoration; builder detail; mobile overflow; portable HTML intake and board'},null,2));
-await browser.close();
-if(errors.length)process.exit(1);

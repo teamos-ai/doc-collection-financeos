@@ -1,0 +1,1400 @@
+{
+  "version": "2026-11-19.2",
+  "status": "proposed specification",
+  "catalogue": [
+    {
+      "number": 1,
+      "group": "Identity",
+      "label": "Driver licence",
+      "description": "Licence supplied through the approved identity process.",
+      "tag": "fos-doc-needed-driver-licence",
+      "key": "driver-licence"
+    },
+    {
+      "number": 2,
+      "group": "Identity",
+      "label": "Passport",
+      "description": "Passport supplied through the approved identity process.",
+      "tag": "fos-doc-needed-passport",
+      "key": "passport"
+    },
+    {
+      "number": 3,
+      "group": "Identity",
+      "label": "Secondary ID",
+      "description": "Additional identification selected by the broker.",
+      "tag": "fos-doc-needed-secondary-id",
+      "key": "secondary-id"
+    },
+    {
+      "number": 4,
+      "group": "Identity",
+      "label": "Name change evidence",
+      "description": "Evidence connecting different names on records.",
+      "tag": "fos-doc-needed-name-change",
+      "key": "name-change"
+    },
+    {
+      "number": 5,
+      "group": "Identity",
+      "label": "Citizenship or residency evidence",
+      "description": "Evidence of relevant citizenship or residency status; visa requests excluded.",
+      "tag": "fos-doc-needed-residency",
+      "key": "residency"
+    },
+    {
+      "number": 6,
+      "group": "Identity",
+      "label": "Verified ID evidence",
+      "description": "Certified ID or the result of an approved digital identity check.",
+      "tag": "fos-doc-needed-verified-id",
+      "key": "verified-id"
+    },
+    {
+      "number": 7,
+      "group": "Employment",
+      "label": "Recent payslips",
+      "description": "Latest payslips for the selected employer and requested quantity.",
+      "tag": "fos-doc-needed-payslips",
+      "key": "payslips"
+    },
+    {
+      "number": 8,
+      "group": "Employment",
+      "label": "Earlier payslips",
+      "description": "Earlier payslips covering the specified history or dates.",
+      "tag": "fos-doc-needed-earlier-payslips",
+      "key": "earlier-payslips"
+    },
+    {
+      "number": 9,
+      "group": "Employment",
+      "label": "Employment contract",
+      "description": "Contract confirming the relevant employment terms.",
+      "tag": "fos-doc-needed-employment-contract",
+      "key": "employment-contract"
+    },
+    {
+      "number": 10,
+      "group": "Employment",
+      "label": "Employer letter",
+      "description": "Employer confirmation of role, income, hours or employment status.",
+      "tag": "fos-doc-needed-employer-letter",
+      "key": "employer-letter"
+    },
+    {
+      "number": 11,
+      "group": "Employment",
+      "label": "ATO income statement",
+      "description": "ATO income statement or PAYG payment summary for the selected year.",
+      "tag": "fos-doc-needed-ato-income",
+      "key": "ato-income"
+    },
+    {
+      "number": 12,
+      "group": "Employment",
+      "label": "Salary bank statements",
+      "description": "Statements showing salary credits for the requested period.",
+      "tag": "fos-doc-needed-salary-statements",
+      "key": "salary-statements"
+    },
+    {
+      "number": 13,
+      "group": "Employment",
+      "label": "Overtime evidence",
+      "description": "Evidence supporting overtime income being considered.",
+      "tag": "fos-doc-needed-overtime",
+      "key": "overtime"
+    },
+    {
+      "number": 14,
+      "group": "Employment",
+      "label": "Commission evidence",
+      "description": "Evidence supporting employment commission income.",
+      "tag": "fos-doc-needed-commission",
+      "key": "commission"
+    },
+    {
+      "number": 15,
+      "group": "Employment",
+      "label": "Bonus evidence",
+      "description": "Evidence supporting bonus income.",
+      "tag": "fos-doc-needed-bonus",
+      "key": "bonus"
+    },
+    {
+      "number": 16,
+      "group": "Employment",
+      "label": "Allowance evidence",
+      "description": "Evidence supporting employment allowances.",
+      "tag": "fos-doc-needed-allowances",
+      "key": "allowances"
+    },
+    {
+      "number": 17,
+      "group": "Employment",
+      "label": "Salary packaging details",
+      "description": "Salary packaging or novated lease documents relevant to deductions.",
+      "tag": "fos-doc-needed-salary-packaging",
+      "key": "salary-packaging"
+    },
+    {
+      "number": 18,
+      "group": "Employment",
+      "label": "Second job evidence",
+      "description": "Requested employment evidence for another job; identify employer and required files.",
+      "tag": "fos-doc-needed-second-job",
+      "key": "second-job"
+    },
+    {
+      "number": 19,
+      "group": "Employment",
+      "label": "Employment history",
+      "description": "Evidence of casual, temporary or contract employment history.",
+      "tag": "fos-doc-needed-employment-history",
+      "key": "employment-history"
+    },
+    {
+      "number": 20,
+      "group": "Personal tax",
+      "label": "Personal tax return",
+      "description": "Individual return and required schedules for the selected year.",
+      "tag": "fos-doc-needed-personal-tax-return",
+      "key": "personal-tax-return"
+    },
+    {
+      "number": 21,
+      "group": "Personal tax",
+      "label": "Notice of Assessment",
+      "description": "ATO assessment for the selected person and year.",
+      "tag": "fos-doc-needed-notice-of-assessment",
+      "key": "notice-of-assessment"
+    },
+    {
+      "number": 22,
+      "group": "Personal tax",
+      "label": "Tax lodgement confirmation",
+      "description": "Confirmation that the relevant return was lodged, where accepted.",
+      "tag": "fos-doc-needed-tax-lodgement",
+      "key": "tax-lodgement"
+    },
+    {
+      "number": 23,
+      "group": "Business income",
+      "label": "Business tax return",
+      "description": "Return for the named business and financial year.",
+      "tag": "fos-doc-needed-business-tax-return",
+      "key": "business-tax-return"
+    },
+    {
+      "number": 24,
+      "group": "Business income",
+      "label": "BAS",
+      "description": "Business Activity Statements for the specified periods.",
+      "tag": "fos-doc-needed-bas",
+      "key": "bas"
+    },
+    {
+      "number": 25,
+      "group": "Business income",
+      "label": "Business bank statements",
+      "description": "Statements for the named business account and period.",
+      "tag": "fos-doc-needed-business-statements",
+      "key": "business-statements"
+    },
+    {
+      "number": 26,
+      "group": "Business income",
+      "label": "Accountant letter and contact details",
+      "description": "Requested accountant confirmation with their contact details.",
+      "tag": "fos-doc-needed-accountant-letter",
+      "key": "accountant-letter"
+    },
+    {
+      "number": 27,
+      "group": "Partnerships and trusts",
+      "label": "Partnership tax return and financials",
+      "description": "Selected partnership return and financial statements; record the required components and years.",
+      "tag": "fos-doc-needed-partnership-financials",
+      "key": "partnership-financials"
+    },
+    {
+      "number": 28,
+      "group": "Partnerships and trusts",
+      "label": "Trust deed",
+      "description": "Deed for the named trust.",
+      "tag": "fos-doc-needed-trust-deed",
+      "key": "trust-deed"
+    },
+    {
+      "number": 29,
+      "group": "Partnerships and trusts",
+      "label": "Trust deed amendments",
+      "description": "Variations or amendments to that trust deed.",
+      "tag": "fos-doc-needed-trust-amendments",
+      "key": "trust-amendments"
+    },
+    {
+      "number": 30,
+      "group": "Partnerships and trusts",
+      "label": "Trust tax return and financials",
+      "description": "Selected trust return and financial statements; record required components and years.",
+      "tag": "fos-doc-needed-trust-financials",
+      "key": "trust-financials"
+    },
+    {
+      "number": 31,
+      "group": "Rental income",
+      "label": "Lease agreement",
+      "description": "Current tenancy agreement for the relevant rental property.",
+      "tag": "fos-doc-needed-lease",
+      "key": "lease"
+    },
+    {
+      "number": 32,
+      "group": "Rental income",
+      "label": "Rental statements",
+      "description": "Rental statements for the named property and period.",
+      "tag": "fos-doc-needed-rental-statements",
+      "key": "rental-statements"
+    },
+    {
+      "number": 33,
+      "group": "Rental income",
+      "label": "Rental bank statements",
+      "description": "Bank statements showing rental credits for the relevant property.",
+      "tag": "fos-doc-needed-rental-bank-statements",
+      "key": "rental-bank-statements"
+    },
+    {
+      "number": 34,
+      "group": "Other income",
+      "label": "Government benefit or pension",
+      "description": "Entitlement statement for the relevant benefit or pension.",
+      "tag": "fos-doc-needed-benefit-pension",
+      "key": "benefit-pension"
+    },
+    {
+      "number": 35,
+      "group": "Other income",
+      "label": "Benefit or pension bank statements",
+      "description": "Statements showing benefit or pension credits.",
+      "tag": "fos-doc-needed-benefit-statements",
+      "key": "benefit-statements"
+    },
+    {
+      "number": 36,
+      "group": "Other income",
+      "label": "Child support agreement",
+      "description": "Child support assessment, agreement or court order.",
+      "tag": "fos-doc-needed-child-support",
+      "key": "child-support"
+    },
+    {
+      "number": 37,
+      "group": "Other income",
+      "label": "Foreign income evidence",
+      "description": "Broker-specified evidence supporting overseas income.",
+      "tag": "fos-doc-needed-foreign-income",
+      "key": "foreign-income"
+    },
+    {
+      "number": 38,
+      "group": "Accounts and assets",
+      "label": "Savings statements",
+      "description": "Statements for the relevant savings account and period.",
+      "tag": "fos-doc-needed-savings-statements",
+      "key": "savings-statements"
+    },
+    {
+      "number": 39,
+      "group": "Accounts and assets",
+      "label": "Term deposit statements",
+      "description": "Statements confirming the relevant term deposit.",
+      "tag": "fos-doc-needed-term-deposit",
+      "key": "term-deposit"
+    },
+    {
+      "number": 40,
+      "group": "Accounts and assets",
+      "label": "Super balance statement",
+      "description": "Superannuation balance evidence where requested; distinct from the removed pension-income item.",
+      "tag": "fos-doc-needed-super-balance",
+      "key": "super-balance"
+    },
+    {
+      "number": 41,
+      "group": "Accounts and assets",
+      "label": "Rates notice",
+      "description": "Rates notice for the named property.",
+      "tag": "fos-doc-needed-rates-notice",
+      "key": "rates-notice"
+    },
+    {
+      "number": 42,
+      "group": "Accounts and assets",
+      "label": "Asset ownership evidence",
+      "description": "Broker-specified evidence for another relevant declared asset.",
+      "tag": "fos-doc-needed-asset-ownership",
+      "key": "asset-ownership"
+    },
+    {
+      "number": 43,
+      "group": "Liabilities",
+      "label": "Home loan statements",
+      "description": "Statements for the named existing home loan.",
+      "tag": "fos-doc-needed-home-loan-statements",
+      "key": "home-loan-statements"
+    },
+    {
+      "number": 44,
+      "group": "Liabilities",
+      "label": "Investment loan statements",
+      "description": "Statements for the named investment-property loan.",
+      "tag": "fos-doc-needed-investment-loan-statements",
+      "key": "investment-loan-statements"
+    },
+    {
+      "number": 45,
+      "group": "Liabilities",
+      "label": "Credit card statements",
+      "description": "Statements showing the relevant credit card balance and limit.",
+      "tag": "fos-doc-needed-credit-card-statements",
+      "key": "credit-card-statements"
+    },
+    {
+      "number": 46,
+      "group": "Liabilities",
+      "label": "Personal loan statements",
+      "description": "Statements for an existing personal loan.",
+      "tag": "fos-doc-needed-personal-loan-statements",
+      "key": "personal-loan-statements"
+    },
+    {
+      "number": 47,
+      "group": "Liabilities",
+      "label": "Vehicle or equipment loan statements",
+      "description": "Statements for existing debt; this does not restore the removed vehicle-finance transaction category.",
+      "tag": "fos-doc-needed-asset-loan-statements",
+      "key": "asset-loan-statements"
+    },
+    {
+      "number": 48,
+      "group": "Liabilities",
+      "label": "Business loan statements",
+      "description": "Statements for relevant existing business debt.",
+      "tag": "fos-doc-needed-business-loan-statements",
+      "key": "business-loan-statements"
+    },
+    {
+      "number": 49,
+      "group": "Liabilities",
+      "label": "Overdraft statements",
+      "description": "Statements for an overdraft or line of credit, including its limit.",
+      "tag": "fos-doc-needed-overdraft-statements",
+      "key": "overdraft-statements"
+    },
+    {
+      "number": 50,
+      "group": "Liabilities",
+      "label": "Buy now pay later statements",
+      "description": "Statements showing relevant buy now pay later commitments.",
+      "tag": "fos-doc-needed-bnpl-statements",
+      "key": "bnpl-statements"
+    },
+    {
+      "number": 51,
+      "group": "Liabilities",
+      "label": "Student loan evidence",
+      "description": "Evidence of HELP or another relevant student loan.",
+      "tag": "fos-doc-needed-student-loan",
+      "key": "student-loan"
+    },
+    {
+      "number": 52,
+      "group": "Liabilities",
+      "label": "Lease or hire purchase agreement",
+      "description": "Agreement for a relevant existing finance commitment.",
+      "tag": "fos-doc-needed-finance-lease",
+      "key": "finance-lease"
+    },
+    {
+      "number": 53,
+      "group": "Deposit and funds",
+      "label": "Deposit funds statements",
+      "description": "Statements evidencing the deposit or funds to complete.",
+      "tag": "fos-doc-needed-deposit-statements",
+      "key": "deposit-statements"
+    },
+    {
+      "number": 54,
+      "group": "Deposit and funds",
+      "label": "Savings history",
+      "description": "Evidence covering the specified savings history.",
+      "tag": "fos-doc-needed-savings-history",
+      "key": "savings-history"
+    },
+    {
+      "number": 55,
+      "group": "Deposit and funds",
+      "label": "Gift declaration",
+      "description": "Gift declaration or selected lender gift form.",
+      "tag": "fos-doc-needed-gift-declaration",
+      "key": "gift-declaration"
+    },
+    {
+      "number": 56,
+      "group": "Deposit and funds",
+      "label": "Contract of sale — selling",
+      "description": "Contract for a property or asset being sold to contribute funds.",
+      "tag": "fos-doc-needed-sale-contract",
+      "key": "sale-contract"
+    },
+    {
+      "number": 57,
+      "group": "Property transaction",
+      "label": "Contract of sale — buying",
+      "description": "Contract for the property being purchased.",
+      "tag": "fos-doc-needed-purchase-contract",
+      "key": "purchase-contract"
+    },
+    {
+      "number": 58,
+      "group": "Property transaction",
+      "label": "Contract amendments",
+      "description": "Variations or amendments to the purchase contract.",
+      "tag": "fos-doc-needed-contract-amendments",
+      "key": "contract-amendments"
+    },
+    {
+      "number": 59,
+      "group": "Property transaction",
+      "label": "Conveyancer details",
+      "description": "Solicitor or conveyancer details; information entry rather than mandatory file upload.",
+      "tag": "fos-doc-needed-conveyancer-details",
+      "key": "conveyancer-details"
+    },
+    {
+      "number": 60,
+      "group": "Property transaction",
+      "label": "First home buyer documents",
+      "description": "Placeholder for scheme-specific requests; exact items must be defined before activation.",
+      "tag": "fos-doc-needed-first-home-buyer",
+      "key": "first-home-buyer"
+    },
+    {
+      "number": 61,
+      "group": "Construction",
+      "label": "Building contract",
+      "description": "Signed contract for the construction project.",
+      "tag": "fos-doc-needed-building-contract",
+      "key": "building-contract"
+    },
+    {
+      "number": 62,
+      "group": "Construction",
+      "label": "Progress payment schedule",
+      "description": "Agreed construction draw or progress-payment schedule.",
+      "tag": "fos-doc-needed-progress-schedule",
+      "key": "progress-schedule"
+    },
+    {
+      "number": 63,
+      "group": "Construction",
+      "label": "Building plans",
+      "description": "Plans for the relevant project and revision.",
+      "tag": "fos-doc-needed-building-plans",
+      "key": "building-plans"
+    },
+    {
+      "number": 64,
+      "group": "Construction",
+      "label": "Building specifications",
+      "description": "Specifications describing the proposed build.",
+      "tag": "fos-doc-needed-building-specifications",
+      "key": "building-specifications"
+    },
+    {
+      "number": 65,
+      "group": "Construction",
+      "label": "Building approvals",
+      "description": "Applicable project approvals or permits.",
+      "tag": "fos-doc-needed-building-approvals",
+      "key": "building-approvals"
+    },
+    {
+      "number": 66,
+      "group": "Construction",
+      "label": "Construction insurance",
+      "description": "Required builder or construction insurance evidence.",
+      "tag": "fos-doc-needed-construction-insurance",
+      "key": "construction-insurance"
+    },
+    {
+      "number": 67,
+      "group": "Construction",
+      "label": "Progress payment claim",
+      "description": "Claim or instruction for the relevant construction draw.",
+      "tag": "fos-doc-needed-progress-claim",
+      "key": "progress-claim"
+    },
+    {
+      "number": 68,
+      "group": "Construction",
+      "label": "Builder invoice",
+      "description": "Invoice supporting the relevant progress payment.",
+      "tag": "fos-doc-needed-builder-invoice",
+      "key": "builder-invoice"
+    },
+    {
+      "number": 69,
+      "group": "Construction",
+      "label": "Stage inspection evidence",
+      "description": "Inspection or valuation evidence for the relevant construction stage.",
+      "tag": "fos-doc-needed-stage-inspection",
+      "key": "stage-inspection"
+    },
+    {
+      "number": 70,
+      "group": "Construction",
+      "label": "Completion evidence",
+      "description": "Completion or occupancy evidence for the relevant final stage.",
+      "tag": "fos-doc-needed-completion-evidence",
+      "key": "completion-evidence"
+    }
+  ],
+  "scenarioRules": [
+    {
+      "id": "R01",
+      "scenario": "Home loan being refinanced",
+      "documents": "Home loan statements",
+      "period": "6 continuous months",
+      "quantity": "Enough statements to cover the period",
+      "freshness": "Proposed: latest evidence within 90 days; lender check",
+      "condition": "Per refinanced account; retained loans use a separate rule.",
+      "basis": "Founder standard",
+      "sources": [
+        "NAB",
+        "ANZ"
+      ]
+    },
+    {
+      "id": "R02",
+      "scenario": "Credit card consolidated into home loan",
+      "documents": "Credit card statements",
+      "period": "6 continuous months",
+      "quantity": "Enough statements to cover the period",
+      "freshness": "Latest available; exact cutoff unresolved",
+      "condition": "Only cards explicitly marked Consolidated.",
+      "basis": "Founder standard",
+      "sources": []
+    },
+    {
+      "id": "R03",
+      "scenario": "Credit card retained / conduct check",
+      "documents": "Credit card statements",
+      "period": "3 continuous months",
+      "quantity": "Enough statements to cover the period",
+      "freshness": "Latest available; exact cutoff unresolved",
+      "condition": "Per retained card. Never inherit another card’s treatment.",
+      "basis": "Founder standard",
+      "sources": []
+    },
+    {
+      "id": "R04",
+      "scenario": "Permanent PAYG income",
+      "documents": "Payslips",
+      "period": "Current pay cycles",
+      "quantity": "Proposed: 2 consecutive payslips",
+      "freshness": "Proposed: latest within 30 days",
+      "condition": "Employer and YTD details matter. Lender alternatives may reduce the pack; not a universal two-slip rule.",
+      "basis": "Proposed",
+      "sources": [
+        "NAB",
+        "ANZ",
+        "CBA"
+      ]
+    },
+    {
+      "id": "R05",
+      "scenario": "Casual PAYG income",
+      "documents": "Payslips; ATO income statement if history is insufficient",
+      "period": "Proposed: establish 6 months income history",
+      "quantity": "2 latest payslips plus only the missing history",
+      "freshness": "Payslip cutoff proposed; history supplement per selected route",
+      "condition": "If YTD establishes history, do not request duplicate historical evidence automatically.",
+      "basis": "Proposed",
+      "sources": [
+        "ANZ"
+      ]
+    },
+    {
+      "id": "R06",
+      "scenario": "Salary credits need matching",
+      "documents": "Salary bank statements",
+      "period": "Proposed: 3 months permanent / 6 months casual",
+      "quantity": "Enough statements for salary-credit coverage",
+      "freshness": "Latest available; cutoff to approve",
+      "condition": "Explicit matching need only. Match net payslip amounts and payment dates; no general transaction-account chase.",
+      "basis": "Proposed",
+      "sources": [
+        "CBA",
+        "ANZ"
+      ]
+    },
+    {
+      "id": "R07",
+      "scenario": "Sole trader standard income route",
+      "documents": "Personal tax returns + ATO notices of assessment",
+      "period": "Proposed: 2 latest lodged financial years",
+      "quantity": "One return and assessment per selected year",
+      "freshness": "Specify FY; lender age limits vary",
+      "condition": "A starting pack, not sufficient evidence for every lender or business.",
+      "basis": "Proposed",
+      "sources": [
+        "CBA",
+        "NAB",
+        "ANZ"
+      ]
+    },
+    {
+      "id": "R08",
+      "scenario": "Company profits relied upon",
+      "documents": "Personal tax returns / NOAs + business tax returns",
+      "period": "Proposed: 2 latest lodged financial years",
+      "quantity": "Per person and contributing entity",
+      "freshness": "Confirm lender route and year-end",
+      "condition": "Standalone P&L and balance sheet excluded by founder. If required, use controlled exception outside this pack.",
+      "basis": "Exception",
+      "sources": [
+        "WBC",
+        "CBA"
+      ]
+    },
+    {
+      "id": "R09",
+      "scenario": "Regular wages from own company",
+      "documents": "Eligible salary / ATO income evidence route",
+      "period": "Lender-specific; no generic automatic shortcut",
+      "quantity": "Confirm eligibility first",
+      "freshness": "Current lender rules",
+      "condition": "Do not treat a director as ordinary PAYG solely because a payslip exists.",
+      "basis": "Exception",
+      "sources": [
+        "ANZ",
+        "CBA"
+      ]
+    },
+    {
+      "id": "R10",
+      "scenario": "Partnership or trust income",
+      "documents": "Retained entity tax-return/financials bundle + relevant personal evidence",
+      "period": "Proposed: 2 latest relevant financial years",
+      "quantity": "Per contributing entity; avoid duplicate shared evidence",
+      "freshness": "Confirm selected lender age limits",
+      "condition": "Trust deed and applicable amendments are separate. Identify borrower / income-provider role; no removed trustee evidence.",
+      "basis": "Proposed",
+      "sources": [
+        "WBC",
+        "NAB"
+      ]
+    },
+    {
+      "id": "R11",
+      "scenario": "Eligible streamlined self-employed route",
+      "documents": "Route-specific alternatives, potentially personal NOAs",
+      "period": "No universal default",
+      "quantity": "Do not stack standard and streamlined packs",
+      "freshness": "Confirm eligibility against current policy",
+      "condition": "Westpac publishes distinct methods. Broker/policy owner resolves route before issue.",
+      "basis": "Exception",
+      "sources": [
+        "WBC"
+      ]
+    },
+    {
+      "id": "R12",
+      "scenario": "Existing rental income",
+      "documents": "Rental statements OR current lease",
+      "period": "Proposed: latest statement / current lease",
+      "quantity": "One approved evidence route",
+      "freshness": "Current evidence for named property",
+      "condition": "Prospective rent is a separate exception because rental appraisals were excluded.",
+      "basis": "Proposed",
+      "sources": [
+        "CBA",
+        "ANZ"
+      ]
+    },
+    {
+      "id": "R13",
+      "scenario": "Purchase with signed contract",
+      "documents": "Contract of sale — buying",
+      "period": "Current transaction",
+      "quantity": "Complete signed contract",
+      "freshness": "Current signed version",
+      "condition": "Pre-approval without a property must not chase an unavailable contract.",
+      "basis": "Proposed",
+      "sources": [
+        "ANZ",
+        "NAB"
+      ]
+    },
+    {
+      "id": "R14",
+      "scenario": "Savings contribute to deposit",
+      "documents": "Savings statements",
+      "period": "Proposed: 3 continuous months",
+      "quantity": "Per contributing savings account",
+      "freshness": "Latest available; lender cutoff to confirm",
+      "condition": "Not a universal genuine-savings test. Gift letter and sale contract remain separate selected sources.",
+      "basis": "Proposed",
+      "sources": [
+        "HG",
+        "ANZ"
+      ]
+    },
+    {
+      "id": "R15",
+      "scenario": "Construction application",
+      "documents": "Building contract, plans, specifications and approvals",
+      "period": "Current project",
+      "quantity": "Required project versions",
+      "freshness": "Current / signed / approved as applicable",
+      "condition": "Progress invoices and completion evidence belong to later stages; owner-builder is an exception.",
+      "basis": "Proposed",
+      "sources": [
+        "ANZ",
+        "ANZ-C"
+      ]
+    },
+    {
+      "id": "R16",
+      "scenario": "Variable income / second job",
+      "documents": "Relevant earlier payslips, bonus, overtime or commission evidence",
+      "period": "Unresolved by income type and lender",
+      "quantity": "Do not assume one generic 3-month pack",
+      "freshness": "Unresolved",
+      "condition": "Identify employer and income component, then resolve approved evidence route.",
+      "basis": "Exception",
+      "sources": [
+        "ANZ",
+        "NAB"
+      ]
+    },
+    {
+      "id": "R17",
+      "scenario": "Government benefit or pension / foreign income",
+      "documents": "Government benefit or pension evidence / foreign income evidence",
+      "period": "No approved common period",
+      "quantity": "Selected income source only",
+      "freshness": "Confirm lender and source-specific standard",
+      "condition": "Do not reinstate removed translations, annuity or other excluded categories.",
+      "basis": "Exception",
+      "sources": [
+        "CBA",
+        "ANZ",
+        "NAB"
+      ]
+    },
+    {
+      "id": "R18",
+      "scenario": "First-home buyer, guarantor or other debt",
+      "documents": "Selected retained catalogue items",
+      "period": "Scheme / liability / lender specific",
+      "quantity": "Resolve named requirement, not broad placeholder",
+      "freshness": "Current requirement at issue",
+      "condition": "First-home buyer is a flag, not a universal extra-document pack. No automatic scheme eligibility decision.",
+      "basis": "Exception",
+      "sources": []
+    }
+  ],
+  "sources": [
+    {
+      "id": "CBA",
+      "name": "CommBank · application checklist",
+      "url": "https://www.commbank.com.au/home-loans/applying-for-a-home-loan.html",
+      "date": "Web page checked 19 Nov 2026",
+      "status": "Primary source",
+      "finding": "Salary-credit evidence distinguishes three months from six for casual employment. Self-employed evidence and rental alternatives vary. This supports conditional requests, not a blanket bank-statement pack."
+    },
+    {
+      "id": "ANZ",
+      "name": "ANZ · home loan checklist",
+      "url": "https://www.anz.com.au/personal/home-loans/get-started/checklist/",
+      "date": "Web page checked 19 Nov 2026 · excludes ANZ Plus",
+      "status": "Primary source",
+      "finding": "PAYG evidence depends on YTD history. Recent payslips may be up to 60 days old. Self-employed routes include one-year evidence or eligible company wages. Home-loan statements are generally unnecessary, with exceptions. Signed contracts come after approval-in-principle."
+    },
+    {
+      "id": "NAB",
+      "name": "NAB · application, page 2",
+      "url": "https://www.nab.com.au/content/dam/nabrwd/documents/forms/loans/home-loan-application-form.pdf",
+      "date": "Document 79936A-0725 · July 2025 · checked 19 Nov 2026",
+      "status": "Dated primary PDF",
+      "finding": "Refinanced loans: six months of transactions, evidence no older than 90 days. PAYG alternatives include one YTD payslip or two of the last three, usually within 45 days; longer pay cycles differ. This separates history, quantity and freshness."
+    },
+    {
+      "id": "WBC",
+      "name": "Westpac · self-employed broker guide",
+      "url": "https://www.westpac.com.au/brokers/ideas-hub/self-employed/",
+      "date": "Web page checked 19 Nov 2026",
+      "status": "Primary source",
+      "finding": "Separate eligible Fast Track, one-year and standard two-year routes. Fast Track uses two personal ATO notices of assessment. Other routes can require entity financials. Do not silently put excluded standalone financials back into the collection catalogue."
+    },
+    {
+      "id": "ING",
+      "name": "ING · mortgage application checklist",
+      "url": "https://www.ing.com.au/pdf/application_checklist.pdf",
+      "date": "Historical 2017 checklist · re-located 19 Nov 2026",
+      "status": "Historical only",
+      "finding": "Useful Australian naming and older six-month loan / three-month card refinance references. Not accepted as current policy. Current detailed ING broker requirements remain an explicit gap; a newer broker-flyer URL could not be retrieved in this pass."
+    },
+    {
+      "id": "ATO-I",
+      "name": "ATO · income statements",
+      "url": "https://www.ato.gov.au/individuals-and-families/jobs-and-employment-types/working-as-an-employee/income-statements/access-your-income-statement",
+      "date": "Checked 19 Nov 2026",
+      "status": "Terminology authority",
+      "finding": "Use ATO income statement. A PAYG payment summary is an alternative employer reporting document, not a tax return or notice of assessment. Keep the actual evidence route on the request."
+    },
+    {
+      "id": "ATO-N",
+      "name": "ATO · notice of assessment",
+      "url": "https://www.ato.gov.au/individuals-and-families/your-tax-return/your-notice-of-assessment",
+      "date": "Checked 19 Nov 2026",
+      "status": "Terminology authority",
+      "finding": "The notice of assessment is the ATO assessment following a tax return. Request the correct financial year and keep it distinct from both the return and the ATO account statement."
+    },
+    {
+      "id": "HG",
+      "name": "Hunter Galloway · supplied checklist",
+      "url": "https://www.huntergalloway.com.au/",
+      "date": "Local one-page PDF read 19 Nov 2026 · publication date unknown",
+      "status": "Broker comparison",
+      "finding": "Compares common income, savings, liabilities and property evidence. Its three-year self-employed / six-month savings suggestions differ from the proposed baseline. Use as gap discovery, not lender policy. Original file is recorded in the research handoff."
+    },
+    {
+      "id": "AUSSIE",
+      "name": "Aussie · supplied refinance checklist",
+      "url": "https://www.aussie.com.au/",
+      "date": "Local one-page PDF ©2021 read 19 Nov 2026",
+      "status": "Historical comparison",
+      "finding": "Separates refinance purpose, existing debts, income and rates notices. Its older “Group Certificates” wording maps to the appropriate ATO income statement / PAYG payment summary route. Expense evidence stays outside this module."
+    },
+    {
+      "id": "ANZ-C",
+      "name": "ANZ · supplied construction checklist",
+      "url": "https://www.anz.com.au/personal/home-loans/",
+      "date": "Local PDF 08.2022; internally current at 29 Apr 2020",
+      "status": "Historical stage comparison",
+      "finding": "Deposit, progress and final draw evidence differ. Use it to justify a construction-stage input; do not import historical payment lead times or request final-stage evidence at initial application."
+    }
+  ],
+  "namingAliases": {
+    "driver-licence": [
+      "Australian driver licence",
+      "driver’s licence"
+    ],
+    "payslips": [
+      "pay slips",
+      "pay stubs — avoid US wording"
+    ],
+    "ato-income": [
+      "ATO income statement",
+      "PAYG payment summary — alternative",
+      "group certificate — legacy term"
+    ],
+    "notice-of-assessment": [
+      "ATO notice of assessment",
+      "NOA"
+    ],
+    "personal-tax-return": [
+      "individual tax return",
+      "personal income tax return"
+    ],
+    "business-tax-return": [
+      "company tax return",
+      "entity tax return"
+    ],
+    "bas": [
+      "business activity statement",
+      "BAS"
+    ],
+    "salary-statements": [
+      "salary-credit statements",
+      "bank statements showing salary credits"
+    ],
+    "rental-statements": [
+      "property manager rental statements",
+      "rental income statements"
+    ],
+    "home-loan-statements": [
+      "mortgage statements",
+      "home loan account statements"
+    ],
+    "credit-card-statements": [
+      "credit card account statements"
+    ],
+    "purchase-contract": [
+      "contract of sale — buying",
+      "purchase contract"
+    ],
+    "sale-contract": [
+      "contract of sale — selling",
+      "asset sale contract"
+    ]
+  },
+  "gaps": [
+    [
+      "Policy owner",
+      "Approve proposed periods, identity combinations and evidence alternatives. The three founder statement durations stay locked."
+    ],
+    [
+      "Policy owner",
+      "Resolve current ING rules, retained loans, variable/foreign income, first-home schemes and other liabilities before automatic issue."
+    ],
+    [
+      "Builder",
+      "Prove loan/applicant/entity/account records, private upload scope, saved-file events and dynamic dropdowns in the target GHL account."
+    ],
+    [
+      "Tumai",
+      "Approve receipt-pause, partial uploads, draft message copy and the restrained reminder schedule."
+    ],
+    [
+      "Builder + broker",
+      "Excluded expenses, standalone business financials and other lender requirements need an owned external route. This module is not a complete credit assessment."
+    ]
+  ],
+  "buildOrder": [
+    {
+      "id": "B01",
+      "title": "Prove the record and access model",
+      "flows": [
+        "DC-01",
+        "DC-02",
+        "DC-03"
+      ],
+      "detail": "Create synthetic concurrent loans, two applicants, one shared entity and two cards. Prove each request and file has an unambiguous owner and permitted recipient.",
+      "done": "No overwrite or cross-recipient exposure. Record chosen native GHL representation and any adapter boundary."
+    },
+    {
+      "id": "B02",
+      "title": "Register rules, fields and tags",
+      "flows": [
+        "DC-01",
+        "DC-07"
+      ],
+      "detail": "Use stable catalogue keys. Keep history, quantity, freshness and source/version separate. Create tags once; assign DC-07 sole writing responsibility.",
+      "done": "The same person can need two different periods for two cards without adding period-specific tags."
+    },
+    {
+      "id": "B03",
+      "title": "Build intake and issue guard",
+      "flows": [
+        "DC-01",
+        "DC-02"
+      ],
+      "detail": "Broker selects circumstances, reviews proposed and approved requirements, records already-held evidence, ticks and confirms. Guard loan + revision before creating requests.",
+      "done": "Drafts send nothing. Replaying confirmation does not duplicate requests or invitation. Unapproved selected rules block production issue."
+    },
+    {
+      "id": "B04",
+      "title": "Build upload and reconciliation",
+      "flows": [
+        "DC-03",
+        "DC-07"
+      ],
+      "detail": "Filter the request dropdown by authorised recipient and loan. Persist files before the receipt event. Support partial / ready-for-review and event retries.",
+      "done": "Dropdown-only and failed save never remove tags. One card received retains the shared tag when the other is missing."
+    },
+    {
+      "id": "B05",
+      "title": "Build human review and amendments",
+      "flows": [
+        "DC-05",
+        "DC-06",
+        "DC-07"
+      ],
+      "detail": "Accept, replace with a reason, withdraw or add requirements without discarding history. Reuse already-held evidence only with a review and request link.",
+      "done": "Rejected evidence reopens only its request. No-longer-required items stop chasing without deleting evidence. Complete is not lender approval."
+    },
+    {
+      "id": "B06",
+      "title": "Connect restrained messages",
+      "flows": [
+        "DC-02",
+        "DC-04",
+        "DC-06"
+      ],
+      "detail": "Approve the draft schedule and copy; map each placeholder. Compute the current list immediately before sending. Coordinate across cases to avoid recipient collisions.",
+      "done": "No unresolved placeholders, duplicate sequences or sends after pause. A reply hands control to the broker. Cap exhaustion creates an owned task."
+    },
+    {
+      "id": "B07",
+      "title": "Audit the manual GHL build",
+      "flows": [
+        "DC-01",
+        "DC-02",
+        "DC-03",
+        "DC-04",
+        "DC-05",
+        "DC-06",
+        "DC-07"
+      ],
+      "detail": "Run the synthetic acceptance pack in an authorised test location, then repeat after snapshot installation. Observe actual files, tags, waits and sends.",
+      "done": "Builder records actual outcomes and evidence. Board checks alone never constitute GHL acceptance."
+    }
+  ],
+  "fieldMappings": [
+    [
+      "Loan reference + applicants",
+      "request_set.loan_id; request.subject_id",
+      "DC-01.start → DC-02.create",
+      "Never resolve solely by email."
+    ],
+    [
+      "Purpose + stage",
+      "purchase / refinance / construction; contract_available",
+      "R13 / R15 → DC-01.rules",
+      "Pre-approval does not chase an unavailable sale contract."
+    ],
+    [
+      "Income + entity role",
+      "income_sources[]; entity_id; income_route",
+      "R04–R12 / R16–R17",
+      "Mixed income is additive; alternative routes are not."
+    ],
+    [
+      "Salary matching",
+      "salary_match_required",
+      "R06 → salary-statements",
+      "No blanket transaction-account request."
+    ],
+    [
+      "Liability + treatment",
+      "account_id; retained / refinance / consolidated",
+      "R01–R03 → locked coverage",
+      "Each card is assessed independently."
+    ],
+    [
+      "Document tick + held evidence",
+      "selected; evidence_link; review_status",
+      "DC-01.confirm → DC-02.create",
+      "Already held does not mean already accepted."
+    ],
+    [
+      "Client request + saved files",
+      "request_id; revision; submission_id; file_refs[]",
+      "DC-03.saved → DC-07.changed",
+      "Successful persistence, not dropdown change, starts reconciliation."
+    ],
+    [
+      "Broker review",
+      "decision; reason; reviewer; evidence_revision",
+      "DC-05.decision → DC-07.changed",
+      "Review the exact uploaded version."
+    ]
+  ],
+  "capabilityChecks": [
+    [
+      "Object workflows",
+      "HighLevel documents object-created/changed events, associated-record updates, If/Else and Wait. Candidate for request records; prove the exact associations and query behaviour.",
+      "https://help.gohighlevel.com/support/solutions/articles/155000004389-using-custom-objects-in-workflow-actions-and-triggers"
+    ],
+    [
+      "Associated record targeting",
+      "Published Find Object Record and associated-record workflow actions support scoped lookup/routing. They do not prove correct loan targeting or atomic issue guards in this build.",
+      "https://help.gohighlevel.com/support/solutions/articles/155000006701/"
+    ],
+    [
+      "Multiple file uploads",
+      "HighLevel documents multiple file links from form/survey uploads. Private request filtering, file history and validated persistence events still require a target-account proof.",
+      "https://ideas.gohighlevel.com/changelog/enhanced-multi-file-upload-functionality-in-formsurvey"
+    ],
+    [
+      "Contact tags",
+      "Add Contact Tag and Remove Contact Tag are published actions. The builder must connect them to the authoritative request aggregate, not the selected dropdown value.",
+      "https://help.gohighlevel.com/support/solutions/folders/155000001361"
+    ]
+  ],
+  "schemaFields": [
+    [
+      "Request set",
+      "loan_id, revision, rule_version, owner_id",
+      "Stable reference, integer, version, staff reference",
+      "Unique issue key = loan_id + revision; not a contact email."
+    ],
+    [
+      "Request set",
+      "collection_status, issued_at, paused_reason",
+      "Draft / Active / Paused / Complete / Closed; datetime; text",
+      "Completion requires accepted aggregate; Closed is not Accepted."
+    ],
+    [
+      "Document request",
+      "request_id, request_set_id, document_key",
+      "Stable IDs; retained catalogue key",
+      "Never encode account, loan or month count into the tag."
+    ],
+    [
+      "Document request",
+      "subject_id, subject_type, account_id, permitted_recipient_ids",
+      "Applicant / Entity / Property / Account; linked references",
+      "Shared evidence requires explicit links and recipient access, not duplicated person fields."
+    ],
+    [
+      "Document request",
+      "coverage_start, coverage_end, quantity, freshness_rule",
+      "Dates, count if relevant, rule reference",
+      "Issued requirement is versioned. No broker period override."
+    ],
+    [
+      "Document request",
+      "status, status_reason, evidence_revision",
+      "Requested / Partial / Awaiting review / Accepted / Replacement / Withdrawn; text; revision",
+      "Withdrawn needs an owner/reason and preserves history."
+    ],
+    [
+      "Submission",
+      "submission_id, request_id, file_refs, saved_at, ready_for_review",
+      "Deduplication key, request reference, file references, datetime, boolean",
+      "Keep multiple files and repeat-upload history. No file data in message merge fields."
+    ],
+    [
+      "Review",
+      "reviewer_id, submission_revision, decision, reason, reviewed_at",
+      "Staff reference, revision, Accept / Replace, text, datetime",
+      "Do not apply an old review to a newer upload."
+    ],
+    [
+      "Communication",
+      "request_set_id, recipient_id, message_id, attempt, last_sent_at, next_due_at",
+      "References, integer, datetimes",
+      "Unique message-event key; cap and recipient-level spacing survive replacement or amendment."
+    ]
+  ],
+  "tagOperations": {
+    "DC-01": [
+      {
+        "op": "NONE",
+        "tag": "Draft checklist",
+        "why": "Selecting or unticking a draft never changes contact tags or sends messages."
+      }
+    ],
+    "DC-02": [
+      {
+        "op": "RECOMPUTE",
+        "tag": "DC-07 is the sole tag writer",
+        "why": "After requests persist, invoke reconciliation before invitation."
+      },
+      {
+        "op": "ADD",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "DC-07 adds the type tag for one or more client-action requests."
+      },
+      {
+        "op": "ADD",
+        "tag": "fos-docs-action-needed",
+        "why": "At least one request needs client action."
+      }
+    ],
+    "DC-03": [
+      {
+        "op": "KEEP",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "Dropdown selection, failed save and partial evidence keep the request outstanding."
+      },
+      {
+        "op": "RECOMPUTE",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "Saved and ready for review: DC-07 removes only if no other request of this type needs action."
+      },
+      {
+        "op": "ADD",
+        "tag": "fos-docs-review-needed",
+        "why": "One or more committed receipts await broker review."
+      }
+    ],
+    "DC-04": [
+      {
+        "op": "NONE",
+        "tag": "Read current request state",
+        "why": "Tags do not store a loan’s outstanding list. Never send directly from a stale tag trigger."
+      }
+    ],
+    "DC-05": [
+      {
+        "op": "RECOMPUTE",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "Acceptance or replacement changes request state, then DC-07 updates summaries."
+      },
+      {
+        "op": "ADD",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "On replacement, only when the affected request requires client action again."
+      }
+    ],
+    "DC-06": [
+      {
+        "op": "RECOMPUTE",
+        "tag": "fos-docs-paused",
+        "why": "At least one relevant request set is paused. The tag alone must not suppress another loan."
+      },
+      {
+        "op": "KEEP",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "Pausing stops sends; it does not erase outstanding evidence."
+      }
+    ],
+    "DC-07": [
+      {
+        "op": "ADD",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "Add if an actionable request exists and the tag is absent."
+      },
+      {
+        "op": "KEEP",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "Retain while any applicable account or loan still needs this document."
+      },
+      {
+        "op": "REMOVE",
+        "tag": "fos-doc-needed-<document-key>",
+        "why": "Only after committed state and a fresh query find no remaining client-action request."
+      },
+      {
+        "op": "RECOMPUTE",
+        "tag": "fos-docs-action-needed · fos-docs-review-needed · fos-docs-paused",
+        "why": "Derive each summary independently; action and review can coexist."
+      }
+    ]
+  },
+  "messages": [
+    {
+      "id": "M01",
+      "title": "Initial document request",
+      "step": "DC-02.invite",
+      "when": "After confirmed requests persist; once per issued revision",
+      "channel": "Email",
+      "subject": "Your document checklist",
+      "body": "Hi [First Name],\n\nHere are the documents we need for [Loan Purpose]:\n\n[Outstanding Items]\n\nUpload your documents here: [Secure Upload Link]\n\nChoose the matching item in the upload list and follow its instructions. You can send what you have now and return for the rest. Please use the upload link for documents rather than email attachments.\n\nIf an item is unclear or difficult to obtain, reply without attaching documents or call [Broker Phone].\n\nThanks,\n[Broker Name]\n[Broker Phone]\n[Credit Licence Details]",
+      "guard": "Use only the authorised recipient’s current list. Validate private link and every required placeholder. Do not promise all file formats are accepted."
+    },
+    {
+      "id": "M02",
+      "title": "First outstanding reminder",
+      "step": "DC-04.send",
+      "when": "Draft: 3 business days after invitation, if still actionable",
+      "channel": "Email",
+      "subject": "Documents still needed for your application",
+      "body": "Hi [First Name],\n\nThese items are still waiting to be uploaded:\n\n[Outstanding Items]\n\nYou can add them here: [Secure Upload Link]\n\nItems already received for review are not included in this list. If you need help finding a document, reply without attachments or call [Broker Phone].\n\nThanks,\n[Broker Name]\n[Broker Phone]\n[Credit Licence Details]",
+      "guard": "Fresh list at send time. No message for an empty list, paused case, recent reply or prohibited channel."
+    },
+    {
+      "id": "M03",
+      "title": "One gentle check-in",
+      "step": "DC-04.send",
+      "when": "Draft: 4 business days after M02; SMS only if allowed",
+      "channel": "SMS",
+      "body": "Hi [First Name], it is [Broker Name]. Your remaining document checklist is here: [Secure Upload Link]. Need help finding an item? Call [Broker Phone]. Reply STOP to stop texts.",
+      "guard": "Use email alternative M02 if SMS is unavailable and permitted. Never send both channels for this attempt. Check expanded length and sender identity."
+    },
+    {
+      "id": "M04",
+      "title": "Hand back to the broker",
+      "step": "DC-04.hold",
+      "when": "Draft: 5 business days after the second reminder, if still outstanding",
+      "channel": "Internal task",
+      "body": "Document follow-up has reached the proposed two-reminder cap. Review the current checklist, recent replies and any sensitive circumstances. Contact the client personally, pause or close the case. Do not automatically restart the sequence.",
+      "guard": "Assign an actual owner. Reopening an item does not reset the recipient contact budget."
+    },
+    {
+      "id": "M05",
+      "title": "Receipt acknowledgement",
+      "step": "DC-03.received",
+      "when": "After saved ready-for-review submission; deduplicate by submission",
+      "channel": "Email",
+      "subject": "Your upload has been received",
+      "body": "Hi [First Name],\n\nWe have received this upload:\n\n[Received Items]\n\nYour broker will review it and let you know if anything needs to be replaced. Your checklist shows any other items still waiting to be uploaded: [Secure Upload Link]\n\nThanks,\n[Broker Name]\n[Broker Phone]\n[Credit Licence Details]",
+      "guard": "Receipt is not acceptance. Never say the whole pack is complete after one file. Combine rapid uploads into one acknowledgement where feasible."
+    },
+    {
+      "id": "M06",
+      "title": "Specific replacement request",
+      "step": "DC-05.replace",
+      "when": "After the broker commits a replacement decision",
+      "channel": "Email",
+      "subject": "A replacement document is needed",
+      "body": "Hi [First Name],\n\nPlease open your checklist for the item that needs replacing and the broker’s instructions:\n\n[Secure Upload Link]\n\nYour other documents keep their current status. If you need help with the request, reply without attachments or call [Broker Phone].\n\nThanks,\n[Broker Name]\n[Broker Phone]\n[Credit Licence Details]",
+      "guard": "Show the exact request and neutral reason inside the private checklist. Avoid sensitive account details in messages. Coordinate with the next reminder."
+    },
+    {
+      "id": "M07",
+      "title": "Selected pack accepted",
+      "step": "DC-05.complete",
+      "when": "After every active selected request is accepted; once per revision",
+      "channel": "Email",
+      "subject": "Your document checklist is complete",
+      "body": "Hi [First Name],\n\nYour broker has reviewed and accepted the documents on this checklist. There is nothing further to upload for this set of requests.\n\nYour broker will contact you about the next step. This confirms document collection only; it is not a loan approval.\n\nThanks,\n[Broker Name]\n[Broker Phone]\n[Credit Licence Details]",
+      "guard": "Only after the accepted aggregate is true. Additional requirements later create a reviewed amendment, not a false original completion."
+    }
+  ],
+  "placeholders": [
+    [
+      "[First Name]",
+      "Recipient first name",
+      "Template registry maps provisionally to {{contact.first_name}}; verify in target GHL."
+    ],
+    [
+      "[Broker Name]",
+      "Assigned broker display name",
+      "Registry {{user.name}} is proposed. Verify assignment is the correct broker."
+    ],
+    [
+      "[Broker Phone]",
+      "Approved operational contact",
+      "Verify exact CRM merge field and populated value."
+    ],
+    [
+      "[Credit Licence Details]",
+      "Approved sender footer",
+      "Required operational footer; no branding setup product. Mapping not yet verified."
+    ],
+    [
+      "[Loan Purpose]",
+      "Recipient-safe case description",
+      "Mapped from the confirmed request set; never another opportunity."
+    ],
+    [
+      "[Outstanding Items]",
+      "Fresh recipient + loan-scoped actionable list",
+      "Composer output, not a static contact tag or old invitation list. Include label, subject and locked period."
+    ],
+    [
+      "[Secure Upload Link]",
+      "Private link for this recipient and case",
+      "Existing token reused; override broad template meaning with verified request-specific scope."
+    ],
+    [
+      "[Received Items]",
+      "Items in this committed submission",
+      "New local token. No assumption that the full pack has arrived."
+    ]
+  ],
+  "acceptanceCases": [
+    "PAYG purchase before contract: request income / selected ID; do not chase an unavailable contract.",
+    "Refinance: home loan 6 months, consolidated card A 6 months, retained card B 3 months; all locked.",
+    "Joint applicants and trust: separate personal requests, link shared entity evidence explicitly.",
+    "Dropdown selection only, failed save and replayed upload: no premature removal or duplicate task.",
+    "Partial A, then ready A, then ready B: retain shared card tag until B is also received.",
+    "A different loan still needs card statements: keep the shared contact tag even when this loan is complete.",
+    "Broker rejects A: preserve files, reopen A, restore needed state; B stays in its actual state.",
+    "Pause or close while waiting: suppress next send; resume never clears DND or resends invitation.",
+    "Add or withdraw a requirement after issue: preserve accepted evidence and revision history.",
+    "Already-held evidence: confirm subject, period and acceptance before excluding from client chase.",
+    "Client replies / reaches reminder cap: pause automated follow-up and create an owned task.",
+    "Copy snapshot to clean test account: prove fields, private links, sender configuration and placeholders."
+  ]
+}

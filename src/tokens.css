@@ -1,0 +1,224 @@
+/* ============================================================================
+   FINANCE OS — TOKEN SYSTEM
+   Three layers:  primitive (raw brand values)  →  semantic (intent)
+   →  component (component-scoped, references semantic).
+
+   SINGLE THEME — Light / Clarity (pure white, Atlas Blue accent), matched to the
+   production site financeos.au. BLUE-PRIMARY: the sole brand accent is Atlas Blue
+   (#33488F) and it owns ALL typographic highlight (headings, emphasised words).
+   Semantic state hues (success green, danger red) remain as functional signals.
+   AMBER is admitted ONLY as a functional STATUS signal — attention/pending badges
+   and star ratings — never as brand colour and never applied to type. There is no
+   gold and no orange. The semantic layer lives on :root; components compose from --c-* only.
+
+   Buttons: primary = solid blue fill (white label), secondary = blue outline.
+   Focus rings are NEUTRAL (never the accent colour).
+   Foundations: pure white canvas · 8px-max squircles · no glassmorphism.
+   ============================================================================ */
+
+/* ----------------------------------------------------------------------------
+   LAYER 1 — PRIMITIVES (raw brand ramps)
+   ---------------------------------------------------------------------------- */
+:root {
+  /* Atlas Blue — THE brand accent. 6-shade ramp (50 = light wash → 500 = deep). */
+  --p-blue-50: #eef2f9;
+  --p-blue-100: #adb6d2;
+  --p-blue-200: #8591bc;
+  --p-blue-300: #5c6da5;
+  --p-blue-400: #33488f; /* base */
+  --p-blue-500: #1f2b56;
+
+  /* Neutral — type, hairlines, surfaces (white → near-black) */
+  --p-neutral-100: #f4f5f7;
+  --p-neutral-200: #c9cdd6;
+  --p-neutral-300: #8b93a3;
+  --p-neutral-400: #3a3f4b;
+  --p-neutral-500: #0f1115;
+  --p-white: #ffffff;
+  --p-black: #000000;
+
+  /* State hues (functional signals only — not brand, not shown as ramps) */
+  --p-green-500: #138a5e;
+  --p-green-700: #0e6b49;
+  --p-red-500: #d5292f;
+  --p-red-700: #a81e23;
+
+  /* Amber — functional STATUS signal only (attention/pending states, star ratings).
+     NOT a brand accent and NEVER applied to type/headings. Text shade darkened to
+     clear WCAG AA on white (#8A5A0F = 5.9:1). See the "amber = status only" rule. */
+  --p-amber-300: #e8b866;
+  --p-amber-400: #d99a3e; /* base — fills, dots, stars */
+  --p-amber-500: #7a4e0a; /* AA text, incl. on amber-soft fills */
+}
+
+/* ----------------------------------------------------------------------------
+   LAYER 2 — SEMANTIC  ·  the single theme (Light / Clarity)
+   Pure white + #F6F7F9 rhythm. Accent = Atlas Blue.
+   ---------------------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+
+  --c-canvas: #ffffff; /* pure white */
+  --c-canvas-muted: #f6f7f9; /* the 50/off-white rhythm ground */
+  --c-surface: #ffffff;
+  --c-elevated: #ffffff;
+  --c-inset: #f6f7f9;
+  --c-selected: #edeff2; /* nav / selected-row lift (clean cool grey) */
+  --c-overlay: rgba(16, 19, 27, 0.45);
+
+  --c-fg: #14161b;
+  --c-fg-muted: #474e5c;
+  --c-fg-subtle: #646c7d;
+  --c-fg-onaccent: #ffffff;
+
+  --c-border: #e6e8ec;
+  --c-border-strong: #cdd2da;
+  --c-border-subtle: rgba(16, 19, 27, 0.08);
+
+  --c-accent: var(--p-blue-400); /* #33488F Atlas Blue */
+  --c-accent-hover: var(--p-blue-300);
+  --c-accent-press: var(--p-blue-500);
+  --c-accent-soft: rgba(51, 72, 143, 0.12);
+  --c-accent-text: var(--p-blue-400); /* 8.5:1 on white */
+  --c-accent-fg: #ffffff; /* white label on blue fill */
+  --c-highlight: var(--p-blue-400); /* headings blue on white */
+
+  --c-inspect: var(--p-blue-400); /* inspector FAB — Atlas Blue */
+  --c-inspect-fg: #ffffff; /* white glyph on the blue FAB */
+
+  --c-brand: var(--p-blue-400);
+  --c-brand-soft: rgba(51, 72, 143, 0.1);
+
+  --c-success: var(--p-green-700);
+  --c-success-soft: rgba(19, 138, 94, 0.12);
+  /* amber = functional STATUS signal (attention/pending badges + star ratings). Status-only, never on type. */
+  --c-amber: var(--p-amber-400);
+  --c-amber-text: var(--p-amber-500); /* AA on white (5.9:1) */
+  --c-amber-soft: rgba(217, 154, 62, 0.16);
+  --c-warning: var(
+    --c-amber-text
+  ); /* attention/pending now reads amber (reversed from the old neutral tint) */
+  --c-warning-soft: var(--c-amber-soft);
+  --c-danger: var(--p-red-700);
+  --c-danger-soft: rgba(213, 41, 47, 0.1);
+  --c-info: var(
+    --p-blue-300
+  ); /* lighter blue so 'info' stays legible vs the #33488F accent */
+  --c-info-soft: rgba(92, 109, 165, 0.14);
+
+  --c-ring: var(--c-fg-subtle); /* NEUTRAL focus ring */
+  --c-glow-accent: rgba(51, 72, 143, 0.28);
+  --c-gradient-accent: linear-gradient(
+    135deg,
+    var(--p-blue-300) 0%,
+    var(--p-blue-400) 100%
+  );
+  --c-img-outline: rgba(
+    16,
+    19,
+    27,
+    0.1
+  ); /* neutral media/image hairline — inset, never tinted */
+
+  /* Scroll-rhythm plane (mirrors brand.financeos.au): the fixed .bg-stage cross-fades
+     white ↔ this soft blue-grey as marker sections reach the viewport centre. COLOUR ONLY —
+     the blue grid paper stays retired (do not reintroduce). */
+  --c-warm: #e8edf7;
+
+  /* grey-blue washes — used inside components (section-folder tabs, feature tiles). */
+  --wash-mist: linear-gradient(180deg, #fbfcfe 0%, #f2f5fb 100%);
+  --wash-haze: linear-gradient(180deg, #f6f8fc 0%, #ecf1f9 100%);
+  --wash-tint:
+    radial-gradient(
+      120% 130% at 100% 0%,
+      rgba(51, 72, 143, 0.08),
+      transparent 55%
+    ),
+    linear-gradient(180deg, #f4f7fc 0%, #ebf0f8 100%);
+  --wash-deep: linear-gradient(180deg, #f2f6fc 0%, #e8eef8 100%);
+
+  /* elevation — calm LAYERED lift (not one flat blur); pairs with the hairline border. */
+  --shadow-sm:
+    0 1px 2px -1px rgba(16, 19, 27, 0.06), 0 2px 6px -2px rgba(16, 19, 27, 0.05);
+  --shadow-md:
+    0 4px 10px -4px rgba(16, 19, 27, 0.09),
+    0 12px 24px -10px rgba(22, 32, 60, 0.1);
+  --shadow-lg:
+    0 10px 22px -12px rgba(22, 32, 60, 0.13),
+    0 24px 44px -24px rgba(22, 32, 60, 0.16);
+  --shadow-glow: 0 8px 30px -10px var(--c-glow-accent);
+}
+
+/* ----------------------------------------------------------------------------
+   LAYER 3 — COMPONENT TOKENS (reference semantic only)
+   ---------------------------------------------------------------------------- */
+:root {
+  /* radius — 2/4/6/8 only. No pills, no full rounds on UI boxes. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* motion — gentle */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in: cubic-bezier(
+    0.55,
+    0,
+    1,
+    0.45
+  ); /* exits — quicker than the entrance */
+  --ease-confirm: var(
+    --ease-spring
+  ); /* the ONE sanctioned overshoot: ticks, seals, state flips */
+  --dur-fast: 150ms; /* hover · press · colour · focus */
+  --dur-base: 250ms; /* small state change · exit */
+  --dur-slow: 400ms; /* the default entrance */
+  --dur-slower: 600ms; /* headline mask reveal · large surfaces */
+  --dur-draw: 1200ms; /* count-ups · chart lines */
+  --rise-sm: 8px; /* entrance travel */
+  --rise: 12px;
+  --rise-lg: 24px;
+  --stagger-tight: 40ms;
+  --stagger: 70ms; /* cap the total stagger at 500ms */
+
+  /* button */
+  --btn-fg: var(--c-accent-fg);
+  --btn-bg: var(--c-accent);
+  --btn-bg-hover: var(--c-accent-hover);
+  --btn-radius: var(--radius-lg);
+
+  /* card */
+  --card-bg: var(--c-surface);
+  --card-border: var(--c-border);
+  --card-radius: var(--radius-lg);
+  --card-shadow: var(--shadow-md);
+
+  /* input */
+  --input-bg: var(--c-surface);
+  --input-border: var(--c-border-strong);
+  --input-fg: var(--c-fg);
+  --input-placeholder: var(--c-fg-subtle);
+  --input-radius: var(--radius-md);
+
+  /* focus ring */
+  --ring-width: 2px;
+  --ring-offset: 2px;
+
+  /* fixed component surfaces (used by the "dark/inverse" and danger variants) */
+  --c-inverse-bg: #141414; /* dark "luxury" surface for the inverse variant */
+  --c-inverse-fg: #f5f5f5;
+  --c-danger-solid: #b42318; /* solid danger fill, AA with white */
+  --c-on-danger: #ffffff;
+
+  /* ── Fixed brand BANNER surfaces (the Banners showcase set) — black · blue · white ── */
+  --banner-black-bg: #000000;
+  --banner-black-fg: #f4f4f5;
+  --banner-black-bd: #2a2a2a;
+  --banner-blue-bg: linear-gradient(135deg, #5c6da5 0%, #33488f 100%);
+  --banner-blue-fg: #ffffff;
+  --banner-white-bg: #ffffff;
+  --banner-white-fg: #14161b;
+  --banner-white-bd: #e6e8ec;
+}

@@ -1,29 +1,781 @@
-import React, {useState,useEffect,useRef,useCallback,useMemo} from 'react';
-import {createRoot} from 'react-dom/client';
-import {ReactFlow,ReactFlowProvider,Background,BackgroundVariant,Controls,MiniMap,Handle,Position,MarkerType,useNodesState,useEdgesState,useReactFlow,type Node,type NodeProps,type Edge} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import {WORKFLOWS,overview,rules,fields,gates,type Step,type Workflow} from './model';
-import './style.css';
-import {IntakeForm} from './IntakeForm';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
+import { createRoot } from "react-dom/client";
+import {
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  BackgroundVariant,
+  Controls,
+  MiniMap,
+  Handle,
+  Position,
+  MarkerType,
+  useReactFlow,
+  useNodesState,
+  type Node,
+  type NodeProps,
+  type Edge,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { WORKFLOWS, overview, type Step, type Workflow } from "./model";
+import { tagOperations, stepTagOperations, messages } from "./buildSpec";
+import { Panels, type PanelName } from "./panels";
+import { Badge, Icon, TagChips } from "./ui";
+import logo from "./assets/logo.png";
+import "./style.css";
 
-declare global {interface Window {openai?: {widgetState?:{privateContent?:{screen?:string;flow?:string}};setWidgetState?:(v:unknown)=>Promise<void>}}}
-const glyph:Record<string,string>={trigger:'↳',action:'▤',decision:'◇',human:'◎',stop:'✓'};
-function Badge({text}:{text:string}){return <span className={'dc-badge '+text.toLowerCase().replaceAll(' ','-')}>{text}</span>}
-function StepDetail({step,close}:{step:Step;close:()=>void}){return <aside className="dc-detail" aria-label="Selected step build details"><div className="dc-detail-top"><span className="dc-overline">Builder detail</span><button className="dc-button" onClick={close} aria-label="Close step details">×</button></div><Badge text={step.evidence}/><h3>{step.title}</h3>{[['Trigger / context',step.trigger],['Action',step.action],['State',step.state],['Tag effect',step.tags],['Guard / stop condition',step.guard],['GHL implementation',step.ghl]].filter(x=>x[1]).map(([k,v])=><section key={k}><h4>{k}</h4><p className={k==='Tag effect'?'dc-mono':''}>{v}</p></section>)}</aside>}
-function FlowNode({data,selected}:NodeProps){const d=data as Step & Record<string,unknown>;return <div className={'dc-node dc-kind-'+d.kind+(selected?' dc-selected':'')}><Handle type="target" position={Position.Left} id="left"/><Handle type="target" position={Position.Top} id="top"/><Handle type="target" position={Position.Bottom} id="target-bottom"/><Handle type="source" position={Position.Top} id="source-top"/><div className="dc-node-top"><span className="dc-node-type">{glyph[d.kind]} {d.kind==='human'?'Human step':d.kind}</span><Badge text={d.evidence}/></div><strong>{d.title}</strong><p>{d.summary}</p><Handle type="source" position={Position.Right} id="right"/><Handle type="source" position={Position.Bottom} id="bottom"/></div>}
-const nodeTypes={step:FlowNode};
-function graph(w:Workflow){return {nodes:w.steps.map(s=>({id:s.id,type:'step',position:{x:s.x,y:s.y},data:{...s},style:{width:290}} as Node)),edges:w.links.map((l,i)=>{const a=w.steps.find(n=>n.id===l.from)!,b=w.steps.find(n=>n.id===l.to)!;const vertical=Math.abs(a.x-b.x)<30;return {id:`${w.id}-${i}`,source:l.from,target:l.to,type:'smoothstep',sourceHandle:l.loop&&b.x<a.x?(a.y===b.y?'source-top':'bottom'):vertical?(b.y>a.y?'bottom':'source-top'):'right',targetHandle:l.loop&&b.x<a.x?(a.y===b.y?'top':'target-bottom'):vertical?(b.y>a.y?'top':'target-bottom'):'left',label:l.label,style:{stroke:l.loop?'#8893b8':'#7d8ab0',strokeWidth:1.5,strokeDasharray:l.loop?'6 4':undefined},labelStyle:{fontSize:12,fill:'#33488f',fontWeight:500},labelBgStyle:{fill:'#fff',fillOpacity:1},labelBgPadding:[6,4],markerEnd:{type:MarkerType.ArrowClosed,color:'#7d8ab0',width:18,height:18},pathOptions:{offset:l.loop?50:28}} as Edge})}}
-function Canvas({workflow,onFlow}:{workflow:Workflow;onFlow:(id:string)=>void}){const g=useMemo(()=>graph(workflow),[workflow]);const [nodes,setNodes,onNodesChange]=useNodesState(g.nodes);const [edges,setEdges,onEdgesChange]=useEdgesState(g.edges);const [selected,setSelected]=useState<Step|null>(null);const {fitView,zoomTo,getZoom}=useReactFlow();
-useEffect(()=>{setNodes(g.nodes);setEdges(g.edges);setSelected(null);const timer=setTimeout(()=>fitView({padding:.12,duration:0}),80);return ()=>clearTimeout(timer)},[g,setNodes,setEdges,fitView]);
-return <><div className="dc-mapbar"><div><span className="dc-overline">{workflow.id==='overview'?'Complete journey':workflow.id+' · '+workflow.folder}</span><h3>{workflow.title}</h3></div><button className="dc-button" onClick={()=>fitView({padding:.12,duration:0})}>Fit map</button><button className="dc-button" onClick={()=>zoomTo(Math.max(1,getZoom()),{duration:0})}>Read at 100%</button></div><div className="dc-canvas-layout"><div className="dc-canvas"><ReactFlow nodes={nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onNodeClick={(_,n)=>{if(workflow.id==='overview'&&WORKFLOWS.some(w=>w.id===n.id))onFlow(n.id);else setSelected(workflow.steps.find(s=>s.id===n.id)??null)}} nodeTypes={nodeTypes} fitView minZoom={.2} maxZoom={1.8} nodesConnectable={false} deleteKeyCode={null} onPaneClick={()=>setSelected(null)} proOptions={{hideAttribution:true}} aria-label="Document collection workflow canvas"><Background variant={BackgroundVariant.Dots} gap={24} size={1.1} color="#d6dff1"/><Controls showInteractive={false}/><MiniMap pannable zoomable nodeColor="#c2cdea" maskColor="rgba(243,246,252,.7)"/><div className="dc-map-hint">Drag to pan · scroll to zoom · click a step</div></ReactFlow></div>{selected&&<StepDetail step={selected} close={()=>setSelected(null)}/>}</div><div className="dc-mapnote">{workflow.note}</div></>}
-function Preview({openFlow}:{openFlow:(id:string)=>void}){const [folder,setFolder]=useState<string|null>(null);const [opened,setOpened]=useState<string|null>(null);const folders=[...new Set(WORKFLOWS.map(w=>w.folder))];return <div className="dc-preview"><div className="dc-preview-head"><span className="dc-mono">{folder??'Automation map'} · {folder?WORKFLOWS.filter(w=>w.folder===folder).length+' workflows':'6 folders · 7 workflows'}</span>{folder&&<button className="dc-button" onClick={()=>{setFolder(null);setOpened(null)}}>← All folders</button>}</div>{!folder?<><div className="dc-journey" aria-label="Collection journey">{['Broker confirms','Requests issued','Client uploads','Broker reviews','Pack complete'].map((t,i)=><React.Fragment key={t}><span>{t}</span>{i<4&&<b aria-hidden="true">→</b>}</React.Fragment>)}</div><div className="dc-folders">{folders.map((f,i)=>{const ws=WORKFLOWS.filter(w=>w.folder===f);return <button className="dc-folder" key={f} onClick={()=>setFolder(f)}><span className="dc-folder-symbol" aria-hidden="true">▱</span><span className="dc-folder-number">{String(i+1).padStart(2,'0')}</span><strong>{f.slice(5)}</strong><span className="dc-folder-sub">{ws.map(w=>w.title).join(' · ')}</span><span className="dc-folder-bottom"><Badge text="New proposed"/><span>{ws.length} {ws.length===1?'workflow':'workflows'} →</span></span></button>})}</div><div className="dc-baseline"><span>Locked collection standards</span><b>Home-loan refinance · 6 months</b><b>Consolidated card · 6 months</b><b>Retained card · 3 months</b></div></>:<div className="dc-workflows">{WORKFLOWS.filter(w=>w.folder===folder).map(w=><div className="dc-workflow" key={w.id}><button className="dc-workflow-head" onClick={()=>setOpened(opened===w.id?null:w.id)} aria-expanded={opened===w.id}><span className="dc-mono">{w.id}</span><strong>{w.title}</strong><Badge text="New proposed"/><span>{opened===w.id?'−':'+'}</span></button>{opened===w.id&&<div className="dc-workflow-body"><p>{w.note}</p><button className="dc-button dc-primary" onClick={()=>openFlow(w.id)}>Open connected workflow →</button><ol className="dc-step-list">{w.steps.map(s=><li key={s.id}><details><summary><span>{s.title}</span><Badge text={s.evidence}/></summary><p>{s.action}</p><p><b>Guard:</b> {s.guard}</p><p><b>GHL:</b> {s.ghl}</p>{s.tags&&<p className="dc-mono">{s.tags}</p>}</details></li>)}</ol></div>}</div>)}</div>}</div>}
-function RuleDemo(){const [t,setT]=useState('Retained');const [a,setA]=useState(false);const [b,setB]=useState(false);return <div className="dc-demo"><h3>Two cards. One shared tag.</h3><p className="dc-caption">Illustrative state model · “received” pauses chasing pending review, as proposed.</p><div className="dc-demo-row"><label>Card A treatment<select value={t} onChange={e=>setT(e.target.value)}><option>Retained</option><option>Consolidated</option></select></label><span className="dc-locked">{t==='Retained'?'3':'6'} months · locked</span><label className="dc-check"><input type="checkbox" checked={a} onChange={e=>setA(e.target.checked)}/> Card A received</label><label className="dc-check"><input type="checkbox" checked={b} onChange={e=>setB(e.target.checked)}/> Card B received · retained, 3 months</label></div><div className="dc-demo-result" aria-live="polite"><code>fos-doc-needed-credit-card-statements</code><Badge text={a&&b?'Removed':'Retained'}/><p>{a&&b?'Both received: remove the needed tag and send evidence to broker review.':'At least one card still needs action: keep the tag and chase only that request.'}</p></div></div>}
-function Rules(){return <div className="dc-rules"><div className="dc-rule-intro"><h3>The build contract</h3><p>Fixed scenario periods, request-level state and one tag writer. These are proposed workflows; the three statement-period standards are founder-confirmed.</p></div><RuleDemo/><h3>Scenario → document → fixed period</h3><div className="dc-tablewrap"><table><thead><tr><th>Scenario</th><th>Document</th><th>Collection standard</th><th>Decision</th></tr></thead><tbody>{rules.map(r=><tr key={r[0]}>{r.map((v,i)=><td key={i}>{i===3?<Badge text={v}/>:v}</td>)}</tr>)}</tbody></table></div><h3>Where the information belongs</h3><div className="dc-tablewrap"><table><thead><tr><th>Record</th><th>Fields</th><th>Purpose</th></tr></thead><tbody>{fields.map(r=><tr key={r[0]}>{r.map(v=><td key={v}>{v}</td>)}</tr>)}</tbody></table></div><h3>State changes</h3><div className="dc-state-line">Requested → Partially received → Received awaiting review → Accepted<br/>Broker rejection → Replacement requested → Received awaiting review</div><h3>Resolve before activation</h3><div className="dc-gates">{gates.map(([h,p])=><div key={h}><Badge text="Feasibility"/><h4>{h}</h4><p>{p}</p></div>)}</div><p className="dc-caption">Full retained catalogue: 70 document types. This view shows the main scenario rules; it is not a request to collect every document.</p></div>}
-function App(){const initial=window.openai?.widgetState?.privateContent;const [screen,setScreen]=useState(initial?.screen==='board'?'board':'preview');const [flow,setFlow]=useState(WORKFLOWS.some(w=>w.id===initial?.flow)?initial!.flow!:'overview');const [expanded,setExpanded]=useState(false);const rootRef=useRef<HTMLDivElement>(null);const fullButton=useRef<HTMLButtonElement>(null);const [notice,setNotice]=useState('');const workflow=WORKFLOWS.find(w=>w.id===flow)??overview;
-const save=(s:string,f:string)=>window.openai?.setWidgetState?.({modelContent:{view:s,workflow:f},privateContent:{screen:s,flow:f}}).catch(()=>{});
-const navigate=(s:string,f=flow)=>{setScreen(s);setFlow(f);save(s,f)};
-const close=useCallback(()=>{setExpanded(false);setNotice('');setTimeout(()=>fullButton.current?.focus(),0)},[]);
-useEffect(()=>{if(!expanded)return; const old=document.body.style.overflow;document.body.style.overflow='hidden';const holder=document.getElementById('fos-document-board')!;holder.style.minHeight='800px';fullButton.current?.focus();const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();close()}if(e.key==='Tab'){const focusable=Array.from(rootRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]),select,input,[tabindex="0"]')??[]).filter(el=>el.offsetParent!==null);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}};document.addEventListener('keydown',key);return ()=>{document.body.style.overflow=old;holder.style.minHeight='';document.removeEventListener('keydown',key)}},[expanded,close]);
-const expand=()=>{navigate('board');setExpanded(true)};
-return <div ref={rootRef} role={expanded?"dialog":undefined} aria-modal={expanded?true:undefined} aria-label={expanded?"Full-screen workflow board":undefined} className={'dc-app'+(expanded?' dc-expanded':'')}><header className="dc-header"><div className="dc-brand"><span className="dc-brand-mark">F<span>OS</span></span><span>FINANCE OS <span className="dc-muted">/ BUILDER BLUEPRINT</span></span></div><Badge text="New proposed"/></header><div className="dc-title"><div><span className="dc-overline">3 Application · Document collection</span><h1>The right documents.<br/><span>The right follow-up.</span></h1><p>Broker-led requests. Client uploads. A checklist that changes the chase.</p></div><div className="dc-title-meta"><span>DESIGN REVIEW · 19 NOV 2026</span><span>GHL build specification</span><span>Not activated in a CRM</span></div></div><section className="dc-shell"><div className="dc-shell-bar"><span className="dc-shell-label">ϟ GoHighLevel · Workflows</span><span className="dc-spacer"/><button ref={fullButton} className="dc-button" onClick={expanded?close:expand}>{expanded?'× Exit full screen':'⛶ Full screen'}</button></div><nav className="dc-tabs" aria-label="Blueprint views">{[['preview','Preview'],['intake','Broker intake form'],['board','Workflow board'],['rules','Rules & build details']].map(([id,t])=><button key={id} onClick={()=>navigate(id)} aria-pressed={screen===id}>{t}</button>)}</nav>{notice&&<div className="dc-notice" role="status">{notice}</div>}{screen==='preview'?<Preview openFlow={id=>navigate('board',id)}/>:screen==='intake'?<IntakeForm openFlow={id=>navigate('board',id)}/>:screen==='rules'?<Rules/>:<><div className="dc-board-nav">{flow==='DC-01'&&<button className="dc-button dc-primary" onClick={()=>navigate('intake')}>Open broker intake form</button>}<button className="dc-button" onClick={()=>navigate('board','overview')}>← Whole journey</button><label>Workflow<select aria-label="Choose workflow" value={flow} onChange={e=>navigate('board',e.target.value)}><option value="overview">Whole journey</option>{WORKFLOWS.map(w=><option key={w.id} value={w.id}>{w.id} · {w.title}</option>)}</select></label></div><ReactFlowProvider><Canvas workflow={workflow} onFlow={id=>navigate('board',id)}/></ReactFlowProvider></>}</section><footer className="dc-footer"><span>Confirmed = founder decision · Proposed = review before build · Feasibility = prove in GHL</span><span>Source pattern: Finovate “New proposed” board</span></footer></div>}
-createRoot(document.getElementById('fos-document-board')!).render(<App/>);
+const TagsContext = createContext(false);
+type Selected = { flow: string; step?: string };
+const stageNames = [
+  "Broker intake",
+  "Issue requests",
+  "Client uploads",
+  "Follow-up",
+  "Broker review",
+  "Case controls",
+  "Tag reconciliation",
+];
+const offsets = WORKFLOWS.map((_, i) => ({
+  x: (i % 2) * 2260,
+  y: 980 + Math.floor(i / 2) * 860,
+}));
+const fullId = (flow: string, step: string) => flow + "." + step;
+function FlowNode({ data, selected }: NodeProps) {
+  const d = data as unknown as Step & {
+    flow: string;
+    reference: string;
+    overview?: boolean;
+  };
+  const showTags = useContext(TagsContext);
+  const ops = d.overview
+    ? (tagOperations[d.id] ?? [])
+    : stepTagOperations(d.flow, d.id);
+  return (
+    <div
+      className={"dc-node dc-kind-" + d.kind + (selected ? " dc-selected" : "")}
+    >
+      <Handle type="target" position={Position.Left} id="left" />
+      <Handle type="target" position={Position.Right} id="right-target" />
+      <Handle type="target" position={Position.Top} id="top" />
+      <Handle type="target" position={Position.Bottom} id="target-bottom" />
+      <Handle type="source" position={Position.Top} id="source-top" />
+      <div className="dc-node-top">
+        <span className="dc-mono">{d.reference}</span>
+        <Icon
+          name={
+            d.kind === "decision"
+              ? "branch"
+              : d.kind === "human"
+                ? "person"
+                : d.kind === "stop"
+                  ? "check"
+                  : "flow"
+          }
+        />
+      </div>
+      <strong>{d.title}</strong>
+      <p>{d.summary}</p>
+      <div className="dc-node-bottom">
+        {showTags ? (
+          <div className="dc-node-tags">
+            {ops.slice(0, 2).map((o, i) => (
+              <span key={i}>
+                <b>{o.op}</b> {o.tag}
+              </span>
+            ))}
+            {ops.length === 0 && <span>NONE · collection outcome</span>}
+          </div>
+        ) : (
+          <>
+            <Badge text={d.evidence} />
+            <span className="dc-node-kind">
+              {d.kind === "human"
+                ? "Broker / client"
+                : d.kind === "decision"
+                  ? "Condition"
+                  : d.kind === "stop"
+                    ? "Exit / handoff"
+                    : "Automation"}
+            </span>
+          </>
+        )}
+      </div>
+      <Handle type="source" position={Position.Right} id="right" />
+      <Handle type="source" position={Position.Bottom} id="bottom" />
+    </div>
+  );
+}
+function AreaNode({ data }: NodeProps) {
+  return (
+    <div className="dc-area-title">
+      <span>{String(data.number).padStart(2, "0")}</span>
+      <div>
+        <small>
+          {String(data.id)} · {String(data.role)}
+        </small>
+        <h2>{String(data.title)}</h2>
+        <p>{String(data.note)}</p>
+      </div>
+    </div>
+  );
+}
+const nodeTypes = { step: FlowNode, area: AreaNode };
+function createGraph() {
+  const nodes: Node[] = [];
+  const edges: Edge[] = [];
+  function add(w: Workflow, ox: number, oy: number, isOverview = false) {
+    w.steps.forEach((s, i) =>
+      nodes.push({
+        id: fullId(w.id, s.id),
+        type: "step",
+        position: { x: s.x + ox, y: s.y + oy },
+        data: {
+          ...s,
+          flow: w.id,
+          reference: isOverview
+            ? s.id === "done"
+              ? "OUTCOME"
+              : s.id
+            : w.id + "." + String(i + 1).padStart(2, "0"),
+          overview: isOverview,
+        },
+        style: { width: 320 },
+        ariaLabel: `${w.id}.${s.id}: ${s.title}`,
+      }),
+    );
+    w.links.forEach((l, i) => {
+      const a = w.steps.find((s) => s.id === l.from)!,
+        b = w.steps.find((s) => s.id === l.to)!;
+      const vertical = a.x === b.x;
+      const back = l.loop && b.x < a.x;
+      edges.push({
+        id: w.id + "-" + i,
+        source: fullId(w.id, l.from),
+        target: fullId(w.id, l.to),
+        type: "smoothstep",
+        sourceHandle:
+          isOverview && l.label === "Replacement"
+            ? "right"
+            : back
+              ? b.y > a.y
+                ? "bottom"
+                : "source-top"
+              : vertical
+                ? b.y > a.y
+                  ? "bottom"
+                  : "source-top"
+                : "right",
+        targetHandle:
+          isOverview && l.label === "Replacement"
+            ? "right-target"
+            : back
+              ? b.y > a.y
+                ? "right-target"
+                : "top"
+              : vertical
+                ? b.y > a.y
+                  ? "top"
+                  : "target-bottom"
+                : "left",
+        label:
+          isOverview && l.label === "Suppress / resume"
+            ? "Hold / resume"
+            : l.label,
+        style: {
+          stroke: "var(--c-border-strong)",
+          strokeWidth: 1.7,
+          strokeDasharray: l.loop ? "6 5" : undefined,
+        },
+        labelStyle: {
+          fontSize: 12,
+          fontWeight: 600,
+          fill: "var(--c-fg-muted)",
+        },
+        labelBgStyle: { fill: "var(--c-surface)" },
+        labelBgPadding: [7, 5],
+        markerEnd: { type: MarkerType.ArrowClosed, color: "#8591BC" },
+      });
+    });
+  }
+  const places: Record<string, [number, number]> = {
+    "DC-01": [0, 0],
+    "DC-02": [400, 0],
+    "DC-03": [800, 0],
+    "DC-05": [800, 280],
+    done: [800, 560],
+    "DC-06": [0, 280],
+    "DC-04": [400, 280],
+    "DC-07": [400, 560],
+  };
+  add(
+    {
+      ...overview,
+      links: overview.links.filter(
+        (l) => !["Upload link", "Receipt event"].includes(l.label ?? ""),
+      ),
+      steps: overview.steps.map((s) => ({
+        ...s,
+        x: places[s.id][0],
+        y: places[s.id][1],
+      })),
+    },
+    0,
+    0,
+    true,
+  );
+  WORKFLOWS.forEach((w, i) => {
+    const o = offsets[i];
+    nodes.push({
+      id: w.id + "-area",
+      type: "area",
+      position: { x: o.x, y: o.y - 100 },
+      data: {
+        id: w.id,
+        number: i + 1,
+        title: w.title,
+        note: w.sub,
+        role:
+          i === 0
+            ? "Broker"
+            : i === 2
+              ? "Client + automation"
+              : i === 4
+                ? "Broker review"
+                : "Automation",
+      },
+      selectable: false,
+      draggable: false,
+      focusable: false,
+      style: { width: 1900, height: 100 },
+    });
+    add(w, o.x, o.y);
+  });
+  const bridges = [
+    ["DC-01.confirm", "DC-02.confirmed", "Confirmed revision"],
+    ["DC-02.invite", "DC-03.open", "Private upload link"],
+    ["DC-02.invite", "DC-04.enrol", "One reminder sequence"],
+    ["DC-03.received", "DC-05.queue", "Awaiting review"],
+    ["DC-03.received", "DC-07.changed", "Committed receipt"],
+    ["DC-05.replace", "DC-03.open", "Replacement required"],
+    ["DC-05.accept", "DC-07.changed", "Review committed"],
+    ["DC-06.sync", "DC-07.changed", "Control changed"],
+  ];
+  bridges.forEach(([a, b, label], i) =>
+    edges.push({
+      id: "bridge-" + i,
+      source: a,
+      target: b,
+      sourceHandle: "bottom",
+      targetHandle: "top",
+      type: "smoothstep",
+      label,
+      style: { stroke: "#ADB6D2", strokeWidth: 1.5, strokeDasharray: "8 8" },
+      labelStyle: { fontSize: 12, fill: "#474E5C" },
+      labelBgStyle: { fill: "#fff" },
+      markerEnd: { type: MarkerType.ArrowClosed, color: "#ADB6D2" },
+    }),
+  );
+  return { nodes, edges };
+}
+function Inspector({
+  selected,
+  close,
+  onSelect,
+  onFocus,
+  onPanel,
+}: {
+  selected: Selected;
+  close: () => void;
+  onSelect: (s: Selected) => void;
+  onFocus: (id: string) => void;
+  onPanel: (p: PanelName) => void;
+}) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    heading.current?.focus();
+  }, [selected.flow, selected.step]);
+  const workflow = WORKFLOWS.find((w) => w.id === selected.flow);
+  const step = selected.step
+    ? workflow?.steps.find((s) => s.id === selected.step)
+    : null;
+  if (!workflow) return null;
+  const refs = step ? workflow.links.filter((l) => l.from === step.id) : [];
+  const linkedMessages = step
+    ? messages.filter((m) => m.step === fullId(workflow.id, step.id))
+    : [];
+  return (
+    <aside className="dc-inspector" aria-label="Builder inspector">
+      <div className="dc-inspector-head">
+        <div>
+          <span className="dc-overline">
+            {workflow.id} {step ? "· " + step.id : "· workflow"}
+          </span>
+          <h2 ref={heading} tabIndex={-1}>
+            {step?.title ?? workflow.title}
+          </h2>
+        </div>
+        <button
+          className="dc-icon-button"
+          onClick={close}
+          aria-label="Close inspector"
+        >
+          <Icon name="close" />
+        </button>
+      </div>
+      <div className="dc-inspector-body">
+        {step ? (
+          <>
+            <Badge text={step.evidence} />
+            <p className="dc-lead">{step.summary}</p>
+            {[
+              ["Trigger / required context", step.trigger],
+              ["Builder action", step.action],
+              [
+                "Request status",
+                step.state ??
+                  "Keep the current request state unless the action explicitly changes it.",
+              ],
+              ["Guard / failure behaviour", step.guard],
+              ["Intended GHL action · verify in account", step.ghl],
+            ].map(([label, text]) => (
+              <section key={label}>
+                <h3>{label}</h3>
+                <p>{text}</p>
+              </section>
+            ))}
+            <section>
+              <h3>Tag operations · via DC-07</h3>
+              <TagChips operations={stepTagOperations(workflow.id, step.id)} />
+              {step.tags && <p className="dc-mono">Step effect: {step.tags}</p>}
+            </section>
+            <section>
+              <h3>Next path</h3>
+              {refs.length ? (
+                refs.map((l) => (
+                  <button
+                    key={l.to}
+                    className="dc-next"
+                    onClick={() => onSelect({ flow: workflow.id, step: l.to })}
+                  >
+                    <span>{l.label ?? "Continue"}</span>
+                    <strong>
+                      {workflow.steps.find((s) => s.id === l.to)?.title}
+                    </strong>
+                    <Icon name="arrow" />
+                  </button>
+                ))
+              ) : (
+                <p>
+                  Exit this logical workflow. Follow the handoff described
+                  above; do not restart from contact tag changes.
+                </p>
+              )}
+            </section>
+            {linkedMessages.length > 0 && (
+              <section>
+                <h3>Message at this step</h3>
+                {linkedMessages.map((m) => (
+                  <p key={m.id}>
+                    <b>
+                      {m.id} · {m.title}
+                    </b>
+                    <br />
+                    {m.when}
+                  </p>
+                ))}
+                <button
+                  className="dc-button"
+                  onClick={() => onPanel("messages")}
+                >
+                  Read exact draft copy
+                </button>
+              </section>
+            )}
+            <button
+              className="dc-button"
+              onClick={() => onSelect({ flow: workflow.id })}
+            >
+              All steps in {workflow.id}
+            </button>
+          </>
+        ) : (
+          <>
+            <Badge text="Proposed workflow" />
+            <p className="dc-lead">{workflow.note}</p>
+            <button
+              className="dc-button dc-primary"
+              onClick={() => onFocus(workflow.id)}
+            >
+              <Icon name="focus" /> Focus this logic on canvas
+            </button>
+            <section>
+              <h3>Build steps</h3>
+              {workflow.steps.map((s, i) => (
+                <button
+                  className="dc-step-row"
+                  key={s.id}
+                  onClick={() => onSelect({ flow: workflow.id, step: s.id })}
+                >
+                  <span className="dc-mono">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>
+                    <strong>{s.title}</strong>
+                    <small>{s.summary}</small>
+                  </span>
+                  <Icon name="arrow" />
+                </button>
+              ))}
+            </section>
+            <section>
+              <h3>Tag contract</h3>
+              <TagChips operations={tagOperations[workflow.id]} />
+            </section>
+            {workflow.id === "DC-01" && (
+              <button className="dc-button" onClick={() => onPanel("intake")}>
+                Try the broker intake
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </aside>
+  );
+}
+function Board() {
+  const g = useMemo(createGraph, []);
+  const [nodes, , onNodesChange] = useNodesState(g.nodes);
+  const [selected, setSelected] = useState<Selected | null>(null);
+  const selectedNodeId = selected
+    ? fullId(
+        selected.step ? selected.flow : "overview",
+        selected.step ?? selected.flow,
+      )
+    : null;
+  const visualNodes = useMemo(
+    () =>
+      nodes.map((node) => ({ ...node, selected: node.id === selectedNodeId })),
+    [nodes, selectedNodeId],
+  );
+  const [showTags, setShowTags] = useState(false);
+  const [panel, setPanel] = useState<PanelName | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [activeArea, setActiveArea] = useState("overview");
+  const [search, setSearch] = useState("");
+  const fullRef = useRef<HTMLButtonElement>(null);
+  const { fitView, getViewport, setViewport } = useReactFlow();
+  const focus = useCallback(
+    (id: string) => {
+      setActiveArea(id);
+      if (id === "all") {
+        fitView({ padding: 0.08, duration: 0 });
+        return;
+      }
+      const wanted =
+        id === "overview"
+          ? g.nodes.filter((n) => n.id.startsWith("overview."))
+          : g.nodes.filter((n) => n.id.startsWith(id + "."));
+      fitView({ nodes: wanted, padding: 0.12, duration: 0, maxZoom: 0.85 });
+    },
+    [fitView, g.nodes],
+  );
+  const choose = (s: Selected) => {
+    setSelected(s);
+    setPanel(null);
+  };
+  const closeInspector = () => {
+    const id = selected
+      ? selected.step
+        ? fullId(selected.flow, selected.step)
+        : fullId("overview", selected.flow)
+      : "";
+    setSelected(null);
+    requestAnimationFrame(() =>
+      document.querySelector<HTMLElement>(`[data-id="${id}"]`)?.focus(),
+    );
+  };
+  const toggleFull = () => {
+    const v = getViewport();
+    setExpanded((x) => !x);
+    requestAnimationFrame(() => setViewport(v, { duration: 0 }));
+  };
+  useEffect(() => {
+    if (!expanded) return;
+    const old = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = old;
+    };
+  }, [expanded]);
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (panel) setPanel(null);
+        else if (selected) closeInspector();
+        else if (expanded) {
+          setExpanded(false);
+          fullRef.current?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", key);
+    return () => document.removeEventListener("keydown", key);
+  }, [panel, selected, expanded]);
+  const results = search.trim()
+    ? WORKFLOWS.flatMap((w) => w.steps.map((s) => ({ w, s })))
+        .filter(({ w, s }) =>
+          (w.id + " " + s.title + " " + s.action + " " + s.tags)
+            .toLowerCase()
+            .includes(search.toLowerCase()),
+        )
+        .slice(0, 8)
+    : [];
+  return (
+    <div className={"dc-app" + (expanded ? " dc-expanded" : "")}>
+      <header className="dc-header">
+        <img src={logo} alt="Finance OS" />
+        <span className="dc-header-divider" />
+        <span className="dc-overline">Builder blueprint</span>
+        <Badge text="New proposed" />
+        <span className="dc-spacer" />
+        <span className="dc-header-status">Specification · not a live CRM</span>
+      </header>
+      <div className="dc-title">
+        <div>
+          <span className="dc-overline">Application / Document collection</span>
+          <h1>One checklist. The whole journey.</h1>
+          <p>
+            Explore the logic, test the forms and see exactly what your builder
+            needs to create.
+          </p>
+        </div>
+        <div className="dc-version">
+          <span>
+            {WORKFLOWS.length} workflows ·{" "}
+            {WORKFLOWS.reduce((n, w) => n + w.steps.length, 0)} build steps
+          </span>
+          <span>Research reviewed · 19 Nov 2026</span>
+        </div>
+      </div>
+      <main className="dc-shell">
+        <div className="dc-toolbar">
+          <div className="dc-search">
+            <Icon name="search" />
+            <input
+              aria-label="Find a workflow step"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Find a step or condition…"
+            />
+            {search && (
+              <button aria-label="Clear search" onClick={() => setSearch("")}>
+                <Icon name="close" />
+              </button>
+            )}
+            {search && (
+              <div className="dc-search-results">
+                {results.length ? (
+                  results.map(({ w, s }) => (
+                    <button
+                      key={fullId(w.id, s.id)}
+                      onClick={() => {
+                        choose({ flow: w.id, step: s.id });
+                        setSearch("");
+                      }}
+                    >
+                      <small>{w.id}</small>
+                      {s.title}
+                    </button>
+                  ))
+                ) : (
+                  <p>No matching steps. Try “upload” or “card”.</p>
+                )}
+              </div>
+            )}
+          </div>
+          <label className="dc-tag-toggle">
+            <input
+              type="checkbox"
+              checked={showTags}
+              onChange={(e) => setShowTags(e.target.checked)}
+            />
+            <span className="dc-switch" aria-hidden="true" />
+            Show tags
+          </label>
+          <button className="dc-button" onClick={() => focus("overview")}>
+            <Icon name="focus" /> Whole journey
+          </button>
+          <button className="dc-button dc-all" onClick={() => focus("all")}>
+            See all logic
+          </button>
+          <span className="dc-spacer" />
+          <button ref={fullRef} className="dc-button" onClick={toggleFull}>
+            <Icon name={expanded ? "minimise" : "expand"} />
+            {expanded ? "Exit full screen" : "Full screen"}
+          </button>
+        </div>
+        <div className="dc-resourcebar" aria-label="Builder resources">
+          {(
+            [
+              ["intake", "Broker intake", "form"],
+              ["upload", "Upload example", "upload"],
+              ["catalogue", "Document catalogue", "document"],
+              ["rules", "Rules & research", "book"],
+              ["tags", "Tag dictionary", "tag"],
+              ["messages", "Email & SMS", "mail"],
+              ["build", "Build guide", "check"],
+            ] as [PanelName, string, string][]
+          ).map(([id, label, icon]) => (
+            <button
+              key={id}
+              aria-pressed={panel === id}
+              onClick={() => setPanel(id)}
+            >
+              <Icon name={icon} />
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="dc-workspace">
+          <nav className="dc-stage-nav" aria-label="Canvas areas">
+            <span className="dc-overline">Jump to logic</span>
+            {WORKFLOWS.map((w, i) => (
+              <button
+                key={w.id}
+                aria-current={activeArea === w.id ? "location" : undefined}
+                onClick={() => {
+                  focus(w.id);
+                  setSelected(null);
+                  setPanel(null);
+                }}
+                title={w.title}
+                aria-label={
+                  String(i + 1).padStart(2, "0") + " " + stageNames[i]
+                }
+              >
+                <b>{String(i + 1).padStart(2, "0")}</b>
+                <span>{stageNames[i]}</span>
+              </button>
+            ))}
+            <div className="dc-nav-note">
+              Click a step to inspect it.
+              <br />
+              The canvas stays in place.
+            </div>
+          </nav>
+          <div
+            className="dc-canvas"
+            data-testid="persistent-canvas"
+            onKeyDownCapture={(e) => {
+              if (e.key !== "Enter" && e.key !== " ") return;
+              const node = (e.target as HTMLElement).closest<HTMLElement>(
+                ".react-flow__node-step",
+              );
+              if (node) {
+                e.preventDefault();
+                e.stopPropagation();
+                node.click();
+              }
+            }}
+          >
+            <TagsContext.Provider value={showTags}>
+              <ReactFlow
+                nodes={visualNodes}
+                edges={g.edges}
+                onNodesChange={onNodesChange}
+                onInit={() => requestAnimationFrame(() => focus("overview"))}
+                onNodeClick={(_, n) => {
+                  const d = n.data as {
+                    flow: string;
+                    id: string;
+                    overview?: boolean;
+                  };
+                  if (d.overview) {
+                    if (d.id === "done")
+                      choose({ flow: "DC-05", step: "complete" });
+                    else choose({ flow: d.id });
+                  } else if (d.flow) choose({ flow: d.flow, step: d.id });
+                }}
+                nodeTypes={nodeTypes}
+                minZoom={0.08}
+                maxZoom={1.8}
+                nodesConnectable={false}
+                nodesDraggable={false}
+                autoPanOnNodeFocus={false}
+                deleteKeyCode={null}
+                aria-label="Connected document collection canvas"
+              >
+                <Background
+                  variant={BackgroundVariant.Dots}
+                  gap={26}
+                  size={2.2}
+                  color="#ADB6D2"
+                />
+                <Controls
+                  showInteractive={false}
+                  onFitView={() => focus("overview")}
+                />
+                <MiniMap
+                  pannable
+                  zoomable
+                  nodeColor={(n) => (n.type === "area" ? "#fff" : "#ADB6D2")}
+                  maskColor="rgba(246,247,249,.75)"
+                />
+                <div className="dc-map-hint">
+                  <span>Drag to pan · scroll to zoom</span>
+                  <span>Solid: sequence · dashed: loop / handoff</span>
+                </div>
+              </ReactFlow>
+            </TagsContext.Provider>
+          </div>
+          {selected && !panel && (
+            <Inspector
+              selected={selected}
+              close={closeInspector}
+              onSelect={choose}
+              onFocus={focus}
+              onPanel={setPanel}
+            />
+          )}
+          <Panels
+            panel={panel}
+            close={() => setPanel(null)}
+            onFlow={(id) => {
+              setPanel(null);
+              setSelected({ flow: id });
+            }}
+          />
+        </div>
+        <div className="dc-statusbar">
+          <span>
+            <b>Founder standard</b> · Home loan refinance 6m / consolidated card
+            6m / retained card 3m
+          </span>
+          <span>No broker period override</span>
+        </div>
+      </main>
+      <footer className="dc-footer">
+        <span>
+          Confirmed = founder decision · Proposed = draft behaviour ·
+          Feasibility = prove in GHL
+        </span>
+        <span>Request records hold the detail. Tags reflect it.</span>
+      </footer>
+    </div>
+  );
+}
+const root = createRoot(document.getElementById("fos-document-board")!);
+root.render(
+  <ReactFlowProvider>
+    <Board />
+  </ReactFlowProvider>,
+);
+if (import.meta.hot) import.meta.hot.dispose(() => root.unmount());
