@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import ts from "typescript";
 async function load(file) {
   const js = ts.transpileModule(readFileSync(file, "utf8"), {
@@ -14,7 +15,7 @@ async function load(file) {
 }
 const { recordUpload, reconcile } = await load("src/requestState.ts");
 const { WORKFLOWS } = await load("src/model.ts");
-const { scenarioRules, sources, namingAliases, gaps } =
+const { scenarioRules, sources, namingAliases, gaps, researchCrossCheck, crossCheckFindings } =
   await load("src/research.ts");
 const {
   messages,
@@ -41,6 +42,11 @@ for (const d of catalogue)
   );
 for (const key of Object.keys(namingAliases))
   assert(catalogue.some((d) => d.key === key));
+assert(!namingAliases.bas.some(x=>/IAS|instalment|integrated|running balance/i.test(x)),'BAS must not alias a different ATO document');
+assert.equal(crossCheckFindings.length,18);
+for(const finding of crossCheckFindings) for(const id of finding.sources) assert(sources.some(s=>s.id===id),'Unlinked cross-check source '+id);
+assert.equal(researchCrossCheck.status,'Completed');
+assert.equal(createHash('sha256').update(readFileSync(researchCrossCheck.reportFile)).digest('hex'),researchCrossCheck.sha256,'Keep the supplied research unchanged');
 for (const rule of scenarioRules)
   for (const id of rule.sources)
     assert(
@@ -125,13 +131,15 @@ writeFileSync(
   "builder-handoff.json",
   JSON.stringify(
     {
-      version: "2026-11-19.2",
+      version: "2026-11-20.1",
       status: "proposed specification",
       catalogue,
       scenarioRules,
       sources,
       namingAliases,
       gaps,
+      researchCrossCheck,
+      crossCheckFindings,
       buildOrder,
       fieldMappings,
       capabilityChecks,

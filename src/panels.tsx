@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { IntakeForm } from "./IntakeForm";
 import catalogue from "./catalogue.json";
 import { WORKFLOWS, fields } from "./model";
-import { scenarioRules, sources, namingAliases, gaps } from "./research";
+import { scenarioRules, sources, namingAliases, gaps, researchCrossCheck, crossCheckFindings } from "./research";
 import {
   tagOperations,
   buildOrder,
@@ -118,7 +118,8 @@ function Catalogue() {
       </div>
       <div className="dc-note">
         ATO income statement, personal tax return, notice of assessment and BAS
-        are different documents. “Group certificate” is a legacy alias, not the
+        are different documents. BAS is not an IAS or ATO account ledger.
+        “Group certificate” is a legacy alias, not the
         preferred label. Contract of sale keeps separate buying and selling
         purposes.
       </div>
@@ -133,9 +134,25 @@ function Rules() {
         Keep the collection standard separate from each lender’s policy. No
         broker can edit the fixed periods.
       </p>
+      <section className="dc-note" aria-label="Perplexity cross-check status">
+        <b>Perplexity cross-check {researchCrossCheck.status.toLowerCase()} · {researchCrossCheck.date}</b>
+        <p>{researchCrossCheck.summary}</p>
+        <p>Report supplied by Tumai, dated {researchCrossCheck.reportDate}. The three founder statement durations and catalogue exclusions remain in force.</p>
+      </section>
+      <details className="dc-source">
+        <summary>What changed after cross-checking · {crossCheckFindings.length} findings</summary>
+        {crossCheckFindings.map((finding) => <article className="dc-gap" key={finding.id}>
+          <span>{finding.id} · {finding.outcome}</span>
+          <h4>{finding.topic}</h4><p>{finding.detail}</p>
+          <small>Evidence: {finding.sources.join(" · ") || "Scope / unverified assessment claim"}</small>
+        </article>)}
+      </details>
       <div className="dc-note">
         <b>History ≠ quantity ≠ freshness.</b> Six months may arrive in one
         combined statement. A recent file does not prove six months’ coverage.
+        Where accepted, pair an official statement with a matching transaction
+        history to bridge missing dates. Freshness also needs a reference event,
+        such as submission or formal approval; 30 days is not always one month.
         Other periods remain draft until approved.
       </div>
       <div className="dc-filter-row">
@@ -200,7 +217,7 @@ function Rules() {
       </div>
       <h3>Sources checked</h3>
       <p>
-        Primary pages read on 19 November 2026. Historical PDFs remain
+        Sources reviewed on 19–20 November 2026. Historical PDFs remain
         comparison material. Source detail and the independent cross-check are
         saved with the project.
       </p>
@@ -215,7 +232,7 @@ function Rules() {
           <small>{s.date}</small>
           <p>{s.finding}</p>
           <a href={s.url} target="_blank" rel="noreferrer">
-            {["HG", "AUSSIE", "ANZ-C"].includes(s.id)
+            {["HG", "AUSSIE"].includes(s.id)
               ? "Publisher website (local PDF recorded in handoff)"
               : "Open original source"}{" "}
             ↗
@@ -296,6 +313,13 @@ function UploadExample() {
         example are fictional.
       </p>
       <Badge text="Proposed receipt-pause behaviour" />
+      <div className="dc-note">
+        <b>Real upload instructions:</b> include all pages and the requested date
+        range for the named account. A statement and matching transaction history
+        can work together where accepted; file count alone proves nothing.
+        Remove tax file numbers from copies before uploading. The builder must
+        prove secure handling; this example does not redact or inspect real files.
+      </div>
       <div className="dc-demo-grid">
         <section className="dc-demo-card">
           <h3>1 · Client uploads</h3>

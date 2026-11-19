@@ -3,6 +3,11 @@ import {
   initialIntake,
   incomeOptions,
   previewRequests,
+  incomeRoutes,
+  constructionStages,
+  isSelfEmployed,
+  reviewIssues,
+  unchangedRequestIds,
   type Intake,
   type Applicant,
   type Liability,
@@ -13,6 +18,7 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const [confirmed, setConfirmed] = useState(false);
   const requests = previewRequests(form);
+  const issues = reviewIssues(form);
   const selected = requests.filter((r) => !excluded.has(r.id));
   const actionable = selected.filter(
     (r) => !held[r.id] || held[r.id] === "Request from client",
@@ -22,6 +28,9 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
     (r) => held[r.id] === "Already held · awaiting review",
   );
   const change = (f: Intake) => {
+    const retained = unchangedRequestIds(form, f);
+    setHeld((old) => Object.fromEntries(Object.entries(old).filter(([id]) => retained.has(id))));
+    setExcluded((old) => new Set([...old].filter((id) => retained.has(id))));
     setForm(f);
     setConfirmed(false);
   };
@@ -120,6 +129,15 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
               Signed purchase contract is available
             </label>
           )}
+          {form.purposes.includes("Construction") && (
+            <label className="dc-entity-field">
+              Construction stage
+              <select value={form.constructionStage ?? "Review first"} onChange={(e) => change({ ...form, constructionStage: e.target.value as Intake["constructionStage"] })}>
+                {constructionStages.map((stage) => <option key={stage}>{stage}</option>)}
+              </select>
+              <small>Only the current stage generates requests. Owner-builder, contract age and lender-specific requirements need review.</small>
+            </label>
+          )}
           <label className="dc-form-check">
             <input
               type="checkbox"
@@ -180,6 +198,15 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
                   </label>
                 ))}
               </div>
+              {isSelfEmployed(a) && (
+                <label className="dc-entity-field">
+                  Self-employed evidence route
+                  <select value={a.incomeRoute ?? "Review first"} onChange={(e) => applicant(a.id, { incomeRoute: e.target.value as Applicant["incomeRoute"] })}>
+                    {incomeRoutes.map((route) => <option key={route}>{route}</option>)}
+                  </select>
+                  <small>Choose one illustrative route after checking the contributing entity and lender policy. This does not assess eligibility. Reduced-document routes do not stack the standard pack.</small>
+                </label>
+              )}
               {a.income.includes("PAYG — casual") && (
                 <label className="dc-form-check">
                   <input
@@ -351,6 +378,7 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
         </fieldset>
         <fieldset>
           <legend>4 · Review and tick the documents</legend>
+          {issues.length > 0 && <div className="dc-note" role="status"><b>Review before issue</b><ul>{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></div>}
           <p className="dc-caption">
             Periods are locked. Confirmed standards are founder decisions;
             proposed standards need approval before live use. This demonstrator
@@ -358,6 +386,7 @@ export function IntakeForm({ openFlow }: { openFlow: (id: string) => void }) {
             on this board. Record already-held evidence only after checking
             subject, period and file linkage.
           </p>
+          <p className="dc-caption">Keep coverage dates, required evidence, issue date and the freshness reference event separate. Ask for all pages and a matching transaction listing only where needed and accepted. Remove tax file numbers from copies before upload; automated redaction is not provided by this preview.</p>
           <div className="dc-tablewrap">
             <table>
               <thead>

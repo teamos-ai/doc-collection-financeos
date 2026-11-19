@@ -1,3 +1,17 @@
+# Perplexity amendment verification — 20 November 2026
+
+Version 0.4.0. Amends the existing visual specification; no live GHL test or activation is claimed.
+
+- Automated checks passed for the retained 70 keys, report hash, source references, locked 6/6/3 defaults, request scope and existing upload/tag transitions.
+- New scenario checks passed: unresolved self-employed route generates no tax pack; standard, NOA-only and company-wage routes stay separate; mixed structures cannot silently use the company-wage example; each construction stage generates only its own proposed documents.
+- Changed-requirement checks passed: draft-to-signed contract and changed card coverage invalidate held/unticked decisions; unchanged card requests retain their decisions.
+- TypeScript, website build and portable packaging passed. Readable handoff and research register now refresh from the same data as the board.
+- Connected-browser checks passed locally: route selection changes the visible checklist, construction pre-approval excludes later evidence, a held draft contract resets to Request from client at formal application, full-screen entry/exit preserves the canvas viewport, tag toggle preserves it, and the 18 findings expand in place.
+- No browser console errors were observed in this local check. [Local research-panel screenshot](perplexity-local.jpg).
+- The standalone Playwright script was not executed. Portable output was regenerated; direct file-URL rendering was not reattempted. Production release evidence is recorded separately in the Finance OS hub after deployment.
+
+---
+
 # Blueprint verification — 19 November 2026
 
 Version 0.3.0. This records the visual specification and synthetic examples, not a live GHL installation.

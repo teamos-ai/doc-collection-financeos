@@ -83,7 +83,7 @@
     "number": 11,
     "group": "Employment",
     "label": "ATO income statement",
-    "description": "ATO income statement or PAYG payment summary for the selected year.",
+    "description": "ATO income statement for the named employer and financial year, with YTD or completed-year finalisation status. A PAYG payment summary may be an accepted alternative; it is not a tax return or NOA.",
     "tag": "fos-doc-needed-ato-income",
     "key": "ato-income"
   },
@@ -187,7 +187,7 @@
     "number": 24,
     "group": "Business income",
     "label": "BAS",
-    "description": "Business Activity Statements for the specified periods.",
+    "description": "Business Activity Statements for the specified periods. BAS, IAS and ATO account ledgers are different documents; the latter two remain excluded.",
     "tag": "fos-doc-needed-bas",
     "key": "bas"
   },
@@ -251,7 +251,7 @@
     "number": 32,
     "group": "Rental income",
     "label": "Rental statements",
-    "description": "Rental statements for the named property and period.",
+    "description": "Landlord rental income statements for the named property. A tenant rental ledger and ongoing rent expenses have different purposes.",
     "tag": "fos-doc-needed-rental-statements",
     "key": "rental-statements"
   },
@@ -339,7 +339,7 @@
     "number": 43,
     "group": "Liabilities",
     "label": "Home loan statements",
-    "description": "Statements for the named existing home loan.",
+    "description": "Evidence for the named loan and required dates. An official statement plus matching transaction history may bridge a gap where accepted; the period is not a file count.",
     "tag": "fos-doc-needed-home-loan-statements",
     "key": "home-loan-statements"
   },
@@ -442,7 +442,7 @@
   {
     "number": 56,
     "group": "Deposit and funds",
-    "label": "Contract of sale \u2014 selling",
+    "label": "Contract of sale — selling",
     "description": "Contract for a property or asset being sold to contribute funds.",
     "tag": "fos-doc-needed-sale-contract",
     "key": "sale-contract"
@@ -450,7 +450,7 @@
   {
     "number": 57,
     "group": "Property transaction",
-    "label": "Contract of sale \u2014 buying",
+    "label": "Contract of sale — buying",
     "description": "Contract for the property being purchased.",
     "tag": "fos-doc-needed-purchase-contract",
     "key": "purchase-contract"
@@ -483,7 +483,7 @@
     "number": 61,
     "group": "Construction",
     "label": "Building contract",
-    "description": "Signed contract for the construction project.",
+    "description": "Tender/draft at the selected pre-approval stage or signed contract where required for the current stage; lender route must be confirmed.",
     "tag": "fos-doc-needed-building-contract",
     "key": "building-contract"
   },

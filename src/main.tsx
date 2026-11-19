@@ -562,7 +562,7 @@ function Board() {
             {WORKFLOWS.length} workflows ·{" "}
             {WORKFLOWS.reduce((n, w) => n + w.steps.length, 0)} build steps
           </span>
-          <span>Research reviewed · 19 Nov 2026</span>
+          <span>Research cross-checked · 20 Nov 2026</span>
         </div>
       </div>
       <main className="dc-shell">

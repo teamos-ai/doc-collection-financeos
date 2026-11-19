@@ -1,6 +1,6 @@
 # Builder handoff · document collection
 
-19 November 2026. Proposed specification for a manual GHL build. The board is the primary walkthrough; this document and the JSON exports carry the exact build contract.
+Updated 20 November 2026 after the [Perplexity reconciliation](perplexity-cross-check-2026-11-20.md). Proposed specification for a manual GHL build. The board is the primary walkthrough; this document and the JSON exports carry the exact build contract.
 
 ## Build order and completion checks
 
@@ -62,15 +62,17 @@ Workflows: DC-01, DC-02, DC-03, DC-04, DC-05, DC-06, DC-07.
 
 ## Proposed field schema
 
-Logical names, not live GHL custom-field IDs. Builder must record actual fields and associations after proving the representation.
+Logical names, not live GHL custom-field IDs. Builder must prove the representation.
 
 | Record | Field names | Type / values | Constraint |
 | --- | --- | --- | --- |
+| Policy route | lender_channel, income_route, construction_stage, source_url, source_version, checked_at, approved_by | References, enum, dates, reviewer | Public-source check is not policy approval. No inferred waiver or eligibility; stage changes require a reviewed revision. |
+| Evidence review | document_issued_at, coverage_intervals, financial_year, finalisation_status, tfn_check | Dates/intervals, year, Current YTD / Finalised / Needs review, reviewer check | Review coverage and accepted formats; no automated redaction or document-content extraction is provided by the board. |
 | Request set | loan_id, revision, rule_version, owner_id | Stable reference, integer, version, staff reference | Unique issue key = loan_id + revision; not a contact email. |
 | Request set | collection_status, issued_at, paused_reason | Draft / Active / Paused / Complete / Closed; datetime; text | Completion requires accepted aggregate; Closed is not Accepted. |
 | Document request | request_id, request_set_id, document_key | Stable IDs; retained catalogue key | Never encode account, loan or month count into the tag. |
 | Document request | subject_id, subject_type, account_id, permitted_recipient_ids | Applicant / Entity / Property / Account; linked references | Shared evidence requires explicit links and recipient access, not duplicated person fields. |
-| Document request | coverage_start, coverage_end, quantity, freshness_rule | Dates, count if relevant, rule reference | Issued requirement is versioned. No broker period override. |
+| Document request | coverage_start, coverage_end, quantity, freshness_rule, freshness_reference_event | Dates, count if relevant, rule reference; issue / submission / approval event | Issued requirement is versioned. A 30-day cutoff is not a less-than-one-month cutoff. No broker override. |
 | Document request | status, status_reason, evidence_revision | Requested / Partial / Awaiting review / Accepted / Replacement / Withdrawn; text; revision | Withdrawn needs an owner/reason and preserves history. |
 | Submission | submission_id, request_id, file_refs, saved_at, ready_for_review | Deduplication key, request reference, file references, datetime, boolean | Keep multiple files and repeat-upload history. No file data in message merge fields. |
 | Review | reviewer_id, submission_revision, decision, reason, reviewed_at | Staff reference, revision, Accept / Replace, text, datetime | Do not apply an old review to a newer upload. |
@@ -81,7 +83,7 @@ Logical names, not live GHL custom-field IDs. Builder must record actual fields 
 | Input / event | Field | Route | Guard |
 | --- | --- | --- | --- |
 | Loan reference + applicants | request_set.loan_id; request.subject_id | DC-01.start → DC-02.create | Never resolve solely by email. |
-| Purpose + stage | purchase / refinance / construction; contract_available | R13 / R15 → DC-01.rules | Pre-approval does not chase an unavailable sale contract. |
+| Purpose + stage | purchase / refinance / construction; contract_available; construction_stage | R13 / R15 → DC-01.rules | Pre-approval does not chase an unavailable sale contract. Construction stages issue only their current pack; changes re-open evidence review. |
 | Income + entity role | income_sources[]; entity_id; income_route | R04–R12 / R16–R17 | Mixed income is additive; alternative routes are not. |
 | Salary matching | salary_match_required | R06 → salary-statements | No blanket transaction-account request. |
 | Liability + treatment | account_id; retained / refinance / consolidated | R01–R03 → locked coverage | Each card is assessed independently. |
@@ -93,7 +95,7 @@ Logical names, not live GHL custom-field IDs. Builder must record actual fields 
 
 ### DC-01 · Build the right checklist
 
-The broker selects circumstances. Fixed rules generate the checklist; the broker ticks the required items and confirms.
+Scenario → documents → confirmation
 
 #### DC-01.01 / `DC-01.start` · Broker opens request form
 
@@ -108,7 +110,7 @@ The broker selects circumstances. Fixed rules generate the checklist; the broker
 
 - **Evidence:** Confirmed
 - **Trigger:** Purpose · income · liabilities
-- **Action:** Select purchase/refinance/construction, owner-occupied/investment, stage, income sources and each debt’s treatment. Multiple selections can coexist.
+- **Action:** Select purchase/refinance/construction, property use, current construction stage, income evidence route and each debt’s treatment. Review self-employed eligibility before generating a tax pack; alternative routes never stack.
 - **Guard:** One consolidated card must not make every retained card a consolidation request.
 - **Proposed GHL mapping:** Conditional form fields; repeated applicant/account mapping to prove.
 - **Next:** Continue → `DC-01.rules`
@@ -118,7 +120,7 @@ The broker selects circumstances. Fixed rules generate the checklist; the broker
 - **Evidence:** Confirmed
 - **Trigger:** Periods are read-only
 - **Action:** Home-loan refinance = 6 months. Consolidated credit card = 6 months. Retained credit card = 3 months. Apply other standards only after approval.
-- **Guard:** No broker period override. No blanket request for all 70 catalogue items.
+- **Guard:** No broker period override or automatic lender waiver. No blanket request for all 70 items. Keep publication date, check date and channel on the rule.
 - **Proposed GHL mapping:** Rules evaluation; native feasibility to prove.
 - **Next:** Continue → `DC-01.supported`
 
@@ -151,7 +153,7 @@ The broker selects circumstances. Fixed rules generate the checklist; the broker
 
 ### DC-02 · Issue one request set
 
-Request records hold the truth. Tags summarise what the contact still needs to provide.
+Create requests → tag → invite
 
 #### DC-02.01 / `DC-02.confirmed` · Confirmed request arrives
 
@@ -178,7 +180,7 @@ Request records hold the truth. Tags summarise what the contact still needs to p
 - **Action:** Create selected requests with document key, applicant/entity/account, period, revision and status. Already-held evidence needs an explicit file link, matching subject/period and review state. Invite only for client-action items; accepted held evidence does not enter chasing.
 - **Guard:** Never overwrite another loan’s request or previous upload.
 - **Proposed GHL mapping:** Per-request storage design: native linked records if proven; otherwise adapter.
-- **Request state:** Requested
+- **State:** Requested
 - **Next:** Continue → `DC-02.tag`
 
 #### DC-02.04 / `DC-02.tag` · Synchronise needed tags
@@ -188,7 +190,7 @@ Request records hold the truth. Tags summarise what the contact still needs to p
 - **Action:** Invoke DC-07 after request persistence. It applies needed tags and the action-needed summary from current requests; this step must not become a second tag writer.
 - **Guard:** Tags are a projection; counts and periods live on requests.
 - **Proposed GHL mapping:** Add Contact Tag action after correct-contact projection.
-- **Request state:** Requested
+- **State:** Requested
 - **Tag effect:** fos-doc-needed-<document-key> · fos-docs-action-needed
 - **Next:** Continue → `DC-02.invite`
 
@@ -212,7 +214,7 @@ Request records hold the truth. Tags summarise what the contact still needs to p
 
 ### DC-03 · Receive the selected document
 
-Proposed: a saved submission marked ready for review pauses chasing that item. Receipt is separate from broker acceptance.
+Upload → receipt → tag reconciliation
 
 #### DC-03.01 / `DC-03.open` · Client opens upload link
 
@@ -245,7 +247,7 @@ Proposed: a saved submission marked ready for review pauses chasing that item. R
 
 - **Evidence:** Proposed
 - **Trigger:** Partial versus submitted evidence
-- **Action:** Support multiple files and explicit partial/ready submission. File count does not prove date coverage or document correctness.
+- **Action:** Support multiple files and partial/ready submission. Statements and accepted transaction listings may combine to cover the dates. Overlapping files do not establish continuous coverage. Do not accept a file count as evidence.
 - **Guard:** No automatic financial-content acceptance. Client declaration only signals readiness for review.
 - **Proposed GHL mapping:** Submission state + broker review; partial-upload UX is proposed.
 - **Next:** Ready → `DC-03.received`; Partial → `DC-03.remaining`
@@ -257,7 +259,7 @@ Proposed: a saved submission marked ready for review pauses chasing that item. R
 - **Action:** Set Received awaiting review, keep receipt visible and create a broker review task. Ordinary chasing pauses for this request. Run DC-07 to reconcile tags.
 - **Guard:** Not Verified; do not advance the loan to lender-ready.
 - **Proposed GHL mapping:** Request state update + internal task; receipt pause needs owner sign-off.
-- **Request state:** Received awaiting review
+- **State:** Received awaiting review
 - **Tag effect:** Reconcile through DC-07
 - **Next:** Exit / handoff described above.
 
@@ -268,7 +270,7 @@ Proposed: a saved submission marked ready for review pauses chasing that item. R
 - **Action:** Show the upload error; allow retry against the correct request. Route unmatched submissions for staff handling.
 - **Guard:** No tag/status change on failure. No guess at the applicant.
 - **Proposed GHL mapping:** Validation/error route.
-- **Request state:** Requested
+- **State:** Requested
 - **Next:** Exit / handoff described above.
 
 #### DC-03.07 / `DC-03.remaining` · Keep partial evidence
@@ -278,13 +280,13 @@ Proposed: a saved submission marked ready for review pauses chasing that item. R
 - **Action:** Preserve uploaded files and show the remaining requirement. Continue against this request without duplicating it.
 - **Guard:** Do not claim the required period is covered because a file exists.
 - **Proposed GHL mapping:** Partial state and request-level remaining text.
-- **Request state:** Partially received
+- **State:** Partially received
 - **Tag effect:** Needed tag remains
 - **Next:** Add remaining files → `DC-03.upload`
 
 ### DC-04 · Chase only what is missing
 
-Draft cadence: invitation, then 3 business days to email, 4 more to one permitted-channel reminder, 5 more to a broker task. Cap at two reminders. Calendar, timing and copy require approval before activation.
+Wait → recheck → current reminder
 
 #### DC-04.01 / `DC-04.enrol` · One reminder sequence
 
@@ -351,7 +353,7 @@ Draft cadence: invitation, then 3 business days to email, 4 more to one permitte
 
 ### DC-05 · Accept or request a replacement
 
-The broker checks the evidence. Collection complete is not lending approval or permission to lodge.
+Human review → reopen or complete
 
 #### DC-05.01 / `DC-05.queue` · Broker review task
 
@@ -366,7 +368,7 @@ The broker checks the evidence. Collection complete is not lending approval or p
 
 - **Evidence:** Confirmed
 - **Trigger:** Accept · replace · more required
-- **Action:** Review identity, account, date coverage and readability; record reviewer, date and reason.
+- **Action:** Review subject/account, all pages, continuous coverage, financial year, finalisation status and TFN handling. Check freshness against its recorded reference event. Record reviewer, date and reason.
 - **Guard:** No automatic acceptance from file presence. Avoid applying a decision to a newer replacement upload.
 - **Proposed GHL mapping:** Controlled review form/status event.
 - **Next:** Accept → `DC-05.accept`; Replace / more → `DC-05.replace`
@@ -376,9 +378,9 @@ The broker checks the evidence. Collection complete is not lending approval or p
 - **Evidence:** Proposed
 - **Trigger:** Evidence verified by broker
 - **Action:** Mark the request Accepted and preserve its history. Recompute request-set completion.
-- **Guard:** Acceptance applies only to this request revision.
+- **Guard:** Acceptance applies only to this request revision. A later submission date or stage change triggers a broker freshness review, not a silent reset or borrower chase.
 - **Proposed GHL mapping:** Request update + DC-07 reconciliation.
-- **Request state:** Accepted
+- **State:** Accepted
 - **Next:** Continue → `DC-05.all`
 
 #### DC-05.04 / `DC-05.all` · Every selected request accepted?
@@ -397,7 +399,7 @@ The broker checks the evidence. Collection complete is not lending approval or p
 - **Action:** Stop this loan’s collection chase and notify the broker that the selected collection pack is complete.
 - **Guard:** No auto lender approval, loan lodgement or settlement-stage movement.
 - **Proposed GHL mapping:** Internal notification + collection status.
-- **Request state:** Collection complete
+- **State:** Collection complete
 - **Next:** Exit / handoff described above.
 
 #### DC-05.06 / `DC-05.replace` · Request specific replacement
@@ -407,7 +409,7 @@ The broker checks the evidence. Collection complete is not lending approval or p
 - **Action:** Preserve old files. Reopen only the affected item with a clear reason; show it in the dropdown and current reminders.
 - **Guard:** No new duplicate request and no reset of other accepted evidence.
 - **Proposed GHL mapping:** Review form → request update → DC-07.
-- **Request state:** Replacement requested
+- **State:** Replacement requested
 - **Tag effect:** Needed tag restored if action remains
 - **Next:** Exit / handoff described above.
 
@@ -422,7 +424,7 @@ The broker checks the evidence. Collection complete is not lending approval or p
 
 ### DC-06 · Pause, resume and close safely
 
-Loan controls and contact channel controls are different. Neither should inadvertently stop an unrelated loan.
+Control events → scoped suppression
 
 #### DC-06.01 / `DC-06.event` · Control event
 
@@ -449,7 +451,7 @@ Loan controls and contact channel controls are different. Neither should inadver
 - **Action:** Set the loan request-set state and stop/suppress its reminders. Preserve every request and file.
 - **Guard:** Closing does not erase financial evidence or declare requests accepted.
 - **Proposed GHL mapping:** Scoped status/exit; multi-opportunity handling must be tested.
-- **Request state:** Paused / Closed
+- **State:** Paused / Closed
 - **Next:** Continue → `DC-06.sync`
 
 #### DC-06.04 / `DC-06.resume` · Resume after recheck
@@ -474,7 +476,7 @@ Loan controls and contact channel controls are different. Neither should inadver
 
 - **Evidence:** Proposed
 - **Trigger:** Add · withdraw · link held evidence
-- **Action:** Create a reviewed checklist revision. Add new scoped requests or mark withdrawn with an owner/reason; preserve accepted evidence and old files. Link already-held evidence with its review status. Notify only the changed requirements.
+- **Action:** Create a reviewed revision for stage, route or freshness changes. Add scoped requests or withdraw with owner/reason; preserve old evidence. Revalidate held files against changed dates/stage. Future-stage requirements carry no current needed tag. Notify only reviewed changes.
 - **Guard:** Do not reset reminder attempts, recreate accepted requests or silently change an issued period. Newly selected unapproved rules remain draft.
 - **Proposed GHL mapping:** Controlled amendment form/event → persisted revision → DC-07.
 - **Next:** Continue → `DC-06.sync`
@@ -490,7 +492,7 @@ Loan controls and contact channel controls are different. Neither should inadver
 
 ### DC-07 · Keep tags truthful
 
-This is the only document-tag writer. It prevents one upload clearing a tag needed by another account, applicant or loan.
+Request state → contact summary
 
 #### DC-07.01 / `DC-07.changed` · Request state changed
 
@@ -709,19 +711,23 @@ Authoring tokens are not automatically executable CRM merge fields. Missing valu
 
 ## Manual GHL acceptance pack
 
-These are future test cases, not completed GHL results.
+These are future tests of the manual GHL implementation. Board tests do not establish GHL acceptance.
 
-1. PAYG purchase before contract: request income / selected ID; do not chase an unavailable contract.
-2. Refinance: home loan 6 months, consolidated card A 6 months, retained card B 3 months; all locked.
-3. Joint applicants and trust: separate personal requests, link shared entity evidence explicitly.
-4. Dropdown selection only, failed save and replayed upload: no premature removal or duplicate task.
-5. Partial A, then ready A, then ready B: retain shared card tag until B is also received.
-6. A different loan still needs card statements: keep the shared contact tag even when this loan is complete.
-7. Broker rejects A: preserve files, reopen A, restore needed state; B stays in its actual state.
-8. Pause or close while waiting: suppress next send; resume never clears DND or resends invitation.
-9. Add or withdraw a requirement after issue: preserve accepted evidence and revision history.
-10. Already-held evidence: confirm subject, period and acceptance before excluding from client chase.
-11. Client replies / reaches reminder cap: pause automated follow-up and create an owned task.
-12. Copy snapshot to clean test account: prove fields, private links, sender configuration and placeholders.
-
-Owner: Tumai approves outstanding standards and communication settings. Builder implements and records actual target-account evidence. Joint audit before client activation and after the first clean snapshot install. No live GHL work was performed in this release.
+1. Self-employed Review first: no automatic tax/entity pack. NOA-only and company-wage examples do not stack standard returns; ineligible mixed structures stay in review.
+2. Construction pre-approval: no permits, draw invoices or final certificates. Changing to a later stage generates only that stage’s proposed requests.
+3. Change a request’s subject, route or period: previous held/unticked choices reset; unchanged requirements retain their decisions.
+4. Six-month history: one complete file can cover it; six overlapping files cannot. Broker reviews accepted statement/listing combinations.
+5. Current-year ATO evidence is not forced to Tax ready; completed-year evidence records finalisation and financial year. BAS is not substituted by IAS.
+6. Later submission/approval date: broker reviews freshness and issues an owned amendment if needed; no automatic rewrite or unsolicited restart.
+7. PAYG purchase before contract: request income / selected ID; do not chase an unavailable contract.
+8. Refinance: home loan 6 months, consolidated card A 6 months, retained card B 3 months; all locked.
+9. Joint applicants and trust: separate personal requests, link shared entity evidence explicitly.
+10. Dropdown selection only, failed save and replayed upload: no premature removal or duplicate task.
+11. Partial A, then ready A, then ready B: retain shared card tag until B is also received.
+12. A different loan still needs card statements: keep the shared contact tag even when this loan is complete.
+13. Broker rejects A: preserve files, reopen A, restore needed state; B stays in its actual state.
+14. Pause or close while waiting: suppress next send; resume never clears DND or resends invitation.
+15. Add or withdraw a requirement after issue: preserve accepted evidence and revision history.
+16. Already-held evidence: confirm subject, period and acceptance before excluding from client chase.
+17. Client replies / reaches reminder cap: pause automated follow-up and create an owned task.
+18. Copy snapshot to clean test account: prove fields, private links, sender configuration and placeholders.

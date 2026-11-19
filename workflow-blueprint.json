@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-19",
+  "version": "2026-11-20",
   "status": "proposed",
   "sourceRevision": "e6f6d8d1423bd97a33a014f38f71d0a8282889b8",
   "workflows": [
@@ -31,7 +31,7 @@
           "x": 380,
           "y": 120,
           "trigger": "Purpose · income · liabilities",
-          "action": "Select purchase/refinance/construction, owner-occupied/investment, stage, income sources and each debt’s treatment. Multiple selections can coexist.",
+          "action": "Select purchase/refinance/construction, property use, current construction stage, income evidence route and each debt’s treatment. Review self-employed eligibility before generating a tax pack; alternative routes never stack.",
           "guard": "One consolidated card must not make every retained card a consolidation request.",
           "ghl": "Conditional form fields; repeated applicant/account mapping to prove.",
           "evidence": "Confirmed"
@@ -45,7 +45,7 @@
           "y": 120,
           "trigger": "Periods are read-only",
           "action": "Home-loan refinance = 6 months. Consolidated credit card = 6 months. Retained credit card = 3 months. Apply other standards only after approval.",
-          "guard": "No broker period override. No blanket request for all 70 catalogue items.",
+          "guard": "No broker period override or automatic lender waiver. No blanket request for all 70 items. Keep publication date, check date and channel on the rule.",
           "ghl": "Rules evaluation; native feasibility to prove.",
           "evidence": "Confirmed"
         },
@@ -292,7 +292,7 @@
           "x": 1140,
           "y": 100,
           "trigger": "Partial versus submitted evidence",
-          "action": "Support multiple files and explicit partial/ready submission. File count does not prove date coverage or document correctness.",
+          "action": "Support multiple files and partial/ready submission. Statements and accepted transaction listings may combine to cover the dates. Overlapping files do not establish continuous coverage. Do not accept a file count as evidence.",
           "guard": "No automatic financial-content acceptance. Client declaration only signals readiness for review.",
           "ghl": "Submission state + broker review; partial-upload UX is proposed.",
           "evidence": "Proposed"
@@ -555,7 +555,7 @@
           "x": 380,
           "y": 120,
           "trigger": "Accept · replace · more required",
-          "action": "Review identity, account, date coverage and readability; record reviewer, date and reason.",
+          "action": "Review subject/account, all pages, continuous coverage, financial year, finalisation status and TFN handling. Check freshness against its recorded reference event. Record reviewer, date and reason.",
           "guard": "No automatic acceptance from file presence. Avoid applying a decision to a newer replacement upload.",
           "ghl": "Controlled review form/status event.",
           "evidence": "Confirmed"
@@ -569,7 +569,7 @@
           "y": 120,
           "trigger": "Evidence verified by broker",
           "action": "Mark the request Accepted and preserve its history. Recompute request-set completion.",
-          "guard": "Acceptance applies only to this request revision.",
+          "guard": "Acceptance applies only to this request revision. A later submission date or stage change triggers a broker freshness review, not a silent reset or borrower chase.",
           "ghl": "Request update + DC-07 reconciliation.",
           "evidence": "Proposed",
           "state": "Accepted"
@@ -748,7 +748,7 @@
           "x": 760,
           "y": 690,
           "trigger": "Add · withdraw · link held evidence",
-          "action": "Create a reviewed checklist revision. Add new scoped requests or mark withdrawn with an owner/reason; preserve accepted evidence and old files. Link already-held evidence with its review status. Notify only the changed requirements.",
+          "action": "Create a reviewed revision for stage, route or freshness changes. Add scoped requests or withdraw with owner/reason; preserve old evidence. Revalidate held files against changed dates/stage. Future-stage requirements carry no current needed tag. Notify only reviewed changes.",
           "guard": "Do not reset reminder attempts, recreate accepted requests or silently change an issued period. Newly selected unapproved rules remain draft.",
           "ghl": "Controlled amendment form/event → persisted revision → DC-07.",
           "evidence": "Proposed"

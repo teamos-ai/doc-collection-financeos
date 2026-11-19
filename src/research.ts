@@ -50,7 +50,7 @@ export const sources: Source[] = [
     date: "Historical 2017 checklist · re-located 19 Nov 2026",
     status: "Historical only",
     finding:
-      "Useful Australian naming and older six-month loan / three-month card refinance references. Not accepted as current policy. Current detailed ING broker requirements remain an explicit gap; a newer broker-flyer URL could not be retrieved in this pass.",
+      "Useful Australian naming and older six-month loan / three-month card refinance references. Not accepted as current policy. Current initial broker requirements remain a gap. ING-V is a newer variation form, not a replacement initial-application checklist.",
   },
   {
     id: "ATO-I",
@@ -91,12 +91,22 @@ export const sources: Source[] = [
   {
     id: "ANZ-C",
     name: "ANZ · supplied construction checklist",
-    url: "https://www.anz.com.au/personal/home-loans/",
+    url: "https://www.anz.com.au/content/dam/anzcomau/documents/pdf/construction-loan-checklist.pdf",
     date: "Local PDF 08.2022; internally current at 29 Apr 2020",
     status: "Historical stage comparison",
     finding:
       "Deposit, progress and final draw evidence differ. Use it to justify a construction-stage input; do not import historical payment lead times or request final-stage evidence at initial application.",
   },
+  {"id": "WBC-26", "name": "Westpac · broker minimum documents", "url": "https://www.westpac.com.au/content/dam/public/brokers/documents/applications/wbc-minimum-required-documents-checklist.pdf", "date": "WBC22133 0226 · February 2026 · checked 20 Nov 2026", "status": "Broker PDF · channel-specific", "finding": "Pages 1, 3–8: TFN removal, PAYG alternatives, CCR-based liability/refinance evidence, staged building documents. Exceptions still refer to credit policy; a waiver is not automatic."},
+  {"id": "ING-V", "name": "ING · existing home-loan variation", "url": "https://www.ing.com.au/pdf/HomeLoans/Variation/VariationFormG.pdf", "date": "IM450 12/25 · December 2025 · checked 20 Nov 2026", "status": "Existing-loan variations only", "finding": "Pages 1/10/19: applies to existing ING loan changes; applicable Section I uses a payslip under one month and salary-credit evidence if ABN is absent. Closure Yes/No is an election, not proof of a universal closure-letter requirement."},
+  {"id": "CBA-S", "name": "CommBank · statement issue frequency", "url": "https://www.commbank.com.au/home-loans/guide-to-statements.html", "date": "Checked 20 Nov 2026", "status": "Primary source", "finding": "Home-loan statements issue in January and July. Request date coverage, not six monthly files. A statement closing balance is not a payout figure."},
+  {"id": "HLE-S", "name": "Home Loan Experts · statements guide", "url": "https://www.homeloanexperts.com.au/home-loan-documents/statements-transaction-histories/", "date": "Checked 20 Nov 2026 · publication date not independently established", "status": "Broker practice, not universal policy", "finding": "Distinguishes official statements from transaction histories and recommends pairing when ownership details/history are missing. Its CSV restriction is broker guidance, not a verified all-lender upload-format ban."},
+  {"id": "ATO-D", "name": "ATO · definitions", "url": "https://www.ato.gov.au/Definitions/?anchor=P789-67151", "date": "Official indexed definition checked 20 Nov 2026; direct page returned 403", "status": "Official indexed terminology", "finding": "IAS is similar to BAS but excludes GST and some other taxes. BAS, IAS and ATO account ledgers are not aliases; only BAS remains in this catalogue."},
+  {"id": "ATO-STP", "name": "ATO · finalising STP data", "url": "https://www.ato.gov.au/businesses-and-organisations/hiring-and-paying-your-workers/single-touch-payroll/finalising-your-stp-data", "date": "Official indexed guidance checked 20 Nov 2026", "status": "Terminology authority", "finding": "Payment summaries remain relevant for payments not reported/finalised through STP. Keep completed-year finalisation distinct from current YTD evidence; do not require an unfinished financial year to be Tax ready."},
+  {"id": "WBC-P", "name": "Westpac · public broker policy", "url": "https://www.westpac.com.au/brokers/policy/", "date": "Checked 20 Nov 2026", "status": "Conflicting public guidance", "finding": "The page mentions both three and six months of rental history for genuine savings. Keep this purpose separate from landlord rental income; resolve the applicable route before issue."},
+  {"id": "ANZ-P", "name": "ANZ · paper application", "url": "https://www.anz.com.au/content/dam/anzcomau/documents/pdf/home-loan-application-form.pdf", "date": "Page 2 · checked 20 Nov 2026", "status": "Channel-specific form", "finding": "Lists three months of home-loan statements if applicable. The web checklist generally does not require them. Do not erase this conditional channel difference."},
+  {"id": "ANZ-D", "name": "ANZ · general documents guide", "url": "https://www.anz.com.au/personal/home-loans/get-started/documents-home-loan-application/", "date": "Checked 20 Nov 2026", "status": "General guide / differing freshness", "finding": "Mentions self-employed tax evidence under 18 months; the detailed checklist uses different limits. No universal tax-age cutoff is adopted."},
+  {"id": "CBA-B", "name": "CommBank · business-owner verification", "url": "https://www.commbank.com.au/business/home-loans.html", "date": "Checked 20 Nov 2026", "status": "Primary source · eligible routes", "finding": "Simplified verification pairs salary evidence with business-profit evidence or an accepted accountant letter. It is not the same as ANZ’s company-wage route or Westpac’s NOA-only route."},
 ];
 export type ScenarioRule = {
   id: string;
@@ -115,11 +125,11 @@ export const scenarioRules: ScenarioRule[] = [
     scenario: "Home loan being refinanced",
     documents: "Home loan statements",
     period: "6 continuous months",
-    quantity: "Enough statements to cover the period",
+    quantity: "Enough non-overlapping evidence for the dates; a matching transaction listing may bridge a statement gap where accepted",
     freshness: "Proposed: latest evidence within 90 days; lender check",
     condition: "Per refinanced account; retained loans use a separate rule.",
     basis: "Founder standard",
-    sources: ["NAB", "ANZ"],
+    sources: ["NAB", "ANZ", "WBC-26", "CBA-S"],
   },
   {
     id: "R02",
@@ -187,7 +197,7 @@ export const scenarioRules: ScenarioRule[] = [
     quantity: "One return and assessment per selected year",
     freshness: "Specify FY; lender age limits vary",
     condition:
-      "A starting pack, not sufficient evidence for every lender or business.",
+      "Generate only after selecting the standard route. Review first generates no tax pack; a reduced-document route must not stack this pack.",
     basis: "Proposed",
     sources: ["CBA", "NAB", "ANZ"],
   },
@@ -213,7 +223,7 @@ export const scenarioRules: ScenarioRule[] = [
     condition:
       "Do not treat a director as ordinary PAYG solely because a payslip exists.",
     basis: "Exception",
-    sources: ["ANZ", "CBA"],
+    sources: ["ANZ", "CBA-B"],
   },
   {
     id: "R10",
@@ -236,7 +246,7 @@ export const scenarioRules: ScenarioRule[] = [
     quantity: "Do not stack standard and streamlined packs",
     freshness: "Confirm eligibility against current policy",
     condition:
-      "Westpac publishes distinct methods. Broker/policy owner resolves route before issue.",
+      "Westpac publishes distinct methods. Broker/policy owner verifies eligibility first. The form now previews a mutually exclusive NOA-only or company-wage route; selecting it does not approve it.",
     basis: "Exception",
     sources: ["WBC"],
   },
@@ -248,7 +258,7 @@ export const scenarioRules: ScenarioRule[] = [
     quantity: "One approved evidence route",
     freshness: "Current evidence for named property",
     condition:
-      "Prospective rent is a separate exception because rental appraisals were excluded.",
+      "Landlord income only; not a tenant ledger. Alternatives are lender-specific: ANZ lists multiple evidence items. Prospective rent and excluded rental appraisals remain separate exceptions.",
     basis: "Proposed",
     sources: ["CBA", "ANZ"],
   },
@@ -279,14 +289,14 @@ export const scenarioRules: ScenarioRule[] = [
   {
     id: "R15",
     scenario: "Construction application",
-    documents: "Building contract, plans, specifications and approvals",
+    documents: "Current-stage contract / plans / schedule, or stage-specific draw evidence",
     period: "Current project",
     quantity: "Required project versions",
-    freshness: "Current / signed / approved as applicable",
+    freshness: "Stage and lender determine current / signed / approved requirements",
     condition:
-      "Progress invoices and completion evidence belong to later stages; owner-builder is an exception.",
+      "Select a stage first. Pre-approval does not chase permits or final invoices; progress and final draws generate separate proposed packs. Owner-builder and excluded property-insurance documents need an external broker route.",
     basis: "Proposed",
-    sources: ["ANZ", "ANZ-C"],
+    sources: ["WBC-26", "ANZ-C"],
   },
   {
     id: "R16",
@@ -329,7 +339,7 @@ export const scenarioRules: ScenarioRule[] = [
 ];
 export const namingAliases: Record<string, string[]> = {
   "driver-licence": ["Australian driver licence", "driver’s licence"],
-  payslips: ["pay slips", "pay stubs — avoid US wording"],
+  payslips: ["pay slips", "pay advice", "wage slip", "pay stubs — avoid US wording"],
   "ato-income": [
     "ATO income statement",
     "PAYG payment summary — alternative",
@@ -339,6 +349,8 @@ export const namingAliases: Record<string, string[]> = {
   "personal-tax-return": [
     "individual tax return",
     "personal income tax return",
+    "individual income tax return",
+    "ITR",
   ],
   "business-tax-return": ["company tax return", "entity tax return"],
   bas: ["business activity statement", "BAS"],
@@ -355,6 +367,7 @@ export const namingAliases: Record<string, string[]> = {
     "home loan account statements",
   ],
   "credit-card-statements": ["credit card account statements"],
+  "rates-notice": ["council rates notice"],
   "purchase-contract": ["contract of sale — buying", "purchase contract"],
   "sale-contract": ["contract of sale — selling", "asset sale contract"],
 };
@@ -379,4 +392,34 @@ export const gaps = [
     "Builder + broker",
     "Excluded expenses, standalone business financials and other lender requirements need an owned external route. This module is not a complete credit assessment.",
   ],
+];
+
+
+export const researchCrossCheck = {
+  status: "Completed",
+  date: "20 November 2026",
+  reportDate: "19 November 2026",
+  reportFile: "docs/references/perplexity-australian-mortgage-research-2026-11-19.md",
+  sha256: "45fc2caf1be0b6caf869eefda92dbd029ceaf9f49df8209339d635479ec86a74",
+  summary: "All eight report sections were reconciled against this module. Material changes were checked against original sources. Completed cross-check does not mean every lender route is approved or that every linked source was independently audited.",
+};
+export const crossCheckFindings = [
+  { id: "PX01", topic: "Fixed statement defaults", outcome: "Retained", detail: "Keep founder 6m home refinance / 6m consolidated card / 3m retained card. Published alternatives do not silently override them.", sources: ["NAB", "ANZ", "WBC-26"] },
+  { id: "PX02", topic: "Statement coverage", outcome: "Amended", detail: "Add statement-plus-history guidance where needed and accepted. One combined file can cover the period; overlapping files do not prove continuity.", sources: ["CBA-S", "NAB", "HLE-S"] },
+  { id: "PX03", topic: "BAS, IAS and ATO ledgers", outcome: "Corrected", detail: "These are different documents, not aliases. IAS and ATO account statements remain excluded; BAS stays.", sources: ["ATO-D"] },
+  { id: "PX04", topic: "ATO annual versus YTD evidence", outcome: "Corrected", detail: "Record financial year and finalisation status. Payment summaries still exist; Tax ready is not a blanket current-year upload requirement.", sources: ["ATO-I", "ATO-STP"] },
+  { id: "PX05", topic: "Self-employed routes", outcome: "Amended", detail: "Review the route first, then preview a standard or reduced-document pack. No automatic eligibility decision or stacking of both routes.", sources: ["WBC", "ANZ", "CBA-B"] },
+  { id: "PX06", topic: "ING evidence scope", outcome: "Corrected", detail: "The December 2025 form concerns changes to existing ING loans. It does not validate current initial broker requirements.", sources: ["ING-V", "ING"] },
+  { id: "PX07", topic: "Freshness reference", outcome: "Corrected", detail: "Store the reference event and date boundary. Thirty days is not always less than one month. NAB’s 45-day payslip rule does not become a retained-card cutoff.", sources: ["ING-V", "NAB", "ANZ-D"] },
+  { id: "PX08", topic: "Construction stages", outcome: "Amended", detail: "Select the stage; request only its proposed items. Future permits, invoices and completion evidence stay out of the current chase.", sources: ["WBC-26", "ANZ-C"] },
+  { id: "PX09", topic: "Three rental purposes", outcome: "Corrected", detail: "Landlord rental income, tenant rent expense and rent-as-genuine-savings are different. Do not rename them all Rental statements; excluded expense collection stays external.", sources: ["ANZ", "WBC-P"] },
+  { id: "PX10", topic: "TFN handling", outcome: "Amended", detail: "Add removal instructions and reviewer checks for tax file numbers. No automated redaction or privacy-compliance claim is made.", sources: ["WBC-26"] },
+  { id: "PX11", topic: "Credit-report / internal-account waivers", outcome: "Gated", detail: "Record a verified lender-specific evidence substitution and owner. Existing customer status or a report alone must not remove requested items or tags.", sources: ["WBC-26", "ANZ"] },
+  { id: "PX12", topic: "File formats", outcome: "Narrowed", detail: "Broker guidance against CSV is not a universal lender rule. Preserve readable originals/all pages and record accepted formats per approved route.", sources: ["HLE-S", "ANZ"] },
+  { id: "PX13", topic: "Identity and excluded documents", outcome: "Retained", detail: "No universal passport-plus-licence pack. Keep the 70-entry menu and founder exclusions; unresolved identity combinations and excluded lender needs go to the broker.", sources: ["ANZ", "WBC-26"] },
+  { id: "PX14", topic: "Settlement and card closure", outcome: "Narrowed", detail: "An ING Yes/No closure election does not establish a universal closure-letter rule. Payouts, discharge authorities and closure evidence remain outside this initial module.", sources: ["ING-V"] },
+  { id: "PX15", topic: "Conflicting public sources", outcome: "Gated", detail: "Keep ANZ web/form and tax-age differences, and Westpac 3m/6m rental-history conflict, visible for policy-owner resolution.", sources: ["ANZ", "ANZ-P", "ANZ-D", "WBC-P"] },
+  { id: "PX16", topic: "Assessment claims", outcome: "Not adopted", detail: "Do not encode the report’s 3.8% serviceability factor, inferred high-LVR card periods, shading, credit-score thresholds or universal LMI triggers. This module collects documents.", sources: [] },
+  { id: "PX17", topic: "Source currency", outcome: "Corrected", detail: "Check date is separate from publication date. Copyright, crawl and PDF modification dates do not prove current accredited policy. Historical forms stay historical.", sources: ["ING", "ANZ-C"] },
+  { id: "PX18", topic: "Policy and implementation gaps", outcome: "Gated", detail: "Open Banking acceptance, variable income, unusual entities, scheme/state rules and native GHL access remain owner-reviewed gates. No credit-report or CDR integration was activated.", sources: [] },
 ];

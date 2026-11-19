@@ -12,7 +12,7 @@ The whole journey and all seven detailed logic areas stay mounted on the same do
 
 Resources open over the same canvas:
 
-- **Broker intake:** scenario selections, account-specific treatment, locked periods, conditional salary matching, already-held evidence and resulting tag preview.
+- **Broker intake:** scenario selections, account-specific treatment, locked periods, conditional salary matching, distinct self-employed evidence routes, construction stages, already-held evidence and resulting tag preview.
 - **Upload example:** synthetic two-card case with failed save, partial receipt, broker review, replacement and another-loan tag retention.
 - **Document catalogue:** all 70 retained entries, explanations, Australian aliases and stable tags.
 - **Rules & research:** 18 scenario routes with coverage, count, freshness, authority, sources and gaps.
@@ -39,7 +39,7 @@ The neutral CRM template has no brokerage-branding setup product. Required sende
 
 ## Sources and research status
 
-Direct lender/ATO checks and three supplied Australian broker/construction PDFs informed the new matrix. Current ING detail and several specialised routes remain unresolved. Perplexity Deep Research was started in Brave, but its completed report could not be retrieved after the native window became unavailable; it is marked pending, not verified.
+The completed Perplexity report supplied by Tumai was cross-checked on 20 November 2026. All eight sections were reconciled, with material changes checked against original lender and ATO sources. The [18-finding ledger](docs/perplexity-cross-check-2026-11-20.md) distinguishes accepted changes, report errors and unresolved claims. The unchanged report is retained as secondary research, not approved lending policy. Current initial ING broker detail and specialised routes remain unresolved.
 
 See [repository due diligence](docs/repository-review-2026-11-19.md) for pinned source revisions, design/component reuse, message provenance and authority conflicts. The earlier Finovate reference section was inspected at `e6f6d8d1423bd97a33a014f38f71d0a8282889b8`: AreaPage → WorkflowsPreview → CurrentAutomationMap / AutomationFlowBoard, dictionary/data/types and supporting styles. The new founder direction replaces its folder/page drill-down with one canvas. Unrelated application pages were not claimed audited.
 

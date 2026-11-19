@@ -210,9 +210,9 @@ export const fieldMappings = [
   ],
   [
     "Purpose + stage",
-    "purchase / refinance / construction; contract_available",
+    "purchase / refinance / construction; contract_available; construction_stage",
     "R13 / R15 → DC-01.rules",
-    "Pre-approval does not chase an unavailable sale contract.",
+    "Pre-approval does not chase an unavailable sale contract. Construction stages issue only their current pack; changes re-open evidence review.",
   ],
   [
     "Income + entity role",
@@ -274,6 +274,9 @@ export const capabilityChecks = [
   ],
 ];
 export const schemaFields = [
+  ["Policy route", "lender_channel, income_route, construction_stage, source_url, source_version, checked_at, approved_by", "References, enum, dates, reviewer", "Public-source check is not policy approval. No inferred waiver or eligibility; stage changes require a reviewed revision."],
+  ["Evidence review", "document_issued_at, coverage_intervals, financial_year, finalisation_status, tfn_check", "Dates/intervals, year, Current YTD / Finalised / Needs review, reviewer check", "Review coverage and accepted formats; no automated redaction or document-content extraction is provided by the board."],
+
   [
     "Request set",
     "loan_id, revision, rule_version, owner_id",
@@ -300,9 +303,9 @@ export const schemaFields = [
   ],
   [
     "Document request",
-    "coverage_start, coverage_end, quantity, freshness_rule",
-    "Dates, count if relevant, rule reference",
-    "Issued requirement is versioned. No broker period override.",
+    "coverage_start, coverage_end, quantity, freshness_rule, freshness_reference_event",
+    "Dates, count if relevant, rule reference; issue / submission / approval event",
+    "Issued requirement is versioned. A 30-day cutoff is not a less-than-one-month cutoff. No broker override.",
   ],
   [
     "Document request",
@@ -330,6 +333,13 @@ export const schemaFields = [
   ],
 ];
 export const acceptanceCases = [
+  "Self-employed Review first: no automatic tax/entity pack. NOA-only and company-wage examples do not stack standard returns; ineligible mixed structures stay in review.",
+  "Construction pre-approval: no permits, draw invoices or final certificates. Changing to a later stage generates only that stage’s proposed requests.",
+  "Change a request’s subject, route or period: previous held/unticked choices reset; unchanged requirements retain their decisions.",
+  "Six-month history: one complete file can cover it; six overlapping files cannot. Broker reviews accepted statement/listing combinations.",
+  "Current-year ATO evidence is not forced to Tax ready; completed-year evidence records finalisation and financial year. BAS is not substituted by IAS.",
+  "Later submission/approval date: broker reviews freshness and issues an owned amendment if needed; no automatic rewrite or unsolicited restart.",
+
   "PAYG purchase before contract: request income / selected ID; do not chase an unavailable contract.",
   "Refinance: home loan 6 months, consolidated card A 6 months, retained card B 3 months; all locked.",
   "Joint applicants and trust: separate personal requests, link shared entity evidence explicitly.",

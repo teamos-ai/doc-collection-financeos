@@ -6,6 +6,7 @@ export type Applicant = {
   income: string[];
   salaryMatch: boolean;
   ytdCoversHistory?: boolean;
+  incomeRoute?: "Review first" | "Standard two-year pack" | "Personal NOAs only" | "Company wage evidence";
   entity: string;
 };
 export type Liability = {
@@ -22,6 +23,7 @@ export type Intake = {
   propertyUse: string;
   contractAvailable: boolean;
   savings: boolean;
+  constructionStage?: "Review first" | "Pre-approval" | "Formal application" | "Before commencement" | "Progress draw" | "Final draw";
   applicants: Applicant[];
   liabilities: Liability[];
 };
@@ -85,6 +87,28 @@ export const incomeOptions = [
   "Trust income",
   "Rental income",
 ];
+export const incomeRoutes = ["Review first", "Standard two-year pack", "Personal NOAs only", "Company wage evidence"] as const;
+export const constructionStages = ["Review first", "Pre-approval", "Formal application", "Before commencement", "Progress draw", "Final draw"] as const;
+export const isSelfEmployed = (a: Applicant) => a.income.some((x) => ["Sole trader", "Company income", "Partnership income", "Trust income"].includes(x));
+const companyWageOnly = (a: Applicant) => a.income.includes("Company income") && !a.income.some((x) => ["Sole trader", "Partnership income", "Trust income"].includes(x));
+export function reviewIssues(f: Intake): string[] {
+  const issues: string[] = [];
+  for (const a of f.applicants) {
+    if (!isSelfEmployed(a)) continue;
+    if (!a.incomeRoute || a.incomeRoute === "Review first") issues.push(`${a.name || a.id}: choose and verify an income evidence route before requesting tax or entity packs.`);
+    else if (a.incomeRoute === "Company wage evidence" && !companyWageOnly(a)) issues.push(`${a.name || a.id}: the company-wage example cannot cover sole-trader, partnership or trust income; resolve the separate routes.`);
+    else issues.push(`${a.name || a.id}: ${a.incomeRoute} is an illustrative route, not an eligibility decision. Record lender/channel, qualifying conditions, policy version and reviewer before production issue.`);
+  }
+  if (f.purposes.includes("Construction") && (!f.constructionStage || f.constructionStage === "Review first")) issues.push("Construction: select the current stage before generating its requests. Owner-builder and unusual projects require a separate review.");
+  return issues;
+}
+
+// A changed period, subject or route invalidates a previous held/unticked decision.
+export function unchangedRequestIds(before: Intake, after: Intake): Set<string> {
+  const fingerprint = (r: RequestPreview) => JSON.stringify([r.key, r.subject, r.period, r.reason]);
+  const old = new Map(previewRequests(before).map((r) => [r.id, fingerprint(r)]));
+  return new Set(previewRequests(after).filter((r) => old.get(r.id) === fingerprint(r)).map((r) => r.id));
+}
 export function previewRequests(f: Intake): RequestPreview[] {
   const rows: RequestPreview[] = [];
   const add = (
@@ -140,16 +164,8 @@ export function previewRequests(f: Intake): RequestPreview[] {
         "Proposed",
         "Only to match payslip net payments to salary credits.",
       );
-    if (
-      a.income.some((x) =>
-        [
-          "Sole trader",
-          "Company income",
-          "Partnership income",
-          "Trust income",
-        ].includes(x),
-      )
-    ) {
+    const standard = isSelfEmployed(a) && a.incomeRoute === "Standard two-year pack";
+    if (standard) {
       add(
         a.id + "-tax",
         "personal-tax-return",
@@ -157,7 +173,7 @@ export function previewRequests(f: Intake): RequestPreview[] {
         "Personal tax returns",
         "2 latest lodged financial years",
         "Proposed",
-        "Standard self-employed initial pack; streamlined lender alternatives need review.",
+        "Selected standard route only. Confirm lender eligibility and required financial years before issue.",
       );
       add(
         a.id + "-noa",
@@ -169,7 +185,13 @@ export function previewRequests(f: Intake): RequestPreview[] {
         "Personal assessment evidence for the selected income route.",
       );
     }
-    if (a.income.includes("Company income"))
+    if (isSelfEmployed(a) && a.incomeRoute === "Personal NOAs only")
+      add(a.id + "-noa-route", "notice-of-assessment", subject, "ATO notices of assessment", "2 latest financial years · selected NOA-only route", "Proposed", "Eligible route example only. Do not stack personal returns, entity financials or trust deeds for income verification; other legal/identity requirements remain separate.");
+    if (isSelfEmployed(a) && a.incomeRoute === "Company wage evidence" && companyWageOnly(a)) {
+      add(a.id + "-company-payslip", "payslips", entity + " · " + subject, "Company-wage payslip", "1 recent payslip · selected route freshness to confirm", "Proposed", "Own-company wages route example. A payslip alone does not establish eligibility; verify the selected lender route.");
+      add(a.id + "-company-ato", "ato-income", entity + " · " + subject, "ATO income statement — company wages", "At least 6 months income history · selected route", "Proposed", "Current YTD and prior financial year if needed. Tax-ready status applies to finalised completed-year evidence; do not require current-year data to be finalised.");
+    }
+    if (standard && a.income.includes("Company income"))
       add(
         a.id + "-company",
         "business-tax-return",
@@ -179,7 +201,7 @@ export function previewRequests(f: Intake): RequestPreview[] {
         "Proposed",
         "Company profits pathway. Removed standalone financials remain a broker-handled exception.",
       );
-    if (a.income.includes("Partnership income"))
+    if (standard && a.income.includes("Partnership income"))
       add(
         a.id + "-partnership",
         "partnership-financials",
@@ -189,7 +211,7 @@ export function previewRequests(f: Intake): RequestPreview[] {
         "Proposed",
         "Retained bundled partnership catalogue item.",
       );
-    if (a.income.includes("Trust income")) {
+    if (standard && a.income.includes("Trust income")) {
       add(
         a.id + "-trust",
         "trust-financials",
@@ -224,9 +246,9 @@ export function previewRequests(f: Intake): RequestPreview[] {
         "rental-statements",
         subject,
         "Rental statements",
-        "Latest statement · lease is an alternative",
+        "Latest statement · lender-specific evidence route",
         "Proposed",
-        "Existing rental income relied upon. Do not request both alternatives by default.",
+        "Landlord rental income only. Lease/statement alternatives depend on lender; tenant rental ledger and ongoing rent expenses are different purposes.",
       );
   }
   for (const l of f.liabilities) {
@@ -258,7 +280,7 @@ export function previewRequests(f: Intake): RequestPreview[] {
           : "Latest statement showing repayment details",
         l.treatment === "Refinance" ? "Confirmed" : "Proposed",
         l.treatment === "Refinance"
-          ? "This existing home loan is being refinanced."
+          ? "Cover the required dates without gaps. An official statement plus a matching transaction listing may bridge the period where accepted; six months does not mean six files."
           : "This home loan is retained as an existing liability.",
       );
   }
@@ -282,21 +304,23 @@ export function previewRequests(f: Intake): RequestPreview[] {
       "Proposed",
       "Savings support the deposit. Account/ownership must be resolved before issue.",
     );
+  const constructionPacks: Record<string, [string, string][]> = {
+    "Pre-approval": [["building-contract", "Building tender / draft contract"], ["building-plans", "Draft building plans"]],
+    "Formal application": [["building-contract", "Signed building contract"], ["progress-schedule", "Progress payment schedule"], ["building-plans", "Building plans"], ["building-specifications", "Building specifications"]],
+    "Before commencement": [["building-approvals", "Building approvals"], ["building-plans", "Approved building plans"], ["construction-insurance", "Construction insurance"]],
+    "Progress draw": [["progress-claim", "Progress payment claim"], ["builder-invoice", "Builder invoice"]],
+    "Final draw": [["progress-claim", "Final progress payment claim"], ["builder-invoice", "Final builder invoice"], ["completion-evidence", "Completion / occupancy evidence"]],
+  };
   if (f.purposes.includes("Construction"))
-    for (const [key, title] of [
-      ["building-contract", "Building contract"],
-      ["building-plans", "Building plans"],
-      ["building-specifications", "Building specifications"],
-      ["building-approvals", "Building approvals"],
-    ])
+    for (const [key, title] of constructionPacks[f.constructionStage ?? "Review first"] ?? [])
       add(
         "loan-" + key,
         key,
         "Construction project",
         title,
-        "Current project version",
+        `${f.constructionStage} · current project version`,
         "Proposed",
-        "Construction application; later invoices/inspections wait for the appropriate stage.",
+        "Stage-specific proposed pack, subject to lender review. Previously held items need an explicit evidence link; later-stage requests are not due yet. Excluded insurance/authority items stay broker-managed outside this module.",
       );
   return rows;
 }

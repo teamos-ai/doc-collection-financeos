@@ -14,5 +14,5 @@ for(const w of [...WORKFLOWS,overview]){
 }
 const distinctFolders=new Set(WORKFLOWS.map(w=>w.folder)).size;
 if(distinctFolders!==6||WORKFLOWS.length!==7)throw Error('Preview totals mismatch');
-writeFileSync('workflow-blueprint.json',JSON.stringify({version:'2026-11-19',status:'proposed',sourceRevision:'e6f6d8d1423bd97a33a014f38f71d0a8282889b8',workflows:WORKFLOWS,overview,rules,fields,gates},null,2));
+writeFileSync('workflow-blueprint.json',JSON.stringify({version:'2026-11-20',status:'proposed',sourceRevision:'e6f6d8d1423bd97a33a014f38f71d0a8282889b8',workflows:WORKFLOWS,overview,rules,fields,gates},null,2));
 console.log(`${WORKFLOWS.length} workflows / ${WORKFLOWS.reduce((n,w)=>n+w.steps.length,0)} steps: identifiers, references, decision branches and reachability verified.`);
