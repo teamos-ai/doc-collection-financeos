@@ -1,0 +1,1208 @@
+{
+  "version": "2026-11-19",
+  "status": "proposed",
+  "sourceRevision": "e6f6d8d1423bd97a33a014f38f71d0a8282889b8",
+  "workflows": [
+    {
+      "id": "DC-01",
+      "folder": "01 · Broker setup",
+      "title": "Build the right checklist",
+      "sub": "Scenario → documents → confirmation",
+      "note": "The broker selects circumstances. Fixed rules generate the checklist; the broker ticks the required items and confirms.",
+      "steps": [
+        {
+          "id": "start",
+          "title": "Broker opens request form",
+          "summary": "Correct loan and applicant selected",
+          "kind": "trigger",
+          "x": 0,
+          "y": 120,
+          "trigger": "Correct loan and applicant selected",
+          "action": "Identify the existing loan, assigned broker, each applicant and their permitted recipients. Capture contact details without overwriting another applicant.",
+          "guard": "A contact can have multiple loans. Never infer a loan from an email alone.",
+          "ghl": "Internal form + loan context; context-safe mapping needs validation.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "scenario",
+          "title": "Select the circumstances",
+          "summary": "Purpose · income · liabilities",
+          "kind": "human",
+          "x": 380,
+          "y": 120,
+          "trigger": "Purpose · income · liabilities",
+          "action": "Select purchase/refinance/construction, owner-occupied/investment, stage, income sources and each debt’s treatment. Multiple selections can coexist.",
+          "guard": "One consolidated card must not make every retained card a consolidation request.",
+          "ghl": "Conditional form fields; repeated applicant/account mapping to prove.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "rules",
+          "title": "Apply fixed scenario rules",
+          "summary": "Periods are read-only",
+          "kind": "action",
+          "x": 760,
+          "y": 120,
+          "trigger": "Periods are read-only",
+          "action": "Home-loan refinance = 6 months. Consolidated credit card = 6 months. Retained credit card = 3 months. Apply other standards only after approval.",
+          "guard": "No broker period override. No blanket request for all 70 catalogue items.",
+          "ghl": "Rules evaluation; native feasibility to prove.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "supported",
+          "title": "Approved rule available?",
+          "summary": "Known defaults versus unresolved cases",
+          "kind": "decision",
+          "x": 1140,
+          "y": 120,
+          "trigger": "Known defaults versus unresolved cases",
+          "action": "Continue with approved rules. If a selected item has no approved standard or falls outside the retained catalogue, flag it for controlled review.",
+          "guard": "Unknown is not zero and not a guessed maximum period.",
+          "ghl": "If/Else on evaluated result; rule source is to be selected.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "confirm",
+          "title": "Review, tick and confirm",
+          "summary": "Broker confirms before issue",
+          "kind": "human",
+          "x": 1520,
+          "y": 120,
+          "trigger": "Broker confirms before issue",
+          "action": "Show the applicant, account, document, locked period and any exception. Broker ticks the required documents and submits.",
+          "guard": "Saving a draft sends nothing. Explicit confirmation is required.",
+          "ghl": "Broker form submission / reviewed request event.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "exception",
+          "title": "Resolve the rule exception",
+          "summary": "Keep request draft",
+          "kind": "stop",
+          "x": 1140,
+          "y": 400,
+          "trigger": "Keep request draft",
+          "action": "Route missing standards or excluded documents to the broker/policy owner. Resolve through controlled rule maintenance or handle outside this collection module.",
+          "guard": "Do not silently reinstate removed financials, consents or expense documents.",
+          "ghl": "Internal task; no client issue while selected rule remains unresolved.",
+          "evidence": "Proposed"
+        }
+      ],
+      "links": [
+        {
+          "from": "start",
+          "to": "scenario",
+          "loop": false
+        },
+        {
+          "from": "scenario",
+          "to": "rules",
+          "loop": false
+        },
+        {
+          "from": "rules",
+          "to": "supported",
+          "loop": false
+        },
+        {
+          "from": "supported",
+          "to": "confirm",
+          "label": "Yes",
+          "loop": false
+        },
+        {
+          "from": "supported",
+          "to": "exception",
+          "label": "No",
+          "loop": false
+        }
+      ]
+    },
+    {
+      "id": "DC-02",
+      "folder": "02 · Requests & tags",
+      "title": "Issue one request set",
+      "sub": "Create requests → tag → invite",
+      "note": "Request records hold the truth. Tags summarise what the contact still needs to provide.",
+      "steps": [
+        {
+          "id": "confirmed",
+          "title": "Confirmed request arrives",
+          "summary": "DC-01 submission event",
+          "kind": "trigger",
+          "x": 0,
+          "y": 130,
+          "trigger": "DC-01 submission event",
+          "action": "Receive the confirmed checklist with loan, applicants, account references and standard version.",
+          "guard": "One authoritative issue event; do not independently start on both form and every document tag.",
+          "ghl": "Form Submitted / validated event adapter.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "duplicate",
+          "title": "Already issued this revision?",
+          "summary": "Check request-set identity",
+          "kind": "decision",
+          "x": 380,
+          "y": 130,
+          "trigger": "Check request-set identity",
+          "action": "Check a durable issue guard using loan + checklist revision, scoped to the request set.",
+          "guard": "A retry must not duplicate requests, tasks or invitations.",
+          "ghl": "Durable guard storage and atomic issue processing require proof.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "create",
+          "title": "Create document requests",
+          "summary": "One record per subject and requirement",
+          "kind": "action",
+          "x": 760,
+          "y": 130,
+          "trigger": "One record per subject and requirement",
+          "action": "Create selected requests with document key, applicant/entity/account, period, revision and status. Reuse compatible evidence only with explicit links.",
+          "guard": "Never overwrite another loan’s request or previous upload.",
+          "ghl": "Per-request storage design: native linked records if proven; otherwise adapter.",
+          "evidence": "Feasibility",
+          "state": "Requested"
+        },
+        {
+          "id": "tag",
+          "title": "Synchronise needed tags",
+          "summary": "Recompute from open requests",
+          "kind": "action",
+          "x": 1140,
+          "y": 130,
+          "trigger": "Recompute from open requests",
+          "action": "Apply the needed tag for each outstanding document type. Set the action-needed summary when any authorised client action remains.",
+          "guard": "Tags are a projection; counts and periods live on requests.",
+          "ghl": "Add Contact Tag action after correct-contact projection.",
+          "evidence": "Proposed",
+          "state": "Requested",
+          "tags": "fos-doc-needed-<document-key> · fos-docs-action-needed"
+        },
+        {
+          "id": "invite",
+          "title": "Send the upload invitation",
+          "summary": "Email/SMS with current checklist",
+          "kind": "action",
+          "x": 1520,
+          "y": 130,
+          "trigger": "Email/SMS with current checklist",
+          "action": "Send the approved invitation with the correct recipient’s loan-scoped upload link. Start one reminder sequence for this request set.",
+          "guard": "Respect allowed channel and DND. Do not send before requests persist; record delivery attempt to prevent repeat invite.",
+          "ghl": "Send Email / SMS. Private upload-link implementation to prove.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "skip",
+          "title": "No duplicate issue",
+          "summary": "Existing requests stay intact",
+          "kind": "stop",
+          "x": 380,
+          "y": 410,
+          "trigger": "Existing requests stay intact",
+          "action": "Use the existing issue result; do not recreate or resend.",
+          "guard": "A changed checklist is a new reviewed revision, not a replay.",
+          "ghl": "Guarded exit.",
+          "evidence": "Proposed"
+        }
+      ],
+      "links": [
+        {
+          "from": "confirmed",
+          "to": "duplicate",
+          "loop": false
+        },
+        {
+          "from": "duplicate",
+          "to": "create",
+          "label": "No",
+          "loop": false
+        },
+        {
+          "from": "duplicate",
+          "to": "skip",
+          "label": "Yes",
+          "loop": false
+        },
+        {
+          "from": "create",
+          "to": "tag",
+          "loop": false
+        },
+        {
+          "from": "tag",
+          "to": "invite",
+          "loop": false
+        }
+      ]
+    },
+    {
+      "id": "DC-03",
+      "folder": "03 · Client uploads",
+      "title": "Receive the selected document",
+      "sub": "Upload → receipt → tag reconciliation",
+      "note": "Proposed: a saved submission marked ready for review pauses chasing that item. Receipt is separate from broker acceptance.",
+      "steps": [
+        {
+          "id": "open",
+          "title": "Client opens upload link",
+          "summary": "Show their outstanding requests",
+          "kind": "trigger",
+          "x": 0,
+          "y": 100,
+          "trigger": "Show their outstanding requests",
+          "action": "Authorise the recipient and show only their actionable loan-specific requests, including the relevant account and fixed period.",
+          "guard": "Do not edit global dropdown options. A bare email or loan reference is not access control.",
+          "ghl": "Private upload page + per-request dropdown filtering.",
+          "evidence": "Feasibility"
+        },
+        {
+          "id": "upload",
+          "title": "Select request and upload",
+          "summary": "One or more files for this item",
+          "kind": "human",
+          "x": 380,
+          "y": 100,
+          "trigger": "One or more files for this item",
+          "action": "Client chooses the exact request and attaches files. A six-month requirement may be one combined PDF.",
+          "guard": "Selecting a dropdown item does not mark it received.",
+          "ghl": "File Upload field exists; dynamic scope/history and repeated submissions need proof.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "saved",
+          "title": "Files saved and linked?",
+          "summary": "Verify request, access and persistence",
+          "kind": "decision",
+          "x": 760,
+          "y": 100,
+          "trigger": "Verify request, access and persistence",
+          "action": "Validate the submission, recipient, request revision and durable file references. Deduplicate repeated upload events.",
+          "guard": "Never acknowledge a failed save or a mismatched request.",
+          "ghl": "Validated receipt event / persistence adapter.",
+          "evidence": "Feasibility"
+        },
+        {
+          "id": "partial",
+          "title": "Ready for broker review?",
+          "summary": "Partial versus submitted evidence",
+          "kind": "decision",
+          "x": 1140,
+          "y": 100,
+          "trigger": "Partial versus submitted evidence",
+          "action": "Support multiple files and explicit partial/ready submission. File count does not prove date coverage or document correctness.",
+          "guard": "No automatic financial-content acceptance. Client declaration only signals readiness for review.",
+          "ghl": "Submission state + broker review; partial-upload UX is proposed.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "received",
+          "title": "Received · awaiting review",
+          "summary": "Hide from actionable dropdown",
+          "kind": "action",
+          "x": 1520,
+          "y": 100,
+          "trigger": "Hide from actionable dropdown",
+          "action": "Set Received awaiting review, keep receipt visible and create a broker review task. Ordinary chasing pauses for this request. Run DC-07 to reconcile tags.",
+          "guard": "Not Verified; do not advance the loan to lender-ready.",
+          "ghl": "Request state update + internal task; receipt pause needs owner sign-off.",
+          "evidence": "Proposed",
+          "state": "Received awaiting review",
+          "tags": "Reconcile through DC-07"
+        },
+        {
+          "id": "retry",
+          "title": "Keep request outstanding",
+          "summary": "Upload failed or invalid reference",
+          "kind": "stop",
+          "x": 760,
+          "y": 410,
+          "trigger": "Upload failed or invalid reference",
+          "action": "Show the upload error; allow retry against the correct request. Route unmatched submissions for staff handling.",
+          "guard": "No tag/status change on failure. No guess at the applicant.",
+          "ghl": "Validation/error route.",
+          "evidence": "Proposed",
+          "state": "Requested"
+        },
+        {
+          "id": "remaining",
+          "title": "Keep partial evidence",
+          "summary": "Request still needs client action",
+          "kind": "action",
+          "x": 1140,
+          "y": 410,
+          "trigger": "Request still needs client action",
+          "action": "Preserve uploaded files and show the remaining requirement. Continue against this request without duplicating it.",
+          "guard": "Do not claim the required period is covered because a file exists.",
+          "ghl": "Partial state and request-level remaining text.",
+          "evidence": "Proposed",
+          "state": "Partially received",
+          "tags": "Needed tag remains"
+        }
+      ],
+      "links": [
+        {
+          "from": "open",
+          "to": "upload",
+          "loop": false
+        },
+        {
+          "from": "upload",
+          "to": "saved",
+          "loop": false
+        },
+        {
+          "from": "saved",
+          "to": "partial",
+          "label": "Yes",
+          "loop": false
+        },
+        {
+          "from": "saved",
+          "to": "retry",
+          "label": "No",
+          "loop": false
+        },
+        {
+          "from": "partial",
+          "to": "received",
+          "label": "Ready",
+          "loop": false
+        },
+        {
+          "from": "partial",
+          "to": "remaining",
+          "label": "Partial",
+          "loop": false
+        },
+        {
+          "from": "remaining",
+          "to": "upload",
+          "label": "Add remaining files",
+          "loop": true
+        }
+      ]
+    },
+    {
+      "id": "DC-04",
+      "folder": "04 · Follow-up",
+      "title": "Chase only what is missing",
+      "sub": "Wait → recheck → current reminder",
+      "note": "Cadence, business-day calendar, maximum attempts and message copy remain to be approved. There is no hard-coded two-day schedule.",
+      "steps": [
+        {
+          "id": "enrol",
+          "title": "One reminder sequence",
+          "summary": "Issued or reopened request set",
+          "kind": "trigger",
+          "x": 0,
+          "y": 120,
+          "trigger": "Issued or reopened request set",
+          "action": "Ensure a single active reminder sequence per loan/request set. Reopened requests reuse the active sequence.",
+          "guard": "Do not run one uncoordinated campaign for each tag.",
+          "ghl": "Workflow entry with durable per-request-set guard.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "wait",
+          "title": "Wait for approved interval",
+          "summary": "Cadence is still to be decided",
+          "kind": "action",
+          "x": 380,
+          "y": 120,
+          "trigger": "Cadence is still to be decided",
+          "action": "Wait using the approved schedule, recipient timezone and sending window.",
+          "guard": "No production send until cadence, cap and copy are approved.",
+          "ghl": "Wait action supports timing/conditions; values pending.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "gate",
+          "title": "Safe to contact now?",
+          "summary": "Active · channel allowed · below cap",
+          "kind": "decision",
+          "x": 760,
+          "y": 120,
+          "trigger": "Active · channel allowed · below cap",
+          "action": "Recheck loan pause/closure, recipient permissions, DND, channel validity and attempt cap immediately before sending.",
+          "guard": "A pause while waiting must suppress the next send.",
+          "ghl": "If/Else + channel/DND controls + request-set status.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "missing",
+          "title": "Any current missing items?",
+          "summary": "Read checklist again now",
+          "kind": "decision",
+          "x": 1140,
+          "y": 120,
+          "trigger": "Read checklist again now",
+          "action": "Read only Requested, Partially received or Replacement requested items for this loan and recipient.",
+          "guard": "Never reuse the original issued list after uploads.",
+          "ghl": "Current-list composition capability to prove.",
+          "evidence": "Feasibility"
+        },
+        {
+          "id": "send",
+          "title": "Send current outstanding list",
+          "summary": "Only these items + upload link",
+          "kind": "action",
+          "x": 1520,
+          "y": 120,
+          "trigger": "Only these items + upload link",
+          "action": "Compose approved email/SMS with current required items and period wording. Record send/attempt and wait again.",
+          "guard": "Final send must use a fresh revision; already queued external sends may not be cancellable.",
+          "ghl": "Send Email / SMS with generated current content.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "hold",
+          "title": "Pause or hand to broker",
+          "summary": "Suppressed / capped / invalid channel",
+          "kind": "stop",
+          "x": 760,
+          "y": 430,
+          "trigger": "Suppressed / capped / invalid channel",
+          "action": "Exit or suspend as appropriate; raise an owned task when human follow-up is required.",
+          "guard": "Opt-out is not cleared by resuming a loan.",
+          "ghl": "Guarded exit + internal task.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "review",
+          "title": "Stop client chase",
+          "summary": "No client action remains",
+          "kind": "stop",
+          "x": 1140,
+          "y": 430,
+          "trigger": "No client action remains",
+          "action": "Stop this request set’s ordinary reminders. Route pending receipts to review; accepted requests may complete collection.",
+          "guard": "No client chase for Received awaiting review.",
+          "ghl": "Guarded exit; request-set context preserved.",
+          "evidence": "Proposed"
+        }
+      ],
+      "links": [
+        {
+          "from": "enrol",
+          "to": "wait",
+          "loop": false
+        },
+        {
+          "from": "wait",
+          "to": "gate",
+          "loop": false
+        },
+        {
+          "from": "gate",
+          "to": "missing",
+          "label": "Yes",
+          "loop": false
+        },
+        {
+          "from": "gate",
+          "to": "hold",
+          "label": "No",
+          "loop": false
+        },
+        {
+          "from": "missing",
+          "to": "send",
+          "label": "Yes",
+          "loop": false
+        },
+        {
+          "from": "missing",
+          "to": "review",
+          "label": "No",
+          "loop": false
+        },
+        {
+          "from": "send",
+          "to": "wait",
+          "label": "Next approved interval",
+          "loop": true
+        }
+      ]
+    },
+    {
+      "id": "DC-05",
+      "folder": "05 · Broker review",
+      "title": "Accept or request a replacement",
+      "sub": "Human review → reopen or complete",
+      "note": "The broker checks the evidence. Collection complete is not lending approval or permission to lodge.",
+      "steps": [
+        {
+          "id": "queue",
+          "title": "Broker review task",
+          "summary": "Saved receipt awaiting review",
+          "kind": "trigger",
+          "x": 0,
+          "y": 120,
+          "trigger": "Saved receipt awaiting review",
+          "action": "Show the document, requested period, applicant/account, submission revision and prior files.",
+          "guard": "The client-selected document type does not verify its content.",
+          "ghl": "Task / internal notification with secure evidence access.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "decision",
+          "title": "Broker’s decision",
+          "summary": "Accept · replace · more required",
+          "kind": "decision",
+          "x": 380,
+          "y": 120,
+          "trigger": "Accept · replace · more required",
+          "action": "Review identity, account, date coverage and readability; record reviewer, date and reason.",
+          "guard": "No automatic acceptance from file presence. Avoid applying a decision to a newer replacement upload.",
+          "ghl": "Controlled review form/status event.",
+          "evidence": "Confirmed"
+        },
+        {
+          "id": "accept",
+          "title": "Accept this request",
+          "summary": "Evidence verified by broker",
+          "kind": "action",
+          "x": 760,
+          "y": 120,
+          "trigger": "Evidence verified by broker",
+          "action": "Mark the request Accepted and preserve its history. Recompute request-set completion.",
+          "guard": "Acceptance applies only to this request revision.",
+          "ghl": "Request update + DC-07 reconciliation.",
+          "evidence": "Proposed",
+          "state": "Accepted"
+        },
+        {
+          "id": "all",
+          "title": "Every selected request accepted?",
+          "summary": "Exclude cancelled/waived only by owner",
+          "kind": "decision",
+          "x": 1140,
+          "y": 120,
+          "trigger": "Exclude cancelled/waived only by owner",
+          "action": "Check all active requests across the loan’s applicants and entities.",
+          "guard": "No missing request can be ignored just because its tag vanished.",
+          "ghl": "Request-set aggregate; mapping to prove.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "complete",
+          "title": "Collection complete",
+          "summary": "Notify the assigned broker",
+          "kind": "stop",
+          "x": 1520,
+          "y": 120,
+          "trigger": "Notify the assigned broker",
+          "action": "Stop this loan’s collection chase and notify the broker that the selected collection pack is complete.",
+          "guard": "No auto lender approval, loan lodgement or settlement-stage movement.",
+          "ghl": "Internal notification + collection status.",
+          "evidence": "Proposed",
+          "state": "Collection complete"
+        },
+        {
+          "id": "replace",
+          "title": "Request specific replacement",
+          "summary": "Reason and remaining requirement",
+          "kind": "action",
+          "x": 380,
+          "y": 430,
+          "trigger": "Reason and remaining requirement",
+          "action": "Preserve old files. Reopen only the affected item with a clear reason; show it in the dropdown and current reminders.",
+          "guard": "No new duplicate request and no reset of other accepted evidence.",
+          "ghl": "Review form → request update → DC-07.",
+          "evidence": "Proposed",
+          "state": "Replacement requested",
+          "tags": "Needed tag restored if action remains"
+        },
+        {
+          "id": "pending",
+          "title": "Keep remaining work active",
+          "summary": "Missing or other review tasks remain",
+          "kind": "stop",
+          "x": 1140,
+          "y": 430,
+          "trigger": "Missing or other review tasks remain",
+          "action": "Leave other requests in their actual states. Chase only items still needing client action.",
+          "guard": "Received items remain with the broker, not in ordinary client chasing.",
+          "ghl": "No blanket reset.",
+          "evidence": "Proposed"
+        }
+      ],
+      "links": [
+        {
+          "from": "queue",
+          "to": "decision",
+          "loop": false
+        },
+        {
+          "from": "decision",
+          "to": "accept",
+          "label": "Accept",
+          "loop": false
+        },
+        {
+          "from": "decision",
+          "to": "replace",
+          "label": "Replace / more",
+          "loop": false
+        },
+        {
+          "from": "accept",
+          "to": "all",
+          "loop": false
+        },
+        {
+          "from": "all",
+          "to": "complete",
+          "label": "Yes",
+          "loop": false
+        },
+        {
+          "from": "all",
+          "to": "pending",
+          "label": "No",
+          "loop": false
+        }
+      ]
+    },
+    {
+      "id": "DC-06",
+      "folder": "06 · Shared controls",
+      "title": "Pause, resume and close safely",
+      "sub": "Control events → scoped suppression",
+      "note": "Loan controls and contact channel controls are different. Neither should inadvertently stop an unrelated loan.",
+      "steps": [
+        {
+          "id": "event",
+          "title": "Control event",
+          "summary": "Pause · resume · closure · opt-out",
+          "kind": "trigger",
+          "x": 0,
+          "y": 120,
+          "trigger": "Pause · resume · closure · opt-out",
+          "action": "Receive an owned loan-control decision or a channel permission/delivery event.",
+          "guard": "Identify exact loan and recipient before changing anything.",
+          "ghl": "Controlled form/status + relevant channel event.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "scope",
+          "title": "Which control applies?",
+          "summary": "Loan status versus contact channel",
+          "kind": "decision",
+          "x": 380,
+          "y": 120,
+          "trigger": "Loan status versus contact channel",
+          "action": "Apply pause/closure to the loan request set; apply channel restrictions to the actual recipient channel.",
+          "guard": "A summary paused tag alone must not suppress all loans.",
+          "ghl": "Request-set status plus native DND/channel checks.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "pause",
+          "title": "Pause or close this loan",
+          "summary": "Suppress future sends",
+          "kind": "action",
+          "x": 760,
+          "y": 0,
+          "trigger": "Suppress future sends",
+          "action": "Set the loan request-set state and stop/suppress its reminders. Preserve every request and file.",
+          "guard": "Closing does not erase financial evidence or declare requests accepted.",
+          "ghl": "Scoped status/exit; multi-opportunity handling must be tested.",
+          "evidence": "Proposed",
+          "state": "Paused / Closed"
+        },
+        {
+          "id": "resume",
+          "title": "Resume after recheck",
+          "summary": "Still eligible and still outstanding",
+          "kind": "action",
+          "x": 760,
+          "y": 230,
+          "trigger": "Still eligible and still outstanding",
+          "action": "Read current requirements, permission and send cap; re-enter at most one reminder sequence if appropriate.",
+          "guard": "Do not resend the initial invitation or override DND.",
+          "ghl": "Controlled re-entry + guard.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "channel",
+          "title": "Suppress affected channel",
+          "summary": "Opt-out or failed delivery",
+          "kind": "action",
+          "x": 760,
+          "y": 460,
+          "trigger": "Opt-out or failed delivery",
+          "action": "Respect DND and invalid channel state; notify broker when action is needed.",
+          "guard": "Do not infer permission for another channel.",
+          "ghl": "Native channel controls; broker task.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "sync",
+          "title": "Reconcile current summary",
+          "summary": "DC-07 recomputes state",
+          "kind": "stop",
+          "x": 1140,
+          "y": 230,
+          "trigger": "DC-07 recomputes state",
+          "action": "Refresh display and summaries from current requests.",
+          "guard": "Keep another loan’s actionable requests intact.",
+          "ghl": "DC-07 reconciliation.",
+          "evidence": "Proposed"
+        }
+      ],
+      "links": [
+        {
+          "from": "event",
+          "to": "scope",
+          "loop": false
+        },
+        {
+          "from": "scope",
+          "to": "pause",
+          "label": "Pause / close",
+          "loop": false
+        },
+        {
+          "from": "scope",
+          "to": "resume",
+          "label": "Resume",
+          "loop": false
+        },
+        {
+          "from": "scope",
+          "to": "channel",
+          "label": "Channel event",
+          "loop": false
+        },
+        {
+          "from": "pause",
+          "to": "sync",
+          "loop": false
+        },
+        {
+          "from": "resume",
+          "to": "sync",
+          "loop": false
+        },
+        {
+          "from": "channel",
+          "to": "sync",
+          "loop": false
+        }
+      ]
+    },
+    {
+      "id": "DC-07",
+      "folder": "06 · Shared controls",
+      "title": "Keep tags truthful",
+      "sub": "Request state → contact summary",
+      "note": "This is the only document-tag writer. It prevents one upload clearing a tag needed by another account, applicant or loan.",
+      "steps": [
+        {
+          "id": "changed",
+          "title": "Request state changed",
+          "summary": "Issue · receipt · review · control",
+          "kind": "trigger",
+          "x": 0,
+          "y": 120,
+          "trigger": "Issue · receipt · review · control",
+          "action": "Reconcile after committed state changes; retry safely on transient failure.",
+          "guard": "Use current persisted data, not decrement counters from duplicate events.",
+          "ghl": "Reconciliation event / adapter.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "read",
+          "title": "Read all relevant requests",
+          "summary": "Correct contact across active loans",
+          "kind": "action",
+          "x": 380,
+          "y": 120,
+          "trigger": "Correct contact across active loans",
+          "action": "For each document key, find unresolved client-action requests belonging to this contact; include Requested, Partial and Replacement. Paused loan requests retain their needed-state evidence.",
+          "guard": "Accepted, received-for-review, waived or cancelled items do not create ordinary client-action need.",
+          "ghl": "Linked request query; a plain contact field is insufficient for concurrent loans.",
+          "evidence": "Feasibility"
+        },
+        {
+          "id": "any",
+          "title": "Same document still needed?",
+          "summary": "Check every applicable account",
+          "kind": "decision",
+          "x": 760,
+          "y": 120,
+          "trigger": "Check every applicable account",
+          "action": "Aggregate at contact + document type. Loan A received must not clear Loan B or card B.",
+          "guard": "An empty dropdown on one loan is not proof the contact needs nothing.",
+          "ghl": "If/Else on authoritative aggregate.",
+          "evidence": "Proposed"
+        },
+        {
+          "id": "keep",
+          "title": "Add or retain needed tag",
+          "summary": "One or more requests need action",
+          "kind": "action",
+          "x": 1140,
+          "y": 0,
+          "trigger": "One or more requests need action",
+          "action": "Retain the canonical needed tag. No new tag for each account, month count or loan.",
+          "guard": "Period and account stay on the request, not inside tag names.",
+          "ghl": "Add Contact Tag.",
+          "evidence": "Proposed",
+          "tags": "fos-doc-needed-<document-key>"
+        },
+        {
+          "id": "remove",
+          "title": "Remove needed tag",
+          "summary": "No requests of that type need action",
+          "kind": "action",
+          "x": 1140,
+          "y": 260,
+          "trigger": "No requests of that type need action",
+          "action": "Remove only this document type’s needed tag. Keep evidence and reviewer tasks.",
+          "guard": "Persist receipt first; remove tag only after successful all-request reconciliation.",
+          "ghl": "Remove Contact Tag.",
+          "evidence": "Proposed",
+          "tags": "Remove fos-doc-needed-<document-key>"
+        },
+        {
+          "id": "summary",
+          "title": "Refresh summaries",
+          "summary": "Action needed · review needed · paused",
+          "kind": "stop",
+          "x": 1520,
+          "y": 120,
+          "trigger": "Action needed · review needed · paused",
+          "action": "Recompute summary tags and loan-specific checklist text; log reconciliation. Tag changes do not issue a new request set.",
+          "guard": "One writer; prevent tag-trigger feedback loops.",
+          "ghl": "Add/Remove Tag + state projection.",
+          "evidence": "Proposed",
+          "tags": "fos-docs-action-needed · fos-docs-review-needed · fos-docs-paused"
+        }
+      ],
+      "links": [
+        {
+          "from": "changed",
+          "to": "read",
+          "loop": false
+        },
+        {
+          "from": "read",
+          "to": "any",
+          "loop": false
+        },
+        {
+          "from": "any",
+          "to": "keep",
+          "label": "Yes",
+          "loop": false
+        },
+        {
+          "from": "any",
+          "to": "remove",
+          "label": "No",
+          "loop": false
+        },
+        {
+          "from": "keep",
+          "to": "summary",
+          "loop": false
+        },
+        {
+          "from": "remove",
+          "to": "summary",
+          "loop": false
+        }
+      ]
+    }
+  ],
+  "overview": {
+    "id": "overview",
+    "folder": "Document collection",
+    "title": "From broker request to complete pack",
+    "sub": "One loan-specific checklist drives the whole journey",
+    "note": "Click a workflow to inspect its branches and build details. Dashed connectors are return/control paths. All automation is proposed, not live.",
+    "steps": [
+      {
+        "id": "DC-01",
+        "title": "Broker setup",
+        "summary": "Select scenario · review · confirm",
+        "kind": "human",
+        "x": 0,
+        "y": 100,
+        "trigger": "Select scenario · review · confirm",
+        "action": "Open DC-01 to inspect the form and fixed scenario rules.",
+        "guard": "No broker period override.",
+        "ghl": "Broker form → validated request.",
+        "evidence": "Confirmed"
+      },
+      {
+        "id": "DC-02",
+        "title": "Issue requests & tags",
+        "summary": "Persist checklist · tag · invite",
+        "kind": "action",
+        "x": 380,
+        "y": 100,
+        "trigger": "Persist checklist · tag · invite",
+        "action": "Open DC-02 for issue guards, request records and initial invitation.",
+        "guard": "One request set per loan revision.",
+        "ghl": "Form / state / tags / outbound message.",
+        "evidence": "Proposed"
+      },
+      {
+        "id": "DC-03",
+        "title": "Client uploads",
+        "summary": "Choose request · save evidence",
+        "kind": "action",
+        "x": 760,
+        "y": 100,
+        "trigger": "Choose request · save evidence",
+        "action": "Open DC-03 for failed, partial and complete submission branches.",
+        "guard": "Receipt is not acceptance.",
+        "ghl": "Upload form / request scope.",
+        "evidence": "Proposed"
+      },
+      {
+        "id": "DC-05",
+        "title": "Broker review",
+        "summary": "Accept or request replacement",
+        "kind": "human",
+        "x": 1140,
+        "y": 100,
+        "trigger": "Accept or request replacement",
+        "action": "Open DC-05 for acceptance and replacement paths.",
+        "guard": "Only a broker verifies evidence.",
+        "ghl": "Review task / form.",
+        "evidence": "Confirmed"
+      },
+      {
+        "id": "done",
+        "title": "Collection complete",
+        "summary": "All selected evidence accepted",
+        "kind": "stop",
+        "x": 1520,
+        "y": 100,
+        "trigger": "All selected evidence accepted",
+        "action": "Notify broker and stop this collection request set.",
+        "guard": "Not lender approval or automatic lodgement.",
+        "ghl": "Collection status + internal notification.",
+        "evidence": "Proposed"
+      },
+      {
+        "id": "DC-06",
+        "title": "Pause & controls",
+        "summary": "Loan scope · channel permissions",
+        "kind": "action",
+        "x": 380,
+        "y": 440,
+        "trigger": "Loan scope · channel permissions",
+        "action": "Open DC-06 for pause, resume, closure and channel restrictions.",
+        "guard": "Do not suppress unrelated loans.",
+        "ghl": "Scoped controls.",
+        "evidence": "Proposed"
+      },
+      {
+        "id": "DC-04",
+        "title": "Outstanding-only reminders",
+        "summary": "Wait · recheck · current list",
+        "kind": "action",
+        "x": 760,
+        "y": 440,
+        "trigger": "Wait · recheck · current list",
+        "action": "Open DC-04 for the reminder loop, stop rules and unresolved cadence.",
+        "guard": "Recheck immediately before every send.",
+        "ghl": "Wait / If/Else / email / SMS.",
+        "evidence": "Proposed"
+      },
+      {
+        "id": "DC-07",
+        "title": "Tag reconciliation",
+        "summary": "Needed ⇄ received ⇄ replacement",
+        "kind": "action",
+        "x": 1140,
+        "y": 440,
+        "trigger": "Needed ⇄ received ⇄ replacement",
+        "action": "Open DC-07 for exact tag removal and multi-account handling.",
+        "guard": "One upload cannot clear another request.",
+        "ghl": "Add/Remove Contact Tag after request query.",
+        "evidence": "Feasibility"
+      }
+    ],
+    "links": [
+      {
+        "from": "DC-01",
+        "to": "DC-02",
+        "loop": false
+      },
+      {
+        "from": "DC-02",
+        "to": "DC-03",
+        "loop": false
+      },
+      {
+        "from": "DC-03",
+        "to": "DC-05",
+        "label": "Received",
+        "loop": false
+      },
+      {
+        "from": "DC-05",
+        "to": "done",
+        "label": "All accepted",
+        "loop": false
+      },
+      {
+        "from": "DC-02",
+        "to": "DC-04",
+        "label": "Start follow-up",
+        "loop": false
+      },
+      {
+        "from": "DC-06",
+        "to": "DC-04",
+        "label": "Suppress / resume",
+        "loop": true
+      },
+      {
+        "from": "DC-04",
+        "to": "DC-03",
+        "label": "Upload link",
+        "loop": true
+      },
+      {
+        "from": "DC-05",
+        "to": "DC-03",
+        "label": "Replacement",
+        "loop": true
+      },
+      {
+        "from": "DC-03",
+        "to": "DC-07",
+        "label": "Receipt event",
+        "loop": true
+      },
+      {
+        "from": "DC-05",
+        "to": "DC-07",
+        "label": "Review event",
+        "loop": true
+      }
+    ]
+  },
+  "rules": [
+    [
+      "Home-loan refinance",
+      "Home-loan statements",
+      "6 continuous months",
+      "Confirmed"
+    ],
+    [
+      "Credit card consolidated into home loan",
+      "Credit-card statements",
+      "6 continuous months",
+      "Confirmed"
+    ],
+    [
+      "Credit card retained / conduct checked",
+      "Credit-card statements",
+      "3 continuous months",
+      "Confirmed"
+    ],
+    [
+      "PAYG employment",
+      "Payslips",
+      "2 latest consecutive; latest within 30 days",
+      "Proposed"
+    ],
+    [
+      "Salary-credit matching required",
+      "Salary bank statements",
+      "3 months permanent / 6 months casual",
+      "Proposed"
+    ],
+    [
+      "Savings fund deposit",
+      "Savings statements",
+      "3 continuous months",
+      "Proposed"
+    ],
+    [
+      "Self-employed / partnership / trust",
+      "Applicable tax returns and retained financials",
+      "2 latest relevant financial years",
+      "Proposed"
+    ],
+    [
+      "Purchase at contract stage",
+      "Contract of sale — buying",
+      "Complete signed current contract",
+      "Proposed"
+    ],
+    [
+      "Existing rental income",
+      "Rental statement OR lease",
+      "Latest statement or current lease",
+      "Proposed"
+    ],
+    [
+      "Construction application",
+      "Contract, plans, specifications, approvals",
+      "Current project versions; later-stage evidence later",
+      "Proposed"
+    ]
+  ],
+  "fields": [
+    [
+      "Contact",
+      "Name, email, mobile, permitted channels",
+      "Person and communication permissions; needed tags are summaries."
+    ],
+    [
+      "Loan / opportunity",
+      "Loan reference, broker, scenario, collection status",
+      "Each deal has its own collection lifecycle."
+    ],
+    [
+      "Request set",
+      "Revision, standard version, issue guard, pause state, reminder count",
+      "Preserve issued requirements and prevent duplicate entry."
+    ],
+    [
+      "Document request",
+      "Document key, applicant/entity/account, coverage, count, status",
+      "Authoritative checklist; exact native GHL storage must be proven."
+    ],
+    [
+      "Submission",
+      "Request/revision reference, file references, receipt time, deduplication key",
+      "Preserve upload history and match the exact request."
+    ],
+    [
+      "Review",
+      "Reviewer, decision, reason, time and evidence revision",
+      "Acceptance is a human decision, not file presence."
+    ]
+  ],
+  "gates": [
+    [
+      "Request storage",
+      "Prove concurrent loans, multiple applicants and multiple accounts without overwriting."
+    ],
+    [
+      "Upload access",
+      "Prove private links, recipient-specific dropdowns, persistent files and repeat uploads."
+    ],
+    [
+      "Dynamic reminders",
+      "Prove generated current lists, exact loan targeting and suppression before send."
+    ],
+    [
+      "Business decisions",
+      "Approve reminder cadence/cap/copy, remaining proposed periods, receipt pause and partial-upload behaviour."
+    ]
+  ]
+}
